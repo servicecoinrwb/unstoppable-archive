@@ -159,18 +159,54 @@
                 Configure the hosting service. This wallet will subsidize the "Free Tier" uploads (under 5MB).
             </p>
 
-            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 mb-4">
-                <h3 class="font-semibold text-white mb-2 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+            <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 mb-4 space-y-5">
+                <h3 class="font-semibold text-white flex items-center gap-2">
+                    <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg> 
                     Initialize Service (Admin)
                 </h3>
-                <p class="text-sm text-slate-400 mb-4">
-                    Generate service wallet to subsidize uploads. 
-                    <span class="text-emerald-400 font-medium block mt-1">✨ Mode: Hybrid Freemium</span>
-                </p>
-                <button onclick="generateWallet()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-                    Start Portal
-                </button>
+                
+                <!-- Import -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wider">Option A: Load Existing Wallet</label>
+                    <input type="file" id="admin-keyfile" accept=".json" onchange="handleKeyfileUpload(this)" 
+                        class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer"/>
+                </div>
+
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-slate-700"></div>
+                    <span class="flex-shrink-0 mx-2 text-slate-600 text-xs font-medium">OR</span>
+                    <div class="flex-grow border-t border-slate-700"></div>
+                </div>
+
+                <!-- Generate -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wider">Option B: Create New Wallet</label>
+                    <button onclick="generateAndSaveWallet()" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Generate & Download Keyfile
+                    </button>
+                    <p class="text-[10px] text-slate-500 mt-2">
+                        ⚠ Downloads a <code>.json</code> file. Keep this safe! You need it to restore your funds if you refresh.
+                    </p>
+                </div>
+
+                <!-- Status Area -->
+                <div id="setup-status" class="hidden mt-4 p-4 bg-slate-950 rounded-lg border border-emerald-500/30 shadow-inner">
+                    <div class="text-xs text-slate-500 mb-1 uppercase font-semibold">Service Address (Send Funds Here):</div>
+                    <div id="setup-address" class="font-mono text-emerald-400 text-xs break-all mb-3 select-all bg-emerald-900/10 p-2 rounded cursor-pointer hover:bg-emerald-900/20" title="Click to Copy" onclick="copyText(this.innerText)"></div>
+                    
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="text-xs text-slate-500 mb-1 uppercase font-semibold">Current Balance:</div>
+                            <div id="setup-balance" class="font-mono text-white text-lg font-bold">Checking...</div>
+                        </div>
+                        <button onclick="refreshSetupBalance()" class="text-xs text-slate-400 hover:text-white underline">Refresh</button>
+                    </div>
+                    
+                    <button onclick="enterPortalAsAdmin()" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-bold transition-all shadow-lg shadow-emerald-500/20">
+                        Launch Portal with Funded Wallet
+                    </button>
+                </div>
             </div>
 
             <div class="relative py-2">
@@ -484,21 +520,80 @@
             modal.classList.toggle('hidden');
         }
 
+        function enterPortalAsAdmin() {
+            if (!serviceWallet) {
+                alert("Please load or generate a wallet first.");
+                return;
+            }
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
+            checkBalance();
+        }
+
         // --- ADMIN / SERVICE LOGIC ---
-        async function generateWallet() {
+        
+        // Option A: Upload Keyfile
+        function handleKeyfileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const jwk = JSON.parse(e.target.result);
+                    serviceWallet = jwk;
+                    serviceAddress = await arweave.wallets.jwkToAddress(jwk);
+                    updateSetupStatus();
+                } catch (err) {
+                    console.error(err);
+                    alert("Invalid JSON keyfile.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Option B: Generate & Save
+        async function generateAndSaveWallet() {
             try {
-                serviceWallet = await arweave.wallets.generate();
-                serviceAddress = await arweave.wallets.jwkToAddress(serviceWallet);
+                // 1. Generate
+                const jwk = await arweave.wallets.generate();
+                serviceWallet = jwk;
+                serviceAddress = await arweave.wallets.jwkToAddress(jwk);
                 
-                document.getElementById('setup-screen').classList.add('hidden');
-                document.getElementById('app-screen').classList.remove('hidden');
+                // 2. Trigger Download
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jwk));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", "arweave-keyfile.json");
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
                 
-                // Immediately check balance to determine Simulation Status
-                await checkBalance();
+                // 3. Update UI
+                updateSetupStatus();
                 
             } catch (e) {
                 console.error("Wallet generation failed:", e);
                 alert("Failed to generate wallet.");
+            }
+        }
+
+        async function updateSetupStatus() {
+            document.getElementById('setup-status').classList.remove('hidden');
+            document.getElementById('setup-address').innerText = serviceAddress;
+            await refreshSetupBalance();
+        }
+
+        async function refreshSetupBalance() {
+            if (!serviceAddress) return;
+            const balEl = document.getElementById('setup-balance');
+            balEl.innerText = "Checking...";
+            try {
+                const winston = await arweave.wallets.getBalance(serviceAddress);
+                const ar = arweave.ar.winstonToAr(winston);
+                balEl.innerText = `${parseFloat(ar).toFixed(4)} AR`;
+            } catch (e) {
+                balEl.innerText = "Error";
             }
         }
 
@@ -541,6 +636,11 @@
                 navigator.clipboard.writeText(serviceAddress);
                 alert("Service Wallet Address Copied!\nSend AR tokens here to activate the Free Tier.");
             }
+        }
+
+        function copyText(text) {
+             navigator.clipboard.writeText(text);
+             alert("Address copied to clipboard!");
         }
 
         // --- USER WALLET LOGIC ---
