@@ -242,17 +242,17 @@
                 </button>
 
                 <!-- Service Balance (Admin Only) -->
-                <div id="service-balance-container" class="hidden flex items-center gap-3 text-xs border-r border-slate-800 pr-4 pl-4 border-l cursor-pointer hover:bg-slate-800/50 py-1 rounded transition-colors group relative" title="Click to copy Service Address" onclick="copyServiceAddress()">
-                    <div class="flex items-center gap-1.5 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">
+                <div id="service-balance-container" class="hidden flex items-center gap-3 text-xs border-r border-slate-800 pr-4 pl-4 border-l transition-colors group relative">
+                    <div class="flex items-center gap-1.5 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded cursor-pointer" onclick="copyServiceAddress()" title="Copy Address">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                         HOSTING ACTIVE
                     </div>
-                    <span class="text-slate-500 group-hover:text-slate-300">Pool: <span id="wallet-balance" class="font-mono text-white">...</span></span>
+                    <span class="text-slate-500">Pool: <span id="wallet-balance" class="font-mono text-white">...</span></span>
                     
-                    <!-- Tooltip -->
-                    <div class="absolute -bottom-8 right-0 w-max bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
-                        Service Wallet (Pays for Free Tier)
-                    </div>
+                    <!-- Disconnect Button -->
+                    <button onclick="logoutAdmin()" class="ml-2 p-1 hover:bg-red-500/20 rounded text-slate-600 hover:text-red-400 transition-colors" title="Disconnect Service Wallet">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    </button>
                 </div>
 
                 <!-- User Wallet Connection -->
@@ -490,11 +490,30 @@
                 port: 443,
                 protocol: 'https'
             });
+            
+            // CHECK LOCAL STORAGE FOR SAVED WALLET
+            const savedWallet = localStorage.getItem('arweave_service_wallet');
+            if (savedWallet) {
+                try {
+                    const jwk = JSON.parse(savedWallet);
+                    loadServiceWallet(jwk);
+                } catch (e) {
+                    console.error("Failed to load saved wallet", e);
+                }
+            }
+
             setupDragAndDrop();
         });
 
         // --- NAVIGATION ---
         function enterPortal() {
+            // If we already have a service wallet loaded, go straight to app
+            if (serviceWallet) {
+                document.getElementById('landing-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                return;
+            }
+            
             document.getElementById('landing-screen').classList.add('hidden');
             document.getElementById('setup-screen').classList.remove('hidden');
         }
@@ -514,7 +533,7 @@
             modal.classList.toggle('hidden');
         }
 
-        function enterPortalAsAdmin() {
+        async function enterPortalAsAdmin() {
             if (!serviceWallet) {
                 alert("Please load or generate a wallet first.");
                 return;
@@ -531,6 +550,27 @@
 
         // --- ADMIN / SERVICE LOGIC ---
         
+        // Load wallet helper
+        async function loadServiceWallet(jwk) {
+            serviceWallet = jwk;
+            serviceAddress = await arweave.wallets.jwkToAddress(jwk);
+            
+            // AUTO SAVE to Local Storage
+            localStorage.setItem('arweave_service_wallet', JSON.stringify(jwk));
+            
+            // If we are on Setup Screen, update status
+            if (!document.getElementById('setup-screen').classList.contains('hidden')) {
+                updateSetupStatus();
+            } else {
+                // If checking blindly on load, verify balance
+                checkBalance();
+                // Ensure UI is ready
+                document.getElementById('service-balance-container').classList.remove('hidden');
+                document.getElementById('service-balance-container').classList.add('flex');
+                document.getElementById('wallet-balance').innerText = '...'; 
+            }
+        }
+
         // Option A: Upload Keyfile
         function handleKeyfileUpload(input) {
             const file = input.files[0];
@@ -540,9 +580,7 @@
             reader.onload = async (e) => {
                 try {
                     const jwk = JSON.parse(e.target.result);
-                    serviceWallet = jwk;
-                    serviceAddress = await arweave.wallets.jwkToAddress(jwk);
-                    updateSetupStatus();
+                    await loadServiceWallet(jwk);
                 } catch (err) {
                     console.error(err);
                     alert("Invalid JSON keyfile.");
@@ -556,8 +594,7 @@
             try {
                 // 1. Generate
                 const jwk = await arweave.wallets.generate();
-                serviceWallet = jwk;
-                serviceAddress = await arweave.wallets.jwkToAddress(jwk);
+                await loadServiceWallet(jwk);
                 
                 // 2. Trigger Download
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jwk));
@@ -568,12 +605,18 @@
                 downloadAnchorNode.click();
                 downloadAnchorNode.remove();
                 
-                // 3. Update UI
-                updateSetupStatus();
-                
             } catch (e) {
                 console.error("Wallet generation failed:", e);
                 alert("Failed to generate wallet.");
+            }
+        }
+        
+        function logoutAdmin() {
+            if(confirm("Are you sure you want to disconnect the Service Wallet? You will need to re-upload the keyfile to act as host.")) {
+                serviceWallet = null;
+                serviceAddress = null;
+                localStorage.removeItem('arweave_service_wallet');
+                location.reload(); // Simplest way to reset state
             }
         }
 
@@ -597,6 +640,7 @@
         }
 
         function skipSetup() {
+            // VISITOR MODE (No Service Wallet)
             serviceWallet = null;
             serviceAddress = null;
             isSimulation = false; 
@@ -617,8 +661,14 @@
             try {
                 const winston = await arweave.wallets.getBalance(serviceAddress);
                 const ar = arweave.ar.winstonToAr(winston);
-                const balanceEl = document.getElementById('wallet-balance');
-                balanceEl.textContent = `${parseFloat(ar).toFixed(4)} AR`;
+                
+                // Update both balance displays (Setup & App)
+                const setupBal = document.getElementById('setup-balance');
+                const appBal = document.getElementById('wallet-balance');
+                
+                const balText = `${parseFloat(ar).toFixed(4)} AR`;
+                if(setupBal) setupBal.innerText = balText;
+                if(appBal) appBal.innerText = balText;
                 
                 // AUTO-TOGGLE SIMULATION
                 if (parseFloat(ar) > 0) {
