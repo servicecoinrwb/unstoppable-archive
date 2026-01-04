@@ -12,15 +12,97 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .drag-active { border-color: #10b981; background-color: rgba(16, 185, 129, 0.05); transform: scale(1.02); }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-emerald-500/30">
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-emerald-500/30 font-sans">
 
-    <!-- SETUP SCREEN (Visible by default until wallet is generated) -->
-    <div id="setup-screen" class="min-h-screen flex items-center justify-center p-4">
+    <!-- LANDING PAGE (Visible on Load) -->
+    <div id="landing-screen" class="min-h-screen flex flex-col relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+            <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[120px]"></div>
+        </div>
+
+        <!-- Header -->
+        <header class="container mx-auto px-6 py-6 flex justify-between items-center">
+            <div class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                <div class="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                Public Archive
+            </div>
+            <a href="https://arweave.org" target="_blank" class="text-sm text-slate-400 hover:text-white transition-colors">Powered by Arweave</a>
+        </header>
+
+        <!-- Hero -->
+        <main class="flex-grow flex flex-col justify-center items-center text-center px-4 py-12">
+            <div class="max-w-3xl space-y-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-xs font-medium text-emerald-400 mb-4">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    Live on Permaweb
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight">
+                    History that <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">cannot be deleted.</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                    Upload evidence, documents, and history to the decentralized blockchain. 
+                    Resistant to censorship, takedowns, and server failure. Forever.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+                    <button onclick="enterPortal()" class="group relative px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40">
+                        Launch Archive Portal
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">→</span>
+                    </button>
+                    <button onclick="scrollToFeatures()" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl border border-slate-700 transition-colors">
+                        How it works
+                    </button>
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div id="features" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-24 text-left">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center mb-4 text-emerald-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Uncensorable</h3>
+                    <p class="text-sm text-slate-400">No central server. Data is stored across thousands of nodes globally. No one can take it down.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center mb-4 text-emerald-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Permanent</h3>
+                    <p class="text-sm text-slate-400">Pay once, store forever. An endowment model ensures your data persists for centuries.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center mb-4 text-emerald-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Easy Upload</h3>
+                    <p class="text-sm text-slate-400">Small files are subsidized by the community. Large files are paid directly by your wallet.</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="py-8 text-center text-slate-600 text-sm">
+            Open Source • Decentralized • Public Good
+        </footer>
+    </div>
+
+    <!-- SETUP SCREEN (Hidden by default) -->
+    <div id="setup-screen" class="hidden min-h-screen flex items-center justify-center p-4">
         <div class="max-w-md w-full bg-slate-900 rounded-2xl shadow-2xl p-8 border border-slate-700">
+            <button onclick="returnToLanding()" class="text-slate-500 hover:text-white mb-6 flex items-center gap-2 text-sm">
+                ← Back
+            </button>
             <div class="flex items-center gap-3 mb-6 text-emerald-400">
-                <!-- Server Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
                 <h1 class="text-2xl font-bold text-white">Service Setup</h1>
             </div>
@@ -31,7 +113,6 @@
 
             <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 mb-4">
                 <h3 class="font-semibold text-white mb-2 flex items-center gap-2">
-                    <!-- Key Icon -->
                     <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
                     Initialize Service (Admin)
                 </h3>
@@ -67,23 +148,28 @@
     <div id="app-screen" class="hidden min-h-screen flex flex-col">
         
         <!-- Navbar -->
-        <div class="bg-slate-900 border-b border-slate-800 py-3 px-6 flex justify-between items-center text-sm">
+        <div class="bg-slate-900 border-b border-slate-800 py-3 px-6 flex justify-between items-center text-sm sticky top-0 z-50">
             <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 text-slate-400">
+                <div class="flex items-center gap-2 text-slate-400 cursor-pointer" onclick="returnToLanding()">
                     <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                     <span class="font-semibold text-white">Public Archive</span>
                 </div>
                 <!-- Enterprise Badge -->
                 <div class="hidden md:flex items-center gap-1.5 px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded border border-indigo-500/20 text-xs font-medium">
-                    <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
                     Enterprise API Active
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <!-- Service Balance (Hidden from normal users in real app, shown here for admin) -->
-                <div id="service-balance-container" class="hidden md:flex items-center gap-2 text-xs text-slate-500 border-r border-slate-800 pr-4">
-                    <span>Service Pool:</span>
+                <!-- Instructions Button -->
+                <button onclick="toggleInstructions()" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+                    <span class="hidden sm:inline">How to Use</span>
+                </button>
+
+                <!-- Service Balance -->
+                <div id="service-balance-container" class="hidden md:flex items-center gap-2 text-xs text-slate-500 border-r border-slate-800 pr-4 pl-4 border-l">
+                    <span>Pool:</span>
                     <span id="wallet-balance" class="font-mono font-bold text-emerald-400">...</span>
                 </div>
 
@@ -96,7 +182,7 @@
         </div>
 
         <!-- Content -->
-        <main class="container mx-auto px-4 py-12 md:py-20 max-w-2xl flex-grow">
+        <main class="container mx-auto px-4 py-12 md:py-20 max-w-2xl flex-grow relative">
             
             <div class="text-center mb-10 space-y-3">
                 <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-white">
@@ -108,11 +194,11 @@
                 
                 <!-- Pricing Tiers Badge -->
                 <div class="flex justify-center gap-4 mt-4 text-xs font-medium">
-                    <div id="badge-free" class="flex items-center gap-1.5 text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20">
+                    <div id="badge-free" class="flex items-center gap-1.5 text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20 cursor-help" title="Small files are paid for by the service pool">
                         <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                         Free &lt; 5MB
                     </div>
-                    <div id="badge-paid" class="flex items-center gap-1.5 text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+                    <div id="badge-paid" class="flex items-center gap-1.5 text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700 cursor-help" title="Large files require your own wallet">
                         <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
                         Paid &gt; 5MB
                     </div>
@@ -137,7 +223,7 @@
                             <h3 class="text-xl font-semibold text-white mb-2 pointer-events-none">Upload Evidence</h3>
                             <p class="text-slate-500 mb-8 pointer-events-none text-sm">
                                 Drag & drop or select file. <br/> 
-                                Large files will require wallet connection.
+                                Permanent storage.
                             </p>
 
                             <div class="relative inline-block">
@@ -159,7 +245,7 @@
                         </div>
                     </div>
 
-                    <!-- PAYMENT PROMPT STATE (New) -->
+                    <!-- PAYMENT PROMPT STATE -->
                     <div id="state-payment" class="hidden py-8 text-center">
                         <div class="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <svg class="w-8 h-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
@@ -205,7 +291,7 @@
                         </p>
 
                          <div id="sim-success-msg" class="hidden mb-6 p-3 bg-yellow-900/20 border border-yellow-800/50 rounded-lg text-yellow-400 text-sm">
-                            <strong>Note:</strong> This was a simulation. In a real deployment with funds, the link below would be active forever.
+                            <strong>Note:</strong> This was a simulation. In a real deployment, the link below would be active forever.
                         </div>
 
                         <div class="bg-slate-950 rounded-lg p-4 border border-slate-800 text-left mb-6">
@@ -231,9 +317,44 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
+            
+            <!-- INSTRUCTIONS MODAL (Hidden by default) -->
+            <div id="instructions-modal" class="hidden absolute top-0 left-0 w-full h-full bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div class="bg-slate-900 border border-slate-700 rounded-xl p-8 max-w-lg w-full shadow-2xl relative">
+                    <button onclick="toggleInstructions()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                    
+                    <h2 class="text-xl font-bold text-white mb-4">How to use this Portal</h2>
+                    
+                    <div class="space-y-4 text-slate-300 text-sm">
+                        <div class="p-3 bg-slate-800 rounded-lg">
+                            <h3 class="font-semibold text-emerald-400 mb-1">1. The Free Tier (&lt; 5MB)</h3>
+                            <p>For text documents, images, and small clips. The hosting service pays the fee for you. You don't need a wallet or crypto.</p>
+                        </div>
+                        
+                        <div class="p-3 bg-slate-800 rounded-lg">
+                            <h3 class="font-semibold text-indigo-400 mb-1">2. The Paid Tier (&gt; 5MB)</h3>
+                            <p>For larger video files. You must connect your own Arweave wallet to pay the network fee.</p>
+                            <a href="https://www.arconnect.io/" target="_blank" class="text-xs text-slate-400 hover:text-white underline mt-2 block">Download ArConnect Wallet →</a>
+                        </div>
+
+                        <div class="p-3 bg-slate-800 rounded-lg border border-red-500/20">
+                            <h3 class="font-semibold text-red-400 mb-1">3. Permanence Warning</h3>
+                            <p>Everything you upload is <strong>Public</strong> and <strong>Permanent</strong>. It cannot be deleted by anyone, including you. Do not upload sensitive personal data.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <button onclick="toggleInstructions()" class="bg-white text-slate-900 px-6 py-2 rounded-lg font-semibold hover:bg-slate-200 transition-colors">
+                            Got it
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -262,17 +383,36 @@
             setupDragAndDrop();
         });
 
+        // --- NAVIGATION ---
+        function enterPortal() {
+            document.getElementById('landing-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+
+        function returnToLanding() {
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.add('hidden');
+            document.getElementById('landing-screen').classList.remove('hidden');
+        }
+
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleInstructions() {
+            const modal = document.getElementById('instructions-modal');
+            modal.classList.toggle('hidden');
+        }
+
         // --- ADMIN / SERVICE LOGIC ---
         async function generateWallet() {
             try {
                 serviceWallet = await arweave.wallets.generate();
                 serviceAddress = await arweave.wallets.jwkToAddress(serviceWallet);
                 
-                // For demo purposes, we enable simulation if the balance is 0
                 isSimulation = true; 
                 document.getElementById('sim-warning-idle').classList.remove('hidden');
 
-                // Switch Screens
                 document.getElementById('setup-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
                 
@@ -284,17 +424,14 @@
         }
 
         function skipSetup() {
-            // Enter as visitor (no service wallet)
             serviceWallet = null;
             serviceAddress = null;
-            isSimulation = false; // Real uploads only (user pays)
+            isSimulation = false; 
 
-            // UI Updates
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.remove('hidden');
             document.getElementById('service-balance-container').classList.add('hidden');
             
-            // Disable Free Tier Badge Visuals
             document.getElementById('badge-free').classList.add('opacity-50', 'grayscale');
             document.getElementById('badge-paid').classList.remove('text-slate-400', 'bg-slate-800');
             document.getElementById('badge-paid').classList.add('text-indigo-400', 'bg-indigo-500/10', 'border-indigo-500/20');
@@ -312,13 +449,11 @@
 
         // --- USER WALLET LOGIC ---
         async function connectUserWallet() {
-            // Check if ArConnect or similar is installed
             if (window.arweaveWallet) {
                 try {
                     await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'DISPATCH']);
                     userAddress = await window.arweaveWallet.getActiveAddress();
                     
-                    // Update Button UI
                     const btn = document.getElementById('connect-wallet-btn');
                     btn.innerHTML = `<div class="w-2 h-2 rounded-full bg-emerald-400"></div> ${userAddress.slice(0,4)}...${userAddress.slice(-4)}`;
                     btn.classList.add('border-emerald-500/50', 'text-emerald-400', 'bg-emerald-500/10');
@@ -329,7 +464,6 @@
                     return false;
                 }
             } else {
-                // If no wallet found (common in iframe/demo), we simulate a user wallet connection
                 const confirmSim = confirm("ArConnect extension not found. Simulate a user wallet connection for this demo?");
                 if (confirmSim) {
                     userAddress = "UserWallet_Simulated_X8s9";
@@ -346,12 +480,8 @@
         async function handleFileSelection(file) {
             console.log(`File size: ${file.size} bytes. Limit: ${FREE_LIMIT_BYTES}`);
             
-            // If file is too large OR Service Wallet is not active (Visitor mode)
             if (file.size > FREE_LIMIT_BYTES || !serviceWallet) {
-                // PAID TIER
                 pendingFile = file;
-                
-                // Update text based on reason
                 const title = document.getElementById('payment-title');
                 const desc = document.getElementById('payment-desc');
                 
@@ -365,19 +495,15 @@
 
                 showState('payment');
             } else {
-                // FREE TIER
                 handleFreeUpload(file);
             }
         }
 
         async function handleUserPayment() {
-            // 1. Ensure connected
             if (!userAddress) {
                 const connected = await connectUserWallet();
                 if (!connected) return;
             }
-
-            // 2. Proceed with upload using USER wallet
             if (pendingFile) {
                 handlePaidUpload(pendingFile);
             }
@@ -386,7 +512,6 @@
         // --- UPLOAD METHOD 1: FREE (Service Wallet) ---
         async function handleFreeUpload(file) {
             if (!serviceWallet) {
-                // Safety catch
                 pendingFile = file;
                 showState('payment');
                 return;
@@ -407,7 +532,6 @@
                 transaction.addTag('Tier', 'Free');
                 
                 await arweave.transactions.sign(transaction, serviceWallet);
-                
                 await performUpload(transaction);
                 
             } catch (err) {
@@ -421,7 +545,6 @@
             showState('uploading');
             updateBadge('USER PAID', 'indigo');
 
-            // Check for simulation
             if (!window.arweaveWallet) {
                 simulateUpload("Simulated User Payment");
                 return;
@@ -429,15 +552,11 @@
 
             try {
                 const data = await readFile(file);
-                
-                // Create transaction without a private key (second arg is undefined)
                 let transaction = await arweave.createTransaction({ data: data });
                 transaction.addTag('App-Name', 'Unstoppable-Portal');
                 transaction.addTag('Tier', 'Paid');
 
-                // Sign using the browser extension
                 await arweave.transactions.sign(transaction); 
-                
                 await performUpload(transaction);
                 
             } catch (err) {
