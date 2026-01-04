@@ -89,6 +89,54 @@
                     <p class="text-sm text-slate-400">Small files are subsidized by the community. Large files are paid directly by your wallet.</p>
                 </div>
             </div>
+
+            <!-- Wallet Guide Section -->
+            <div id="wallet-guide" class="max-w-4xl mx-auto mt-24 mb-12 text-left px-6 w-full">
+                <h2 class="text-2xl font-bold text-white mb-8 text-center">Getting Set Up</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Step 1 -->
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
+                        <h3 class="text-xl font-semibold text-emerald-400 mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-emerald-500/10 rounded-full flex items-center justify-center text-sm border border-emerald-500/20">1</span>
+                            Get a Wallet
+                        </h3>
+                        <p class="text-slate-400 mb-6 text-sm">You need an Arweave-compatible wallet to sign transactions and pay for permanent storage.</p>
+                        <a href="https://www.arconnect.io/" target="_blank" class="block w-full bg-slate-800 hover:bg-emerald-600/20 text-center py-3 rounded-lg transition-colors border border-slate-700 hover:border-emerald-500/50 text-white font-medium flex items-center justify-center gap-2">
+                            Download ArConnect
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                        </a>
+                        <p class="text-xs text-slate-500 mt-3 text-center">Available for Chrome, Brave, Firefox & Mobile</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
+                         <h3 class="text-xl font-semibold text-indigo-400 mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-indigo-500/10 rounded-full flex items-center justify-center text-sm border border-indigo-500/20">2</span>
+                            Fund with AR
+                        </h3>
+                        <p class="text-slate-400 mb-4 text-sm">You need AR tokens to pay for data. 1GB costs approx $3-6 USD (one-time fee).</p>
+                        <ul class="space-y-3 text-sm text-slate-300">
+                            <li class="flex items-start gap-3 p-2 bg-slate-900 rounded border border-slate-800/50">
+                                <div class="bg-slate-800 p-1 rounded text-slate-400">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01m6 0h.01m6 0h.01"/></svg>
+                                </div>
+                                <div>
+                                    <strong class="block text-white">Easiest: Exchanges</strong>
+                                    <span class="text-slate-500 text-xs">Buy AR on <span class="text-slate-300">Coinbase</span>, <span class="text-slate-300">Binance</span>, or <span class="text-slate-300">Kraken</span> and withdraw to your wallet address.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3 p-2 bg-slate-900 rounded border border-slate-800/50">
+                                <div class="bg-slate-800 p-1 rounded text-slate-400">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+                                </div>
+                                <div>
+                                    <strong class="block text-white">Alternative: Swap</strong>
+                                    <span class="text-slate-500 text-xs">Use a bridge like <a href="https://simpleswap.io" target="_blank" class="underline hover:text-white">SimpleSwap</a> to exchange BTC/ETH/SOL for AR.</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </main>
 
         <footer class="py-8 text-center text-slate-600 text-sm">
@@ -168,9 +216,13 @@
                 </button>
 
                 <!-- Service Balance -->
-                <div id="service-balance-container" class="hidden md:flex items-center gap-2 text-xs text-slate-500 border-r border-slate-800 pr-4 pl-4 border-l">
+                <div id="service-balance-container" class="hidden md:flex items-center gap-2 text-xs text-slate-500 border-r border-slate-800 pr-4 pl-4 border-l cursor-pointer hover:text-white group relative" title="Click to copy Service Address" onclick="copyServiceAddress()">
                     <span>Pool:</span>
                     <span id="wallet-balance" class="font-mono font-bold text-emerald-400">...</span>
+                    <!-- Tooltip -->
+                    <div class="absolute -bottom-8 right-0 w-max bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        Click to copy funding address
+                    </div>
                 </div>
 
                 <!-- User Wallet Connection -->
@@ -239,8 +291,8 @@
                                 <span id="error-text">Error goes here</span>
                             </div>
 
-                            <div id="sim-warning-idle" class="hidden mt-4 text-xs text-yellow-500">
-                                Simulation Mode Active
+                            <div id="sim-warning-idle" class="hidden mt-4 text-xs text-yellow-500 bg-yellow-900/10 px-2 py-1 rounded inline-block border border-yellow-500/20">
+                                ⚠ Simulation Mode: Service Wallet Empty
                             </div>
                         </div>
                     </div>
@@ -291,7 +343,7 @@
                         </p>
 
                          <div id="sim-success-msg" class="hidden mb-6 p-3 bg-yellow-900/20 border border-yellow-800/50 rounded-lg text-yellow-400 text-sm">
-                            <strong>Note:</strong> This was a simulation. In a real deployment, the link below would be active forever.
+                            <strong>Simulation Mode:</strong> No funds were detected, so this was a mock upload. Fund the service wallet to go live.
                         </div>
 
                         <div class="bg-slate-950 rounded-lg p-4 border border-slate-800 text-left mb-6">
@@ -322,34 +374,62 @@
             
             <!-- INSTRUCTIONS MODAL (Hidden by default) -->
             <div id="instructions-modal" class="hidden absolute top-0 left-0 w-full h-full bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <div class="bg-slate-900 border border-slate-700 rounded-xl p-8 max-w-lg w-full shadow-2xl relative">
+                <div class="bg-slate-900 border border-slate-700 rounded-xl p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
                     <button onclick="toggleInstructions()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                     
-                    <h2 class="text-xl font-bold text-white mb-4">How to use this Portal</h2>
+                    <h2 class="text-xl font-bold text-white mb-6">Guide & Help</h2>
                     
-                    <div class="space-y-4 text-slate-300 text-sm">
-                        <div class="p-3 bg-slate-800 rounded-lg">
-                            <h3 class="font-semibold text-emerald-400 mb-1">1. The Free Tier (&lt; 5MB)</h3>
-                            <p>For text documents, images, and small clips. The hosting service pays the fee for you. You don't need a wallet or crypto.</p>
-                        </div>
-                        
-                        <div class="p-3 bg-slate-800 rounded-lg">
-                            <h3 class="font-semibold text-indigo-400 mb-1">2. The Paid Tier (&gt; 5MB)</h3>
-                            <p>For larger video files. You must connect your own Arweave wallet to pay the network fee.</p>
-                            <a href="https://www.arconnect.io/" target="_blank" class="text-xs text-slate-400 hover:text-white underline mt-2 block">Download ArConnect Wallet →</a>
+                    <div class="space-y-6 text-slate-300 text-sm">
+                        <!-- Tiers -->
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider border-b border-slate-700 pb-2">How it works</h3>
+                            <div class="p-3 bg-slate-800/50 rounded-lg">
+                                <h3 class="font-semibold text-emerald-400 mb-1">🟢 Free Tier (&lt; 5MB)</h3>
+                                <p>Small files are paid for by the Service Pool. No wallet needed.</p>
+                            </div>
+                            
+                            <div class="p-3 bg-slate-800/50 rounded-lg">
+                                <h3 class="font-semibold text-indigo-400 mb-1">🔵 Paid Tier (&gt; 5MB)</h3>
+                                <p>Large files require you to pay the network fee (~$0.005/MB).</p>
+                            </div>
                         </div>
 
-                        <div class="p-3 bg-slate-800 rounded-lg border border-red-500/20">
-                            <h3 class="font-semibold text-red-400 mb-1">3. Permanence Warning</h3>
-                            <p>Everything you upload is <strong>Public</strong> and <strong>Permanent</strong>. It cannot be deleted by anyone, including you. Do not upload sensitive personal data.</p>
+                        <!-- Setup Guide -->
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider border-b border-slate-700 pb-2">Wallet Setup</h3>
+                            
+                            <div class="flex gap-4 items-start">
+                                <div class="bg-slate-800 w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">1</div>
+                                <div>
+                                    <strong class="block text-white">Download ArConnect</strong>
+                                    <p class="text-xs text-slate-400 mt-1">The leading browser extension for Arweave.</p>
+                                    <a href="https://www.arconnect.io/" target="_blank" class="text-xs text-emerald-400 hover:underline mt-1 block">Get Extension →</a>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4 items-start">
+                                <div class="bg-slate-800 w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">2</div>
+                                <div>
+                                    <strong class="block text-white">Fund your Wallet</strong>
+                                    <p class="text-xs text-slate-400 mt-1">
+                                        <span class="block mb-1">• <strong>Exchanges:</strong> Buy AR on Binance/Coinbase and withdraw to your address.</span>
+                                        <span class="block">• <strong>Swap:</strong> Use <a href="https://simpleswap.io" target="_blank" class="text-indigo-400 hover:underline">SimpleSwap</a> to exchange ETH/BTC for AR.</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-red-900/10 rounded-lg border border-red-500/20 text-center">
+                            <h3 class="font-semibold text-red-400 mb-1 text-xs uppercase">Warning</h3>
+                            <p class="text-xs">Uploads are <strong>permanent</strong>. They cannot be deleted.</p>
                         </div>
                     </div>
                     
                     <div class="mt-6 text-center">
-                        <button onclick="toggleInstructions()" class="bg-white text-slate-900 px-6 py-2 rounded-lg font-semibold hover:bg-slate-200 transition-colors">
-                            Got it
+                        <button onclick="toggleInstructions()" class="bg-white text-slate-900 px-6 py-2 rounded-lg font-semibold hover:bg-slate-200 transition-colors w-full">
+                            Close Guide
                         </button>
                     </div>
                 </div>
@@ -410,13 +490,12 @@
                 serviceWallet = await arweave.wallets.generate();
                 serviceAddress = await arweave.wallets.jwkToAddress(serviceWallet);
                 
-                isSimulation = true; 
-                document.getElementById('sim-warning-idle').classList.remove('hidden');
-
                 document.getElementById('setup-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
                 
-                checkBalance();
+                // Immediately check balance to determine Simulation Status
+                await checkBalance();
+                
             } catch (e) {
                 console.error("Wallet generation failed:", e);
                 alert("Failed to generate wallet.");
@@ -444,7 +523,24 @@
                 const ar = arweave.ar.winstonToAr(winston);
                 const balanceEl = document.getElementById('wallet-balance');
                 balanceEl.textContent = `${parseFloat(ar).toFixed(4)} AR`;
+                
+                // AUTO-TOGGLE SIMULATION
+                if (parseFloat(ar) > 0) {
+                    isSimulation = false; // REAL MODE
+                    document.getElementById('sim-warning-idle').classList.add('hidden');
+                } else {
+                    isSimulation = true; // DEMO MODE
+                    document.getElementById('sim-warning-idle').classList.remove('hidden');
+                }
+
             } catch (e) { console.error(e); }
+        }
+
+        function copyServiceAddress() {
+            if(serviceAddress) {
+                navigator.clipboard.writeText(serviceAddress);
+                alert("Service Wallet Address Copied!\nSend AR tokens here to activate the Free Tier.");
+            }
         }
 
         // --- USER WALLET LOGIC ---
@@ -480,7 +576,10 @@
         async function handleFileSelection(file) {
             console.log(`File size: ${file.size} bytes. Limit: ${FREE_LIMIT_BYTES}`);
             
-            if (file.size > FREE_LIMIT_BYTES || !serviceWallet) {
+            // Check balance again before upload
+            if (serviceAddress) await checkBalance();
+
+            if (file.size > FREE_LIMIT_BYTES || (!serviceWallet && !isSimulation)) {
                 pendingFile = file;
                 const title = document.getElementById('payment-title');
                 const desc = document.getElementById('payment-desc');
@@ -521,7 +620,7 @@
             updateBadge('SUBSIDIZED (FREE)', 'emerald');
             
             if (isSimulation) {
-                simulateUpload("Free Tier Upload");
+                simulateUpload("Free Tier Upload (Simulated due to 0 balance)");
                 return;
             }
 
@@ -536,7 +635,8 @@
                 
             } catch (err) {
                 console.error(err);
-                simulateUpload("Simulated (Insufficient Funds)");
+                // If it fails (e.g. out of funds during execution), fallback
+                simulateUpload("Upload failed (Likely insufficient funds). Simulating...");
             }
         }
 
