@@ -956,21 +956,71 @@
         }
 
         // --- COUNCIL / MEMBERSHIP LOGIC ---
-        function checkMembership() {
+        async function checkMembership() {
             if(!userAddress) {
-                connectUserWallet().then(success => {
-                    if(success) checkMembership();
-                });
-                return;
+                const connected = await connectUserWallet();
+                if(!connected) return;
             }
             
-            // In a real AO app, this would query the token balance.
-            // For this client-side version, we check localStorage or simulate.
-            if(isMember) {
-                alert("Signet Verified. Welcome, Council Member.");
+            const btn = document.querySelector('button[onclick="checkMembership()"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Verifying Signet...";
+            btn.disabled = true;
+
+            // 1. Check Local Cache first
+            if(localStorage.getItem('is_alex_member') === 'true') {
+                isMember = true;
                 unlockCouncil();
-            } else {
-                alert("No Signet found. Please acquire membership to enter.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+                return;
+            }
+
+            // 2. Query the Blockchain for the "Mint-ALEX" Artifact
+            // This effectively checks: "Does this user own the 'Mint' NFT?"
+            const query = {
+                query: `
+                query {
+                    transactions(
+                        owners: ["${userAddress}"]
+                        recipients: ["${APP_CONFIG.FEE_DESTINATION}"]
+                        tags: [
+                            { name: "App-Name", values: ["Unstoppable-Portal"] },
+                            { name: "Action", values: ["Mint-ALEX"] }
+                        ]
+                        first: 1
+                    ) {
+                        edges {
+                            node {
+                                id
+                            }
+                        }
+                    }
+                }`
+            };
+
+            try {
+                const res = await fetch(`https://${currentGateway}/graphql`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(query)
+                });
+                const json = await res.json();
+                
+                if (json.data && json.data.transactions.edges.length > 0) {
+                    alert("Signet Verified on-chain. Welcome, Council Member.");
+                    isMember = true;
+                    localStorage.setItem('is_alex_member', 'true');
+                    unlockCouncil();
+                } else {
+                    alert("No $ALEX Signet found on the blockchain for this wallet.");
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Verification failed. Network error.");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         }
 
@@ -978,6 +1028,8 @@
             const connected = await connectUserWallet();
             if(!connected) return;
 
+            // IMPORTANT: In a real deployment, ensure APP_CONFIG.FEE_DESTINATION is set to YOUR wallet address
+            // so you receive the 5 AR funds.
             if(confirm(`Mint 1 $ALEX Signet for ${APP_CONFIG.MEMBERSHIP_PRICE} AR?`)) {
                 try {
                     let transaction = await arweave.createTransaction({
@@ -986,12 +1038,15 @@
                     });
                     transaction.addTag('App-Name', 'Unstoppable-Portal');
                     transaction.addTag('Type', 'Membership-Buy');
-                    transaction.addTag('Action', 'Mint-ALEX');
+                    transaction.addTag('Action', 'Mint-ALEX'); // This tag CREATES the token record
+                    transaction.addTag('Version', '1.0');
                     
                     await arweave.transactions.sign(transaction);
                     await arweave.transactions.post(transaction);
                     
-                    alert("Transaction Sent! Welcome to the High Council.");
+                    alert("Transaction Sent! Once confirmed (approx 2-5 mins), your Signet will be permanently verifiable.");
+                    
+                    // Optimistic update for UX
                     isMember = true;
                     localStorage.setItem('is_alex_member', 'true');
                     unlockCouncil();
