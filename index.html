@@ -33,14 +33,31 @@
                 <h3 class="font-semibold text-white mb-2 flex items-center gap-2">
                     <!-- Key Icon -->
                     <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
-                    Initialize Service
+                    Initialize Service (Admin)
                 </h3>
                 <p class="text-sm text-slate-400 mb-4">
-                    Generate service wallet. 
-                    <span class="text-emerald-400 font-medium block mt-1">✨ Mode: Hybrid Freemium (Free &lt; 5MB)</span>
+                    Generate service wallet to subsidize uploads. 
+                    <span class="text-emerald-400 font-medium block mt-1">✨ Mode: Hybrid Freemium</span>
                 </p>
                 <button onclick="generateWallet()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
                     Start Portal
+                </button>
+            </div>
+
+            <div class="relative py-2">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-slate-700"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-slate-900 text-slate-500">Or</span>
+                </div>
+            </div>
+
+            <!-- VISITOR MODE BUTTON -->
+            <div class="mt-2 text-center">
+                <button onclick="skipSetup()" class="text-slate-400 hover:text-white text-sm font-medium transition-colors flex items-center justify-center gap-2 w-full py-2 hover:bg-slate-800 rounded-lg">
+                    Skip Setup (Enter as Visitor)
+                    <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </button>
             </div>
         </div>
@@ -65,7 +82,7 @@
 
             <div class="flex items-center gap-4">
                 <!-- Service Balance (Hidden from normal users in real app, shown here for admin) -->
-                <div class="hidden md:flex items-center gap-2 text-xs text-slate-500 border-r border-slate-800 pr-4">
+                <div id="service-balance-container" class="hidden md:flex items-center gap-2 text-xs text-slate-500 border-r border-slate-800 pr-4">
                     <span>Service Pool:</span>
                     <span id="wallet-balance" class="font-mono font-bold text-emerald-400">...</span>
                 </div>
@@ -91,11 +108,11 @@
                 
                 <!-- Pricing Tiers Badge -->
                 <div class="flex justify-center gap-4 mt-4 text-xs font-medium">
-                    <div class="flex items-center gap-1.5 text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20">
+                    <div id="badge-free" class="flex items-center gap-1.5 text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20">
                         <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                         Free &lt; 5MB
                     </div>
-                    <div class="flex items-center gap-1.5 text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+                    <div id="badge-paid" class="flex items-center gap-1.5 text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
                         <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
                         Paid &gt; 5MB
                     </div>
@@ -147,9 +164,9 @@
                         <div class="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <svg class="w-8 h-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-white mb-2">File Too Large for Free Tier</h3>
-                        <p class="text-slate-400 mb-6 max-w-xs mx-auto text-sm">
-                            This file exceeds 5MB. To upload it, you must use your own wallet to pay the network fee.
+                        <h3 id="payment-title" class="text-xl font-semibold text-white mb-2">Upload Requires Payment</h3>
+                        <p id="payment-desc" class="text-slate-400 mb-6 max-w-xs mx-auto text-sm">
+                            To upload this file, you must use your own wallet to pay the network fee.
                         </p>
                         
                         <div class="flex gap-3 justify-center">
@@ -266,6 +283,23 @@
             }
         }
 
+        function skipSetup() {
+            // Enter as visitor (no service wallet)
+            serviceWallet = null;
+            serviceAddress = null;
+            isSimulation = false; // Real uploads only (user pays)
+
+            // UI Updates
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
+            document.getElementById('service-balance-container').classList.add('hidden');
+            
+            // Disable Free Tier Badge Visuals
+            document.getElementById('badge-free').classList.add('opacity-50', 'grayscale');
+            document.getElementById('badge-paid').classList.remove('text-slate-400', 'bg-slate-800');
+            document.getElementById('badge-paid').classList.add('text-indigo-400', 'bg-indigo-500/10', 'border-indigo-500/20');
+        }
+
         async function checkBalance() {
             if (!serviceAddress) return;
             try {
@@ -312,9 +346,23 @@
         async function handleFileSelection(file) {
             console.log(`File size: ${file.size} bytes. Limit: ${FREE_LIMIT_BYTES}`);
             
-            if (file.size > FREE_LIMIT_BYTES) {
+            // If file is too large OR Service Wallet is not active (Visitor mode)
+            if (file.size > FREE_LIMIT_BYTES || !serviceWallet) {
                 // PAID TIER
                 pendingFile = file;
+                
+                // Update text based on reason
+                const title = document.getElementById('payment-title');
+                const desc = document.getElementById('payment-desc');
+                
+                if (!serviceWallet) {
+                    title.textContent = "Service Pool Inactive";
+                    desc.textContent = "Visitor Mode: Please connect your own wallet to pay for the upload gas fee.";
+                } else {
+                    title.textContent = "File Too Large for Free Tier";
+                    desc.textContent = "This file exceeds 5MB. To upload it, you must use your own wallet to pay the network fee.";
+                }
+
                 showState('payment');
             } else {
                 // FREE TIER
@@ -337,6 +385,13 @@
 
         // --- UPLOAD METHOD 1: FREE (Service Wallet) ---
         async function handleFreeUpload(file) {
+            if (!serviceWallet) {
+                // Safety catch
+                pendingFile = file;
+                showState('payment');
+                return;
+            }
+
             showState('uploading');
             updateBadge('SUBSIDIZED (FREE)', 'emerald');
             
@@ -353,13 +408,10 @@
                 
                 await arweave.transactions.sign(transaction, serviceWallet);
                 
-                // For this code to actually work with 0 balance, we'd fail here, so we rely on simulation for demo
-                // But this is the real code path:
                 await performUpload(transaction);
                 
             } catch (err) {
                 console.error(err);
-                // Fallback to simulation for the demo if real upload fails (likely due to 0 balance)
                 simulateUpload("Simulated (Insufficient Funds)");
             }
         }
