@@ -262,7 +262,12 @@
         </main>
 
         <footer class="py-8 text-center text-stone-400 text-xs font-serif mt-12 border-t border-stone-200">
-            Est. 2024 • Decentralized • Encrypted • Unstoppable
+            <div class="flex justify-center items-center gap-6 mb-4">
+                <span>Est. 2024 • Decentralized • Encrypted • Unstoppable</span>
+            </div>
+            <button onclick="cloneNode()" class="text-stone-400 hover:text-red-900 transition-colors flex items-center gap-2 mx-auto uppercase tracking-widest font-bold">
+                <i data-lucide="git-fork" class="w-3 h-3"></i> Clone Node
+            </button>
         </footer>
     </div>
 
@@ -307,6 +312,19 @@
                             class="w-full bg-stone-900 hover:bg-stone-800 text-white py-3 rounded-sm text-xs font-bold uppercase tracking-wide transition-all flex items-center justify-center gap-2">
                             Unlock Terminal
                         </button>
+                        <button onclick="verifyLicense()" id="verify-license-btn"
+                            class="mt-3 text-[10px] text-stone-500 hover:text-stone-900 underline font-mono uppercase tracking-widest w-full">
+                            Restore / Verify License
+                        </button>
+                        
+                        <!-- Manual Verification -->
+                        <div class="mt-4 pt-3 border-t border-stone-100">
+                            <label class="block text-[10px] font-bold text-stone-400 mb-1 uppercase tracking-widest text-left">Manual Verification (TXID)</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="manual-verify-tx" placeholder="Enter TX ID..." class="flex-1 text-xs bg-stone-50 border border-stone-200 rounded-sm px-2 py-1 focus:outline-none focus:border-stone-400">
+                                <button onclick="manualVerify()" class="text-[10px] bg-stone-200 hover:bg-stone-300 px-2 rounded-sm font-bold uppercase">Check</button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- UNLOCKED STATE (Hidden by default) -->
@@ -401,6 +419,12 @@
                     </div>
                     <span class="text-stone-500">Pool: <span id="wallet-balance"
                             class="font-mono text-stone-900">...</span></span>
+                    
+                    <!-- Donate Button -->
+                    <button onclick="donateToNode()" title="Donate to Node Wallet" class="ml-2 text-stone-400 hover:text-green-600 transition-colors">
+                        <i data-lucide="heart" class="w-3 h-3"></i>
+                    </button>
+
                     <button onclick="logoutAdmin()"
                         class="ml-2 p-1 hover:bg-red-50 rounded text-stone-400 hover:text-red-700 transition-colors"
                         title="Disconnect">
@@ -627,8 +651,14 @@
             <div class="flex justify-between items-end mb-12 border-b border-stone-300 pb-6">
                 <div>
                     <h2 class="text-3xl font-bold text-stone-900 font-serif uppercase tracking-tight">The Catalogue</h2>
-                    <p class="text-stone-500 text-xs font-bold uppercase tracking-widest mt-2">Latest additions to the
-                        library</p>
+                    <div class="flex gap-4 mt-2">
+                        <button onclick="setFeedMode('raw')" id="feed-raw"
+                            class="text-[10px] font-bold uppercase tracking-widest text-red-900 border-b border-red-900">Raw
+                            Feed</button>
+                        <button onclick="setFeedMode('curated')" id="feed-curated"
+                            class="text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors">Curated
+                            (Librarians)</button>
+                    </div>
                 </div>
                 <div class="flex items-center gap-6">
                     <button onclick="loadGallery(userAddress)" id="btn-my-uploads"
@@ -715,7 +745,9 @@
         const APP_CONFIG = {
             FEE_DESTINATION: "X7ao0ix5LZNuzsXupoAWiTRJckb_rQlIv4ZKP7xNqyQ",
             FEE_AMOUNT: "0.01",
-            KIOSK_PRICE: "0.5"
+            KIOSK_PRICE: "0.5",
+            LIBRARIANS: ["X7ao0ix5LZNuzsXupoAWiTRJckb_rQlIv4ZKP7xNqyQ"], // Default list of curated wallets
+            UDL_FEE: "0.1" // Default Royalty Fee
         };
 
         // VARS
@@ -723,6 +755,7 @@
         let isSimulation = false, isKioskUnlocked = false, pendingFile = null;
         let currentGateway = localStorage.getItem('ar_gateway') || 'arweave.net';
         let uploadType = 'file'; // 'file' or 'article'
+        let feedMode = 'raw'; // 'raw' or 'curated'
         const FREE_LIMIT_BYTES = 5 * 1024 * 1024;
 
         // INIT
@@ -822,10 +855,100 @@
             document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
         }
 
+        function cloneNode() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert("Node Cloned. You now have the source code.");
+        }
+
         // --- KIOSK LOGIC ---
         function showUnlockedKiosk() {
             document.getElementById('kiosk-locked-area').classList.add('hidden');
             document.getElementById('kiosk-unlocked-area').classList.remove('hidden');
+        }
+
+        async function verifyLicense() {
+            const connected = await connectUserWallet();
+            if (!connected) return;
+
+            const btn = document.getElementById('verify-license-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "Scanning Chain...";
+            btn.disabled = true;
+
+            const query = {
+                query: `
+                query {
+                    transactions(
+                        owners: ["${userAddress}"]
+                        recipients: ["${APP_CONFIG.FEE_DESTINATION}"]
+                        tags: [
+                            { name: "App-Name", values: ["Unstoppable-Portal"] },
+                            { name: "Type", values: ["Kiosk-License-Fee"] }
+                        ]
+                        first: 1
+                    ) {
+                        edges {
+                            node {
+                                id
+                            }
+                        }
+                    }
+                }`
+            };
+
+            try {
+                const res = await fetch(`https://${currentGateway}/graphql`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(query)
+                });
+                const json = await res.json();
+                if (json.data.transactions.edges.length > 0) {
+                    alert("License Found! Kiosk Unlocked.");
+                    isKioskUnlocked = true;
+                    localStorage.setItem('kiosk_unlocked', 'true');
+                    showUnlockedKiosk();
+                } else {
+                    alert("No license payment found for this wallet.");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Verification failed. Network error.");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function manualVerify() {
+            const txid = document.getElementById('manual-verify-tx').value.trim();
+            if (!txid) {
+                alert("Please enter a Transaction ID.");
+                return;
+            }
+            
+            try {
+                const status = await arweave.transactions.getStatus(txid);
+                if (status.status === 200 || status.status === 202) {
+                     alert("Transaction Confirmed! Kiosk Unlocked.");
+                     isKioskUnlocked = true;
+                     localStorage.setItem('kiosk_unlocked', 'true');
+                     showUnlockedKiosk();
+                } else {
+                    alert("Transaction not found or invalid.");
+                }
+            } catch(e) {
+                alert("Error verifying transaction.");
+            }
         }
 
         async function unlockKiosk() {
@@ -845,6 +968,31 @@
                 localStorage.setItem('kiosk_unlocked', 'true');
                 showUnlockedKiosk();
             } catch (e) { alert("Payment failed."); }
+        }
+
+        async function donateToNode() {
+            if (!serviceAddress) {
+                alert("No Kiosk wallet loaded to donate to.");
+                return;
+            }
+            if(!userAddress && !(await connectUserWallet())) return;
+            
+            const amount = prompt("Enter amount to donate (AR):", "0.1");
+            if(!amount) return;
+
+            try {
+                let transaction = await arweave.createTransaction({
+                    target: serviceAddress,
+                    quantity: arweave.ar.arToWinston(amount)
+                });
+                transaction.addTag('App-Name', 'Unstoppable-Portal');
+                transaction.addTag('Type', 'Donation');
+                await arweave.transactions.sign(transaction);
+                await arweave.transactions.post(transaction);
+                alert("Donation Sent! Thank you for supporting the node.");
+            } catch(e) {
+                alert("Donation failed: " + e.message);
+            }
         }
 
         function handleKeyfileUpload(input) {
@@ -1043,7 +1191,10 @@
                     { name: 'App-Name', value: 'Unstoppable-Portal' },
                     { name: 'Content-Type', value: file.type },
                     { name: 'Title', value: title },
-                    { name: 'Timestamp', value: Date.now().toString() }
+                    { name: 'Timestamp', value: Date.now().toString() },
+                    { name: 'License', value: 'yRj4a5KMctX_uOmKWCFJIjmY8DeJcusvk6-HzLiM_t8' }, // UDL
+                    { name: 'License-Fee', value: APP_CONFIG.UDL_FEE },
+                    { name: 'Derivation', value: 'Allowed-With-Credit' }
                 ];
 
                 if (isSensitive) {
@@ -1093,6 +1244,19 @@
         }
 
         // --- GALLERY LOGIC ---
+        function setFeedMode(mode) {
+            feedMode = mode;
+            // Update UI
+            if (mode === 'raw') {
+                document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-red-900 border-b border-red-900";
+                document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors";
+            } else {
+                document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors";
+                document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-red-900 border-b border-red-900";
+            }
+            loadGallery();
+        }
+
         async function loadGallery(filterOwner = null) {
             // Check if filtering by owner but no wallet connected
             if (filterOwner && !userAddress) {
@@ -1108,6 +1272,11 @@
 
             // Build Query
             let ownerFilter = filterOwner ? `owners: ["${filterOwner}"],` : '';
+            if (feedMode === 'curated' && !filterOwner) {
+                // If curated and not filtering by "My Uploads", use the librarians list
+                const librariansStr = APP_CONFIG.LIBRARIANS.map(l => `"${l}"`).join(',');
+                ownerFilter = `owners: [${librariansStr}],`;
+            }
 
             const query = {
                 query: `
