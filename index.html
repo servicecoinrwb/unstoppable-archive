@@ -150,80 +150,70 @@
             <button onclick="returnToLanding()" class="text-slate-500 hover:text-white mb-6 flex items-center gap-2 text-sm">
                 ← Back
             </button>
-            <div class="flex items-center gap-3 mb-6 text-emerald-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
-                <h1 class="text-2xl font-bold text-white">Service Setup</h1>
+            <div class="flex items-center gap-3 mb-6 text-white">
+                <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-emerald-400 border border-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white">Choose Your Role</h1>
+                    <p class="text-xs text-slate-400">How do you want to use the portal?</p>
+                </div>
             </div>
             
-            <p class="text-slate-400 mb-6 leading-relaxed">
-                Configure the hosting service. This wallet will subsidize the "Free Tier" uploads (under 5MB).
-            </p>
-
-            <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 mb-4 space-y-5">
-                <h3 class="font-semibold text-white flex items-center gap-2">
-                    <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg> 
-                    Initialize Service (Admin)
-                </h3>
-                
-                <!-- Import -->
-                <div>
-                    <label class="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wider">Option A: Load Existing Wallet</label>
-                    <input type="file" id="admin-keyfile" accept=".json" onchange="handleKeyfileUpload(this)" 
-                        class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer"/>
-                </div>
-
-                <div class="relative flex py-1 items-center">
-                    <div class="flex-grow border-t border-slate-700"></div>
-                    <span class="flex-shrink-0 mx-2 text-slate-600 text-xs font-medium">OR</span>
-                    <div class="flex-grow border-t border-slate-700"></div>
-                </div>
-
-                <!-- Generate -->
-                <div>
-                    <label class="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wider">Option B: Create New Wallet</label>
-                    <button onclick="generateAndSaveWallet()" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                        Generate & Download Keyfile
-                    </button>
-                    <p class="text-[10px] text-slate-500 mt-2">
-                        ⚠ Downloads a <code>.json</code> file. Keep this safe! You need it to restore your funds if you refresh.
+            <div class="space-y-6">
+                <!-- Option 1: ADMIN -->
+                <div class="bg-emerald-900/10 p-5 rounded-xl border border-emerald-500/20">
+                    <h3 class="font-bold text-emerald-400 flex items-center gap-2 mb-2">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
+                        I am the Host (Admin)
+                    </h3>
+                    <p class="text-sm text-slate-400 mb-4">
+                        I want to load a funded wallet to <strong>pay for other people's</strong> small uploads (Free Tier).
                     </p>
+                    
+                    <!-- Import -->
+                    <div class="mb-3">
+                        <label class="block text-[10px] font-medium text-slate-500 mb-1 uppercase tracking-wider">Load Existing Keyfile (.json)</label>
+                        <input type="file" id="admin-keyfile" accept=".json" onchange="handleKeyfileUpload(this)" 
+                            class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer bg-slate-950/50 rounded-lg"/>
+                    </div>
+
+                    <div class="text-center text-xs text-slate-600 my-2">- OR -</div>
+
+                    <!-- Generate -->
+                    <button onclick="generateAndSaveWallet()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-lg font-medium transition-colors text-xs flex items-center justify-center gap-2 border border-slate-700">
+                        Generate New Service Wallet
+                    </button>
+
+                    <!-- Status Area -->
+                    <div id="setup-status" class="hidden mt-4 p-3 bg-slate-950 rounded-lg border border-emerald-500/30">
+                        <div class="text-[10px] text-slate-500 mb-1 uppercase font-semibold">Service Address (Fund this):</div>
+                        <div id="setup-address" class="font-mono text-emerald-400 text-[10px] break-all mb-2 select-all bg-emerald-900/10 p-1.5 rounded cursor-pointer" title="Click to Copy" onclick="copyText(this.innerText)"></div>
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="text-xs text-white">Balance: <span id="setup-balance" class="font-mono font-bold">...</span></div>
+                            <button onclick="refreshSetupBalance()" class="text-[10px] text-slate-400 hover:text-white underline">Refresh</button>
+                        </div>
+                        
+                        <button onclick="enterPortalAsAdmin()" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg text-sm font-bold transition-all shadow-lg shadow-emerald-500/20">
+                            Launch as Host
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Status Area -->
-                <div id="setup-status" class="hidden mt-4 p-4 bg-slate-950 rounded-lg border border-emerald-500/30 shadow-inner">
-                    <div class="text-xs text-slate-500 mb-1 uppercase font-semibold">Service Address (Send Funds Here):</div>
-                    <div id="setup-address" class="font-mono text-emerald-400 text-xs break-all mb-3 select-all bg-emerald-900/10 p-2 rounded cursor-pointer hover:bg-emerald-900/20" title="Click to Copy" onclick="copyText(this.innerText)"></div>
-                    
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <div class="text-xs text-slate-500 mb-1 uppercase font-semibold">Current Balance:</div>
-                            <div id="setup-balance" class="font-mono text-white text-lg font-bold">Checking...</div>
-                        </div>
-                        <button onclick="refreshSetupBalance()" class="text-xs text-slate-400 hover:text-white underline">Refresh</button>
-                    </div>
-                    
-                    <button onclick="enterPortalAsAdmin()" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-bold transition-all shadow-lg shadow-emerald-500/20">
-                        Launch Portal with Funded Wallet
+                <div class="relative flex items-center">
+                    <div class="flex-grow border-t border-slate-800"></div>
+                    <span class="flex-shrink-0 mx-2 text-slate-600 text-xs">OR</span>
+                    <div class="flex-grow border-t border-slate-800"></div>
+                </div>
+
+                <!-- Option 2: VISITOR -->
+                <div class="text-center">
+                    <button onclick="skipSetup()" class="w-full text-slate-300 hover:text-white hover:bg-slate-800 p-4 rounded-xl transition-all border border-transparent hover:border-slate-700 flex flex-col items-center group">
+                        <span class="font-semibold text-lg mb-1 group-hover:text-indigo-400 transition-colors">I am a User (Visitor)</span>
+                        <span class="text-sm text-slate-500">I just want to upload files using the portal.</span>
                     </button>
                 </div>
-            </div>
-
-            <div class="relative py-2">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-slate-700"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-slate-900 text-slate-500">Or</span>
-                </div>
-            </div>
-
-            <!-- VISITOR MODE BUTTON -->
-            <div class="mt-2 text-center">
-                <button onclick="skipSetup()" class="text-slate-400 hover:text-white text-sm font-medium transition-colors flex items-center justify-center gap-2 w-full py-2 hover:bg-slate-800 rounded-lg">
-                    Skip Setup (Enter as Visitor)
-                    <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                </button>
             </div>
         </div>
     </div>
@@ -251,20 +241,24 @@
                     <span class="hidden sm:inline">How to Use</span>
                 </button>
 
-                <!-- Service Balance -->
-                <div id="service-balance-container" class="hidden md:flex items-center gap-2 text-xs text-slate-500 border-r border-slate-800 pr-4 pl-4 border-l cursor-pointer hover:text-white group relative" title="Click to copy Service Address" onclick="copyServiceAddress()">
-                    <span>Pool:</span>
-                    <span id="wallet-balance" class="font-mono font-bold text-emerald-400">...</span>
+                <!-- Service Balance (Admin Only) -->
+                <div id="service-balance-container" class="hidden flex items-center gap-3 text-xs border-r border-slate-800 pr-4 pl-4 border-l cursor-pointer hover:bg-slate-800/50 py-1 rounded transition-colors group relative" title="Click to copy Service Address" onclick="copyServiceAddress()">
+                    <div class="flex items-center gap-1.5 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        HOSTING ACTIVE
+                    </div>
+                    <span class="text-slate-500 group-hover:text-slate-300">Pool: <span id="wallet-balance" class="font-mono text-white">...</span></span>
+                    
                     <!-- Tooltip -->
-                    <div class="absolute -bottom-8 right-0 w-max bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        Click to copy funding address
+                    <div class="absolute -bottom-8 right-0 w-max bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
+                        Service Wallet (Pays for Free Tier)
                     </div>
                 </div>
 
                 <!-- User Wallet Connection -->
                 <button id="connect-wallet-btn" onclick="connectUserWallet()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors text-xs font-medium">
                     <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
-                    Connect Wallet
+                    Connect Personal Wallet
                 </button>
             </div>
         </div>
@@ -527,6 +521,11 @@
             }
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.remove('hidden');
+            
+            // SHOW THE SERVICE CONTROLS
+            document.getElementById('service-balance-container').classList.remove('hidden');
+            document.getElementById('service-balance-container').classList.add('flex');
+            
             checkBalance();
         }
 
@@ -604,7 +603,9 @@
 
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.remove('hidden');
+            // HIDE SERVICE CONTROLS
             document.getElementById('service-balance-container').classList.add('hidden');
+            document.getElementById('service-balance-container').classList.remove('flex');
             
             document.getElementById('badge-free').classList.add('opacity-50', 'grayscale');
             document.getElementById('badge-paid').classList.remove('text-slate-400', 'bg-slate-800');
