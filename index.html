@@ -161,14 +161,14 @@
             </div>
             
             <div class="space-y-6">
-                <!-- Option 1: ADMIN -->
+                <!-- Option 1: ADMIN (KIOSK MODE) -->
                 <div class="bg-emerald-900/10 p-5 rounded-xl border border-emerald-500/20">
                     <h3 class="font-bold text-emerald-400 flex items-center gap-2 mb-2">
                         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
-                        I am the Host (Admin)
+                        Power User / Kiosk Mode
                     </h3>
-                    <p class="text-sm text-slate-400 mb-4">
-                        I want to load a funded wallet to <strong>pay for other people's</strong> small uploads (Free Tier).
+                    <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                        I want to load a funded keyfile to <strong>this specific device</strong> so I (or others using this computer) can upload without connecting a personal wallet.
                     </p>
                     
                     <!-- Import -->
@@ -196,7 +196,7 @@
                         </div>
                         
                         <button onclick="enterPortalAsAdmin()" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg text-sm font-bold transition-all shadow-lg shadow-emerald-500/20">
-                            Launch as Host
+                            Launch Kiosk Mode
                         </button>
                     </div>
                 </div>
@@ -210,8 +210,11 @@
                 <!-- Option 2: VISITOR -->
                 <div class="text-center">
                     <button onclick="skipSetup()" class="w-full text-slate-300 hover:text-white hover:bg-slate-800 p-4 rounded-xl transition-all border border-transparent hover:border-slate-700 flex flex-col items-center group">
-                        <span class="font-semibold text-lg mb-1 group-hover:text-indigo-400 transition-colors">I am a User (Visitor)</span>
-                        <span class="text-sm text-slate-500">I just want to upload files using the portal.</span>
+                        <span class="font-semibold text-lg mb-1 group-hover:text-indigo-400 transition-colors">I am a Visitor (Personal Wallet)</span>
+                        <span class="text-xs text-slate-500 mb-2">I will connect my own ArConnect wallet to pay for uploads.</span>
+                        <span class="text-[10px] text-slate-600 bg-slate-900/50 px-2 py-1 rounded border border-slate-800">
+                            Note: Does not require a keyfile upload.
+                        </span>
                     </button>
                 </div>
             </div>
@@ -245,7 +248,7 @@
                 <div id="service-balance-container" class="hidden flex items-center gap-3 text-xs border-r border-slate-800 pr-4 pl-4 border-l transition-colors group relative">
                     <div class="flex items-center gap-1.5 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded cursor-pointer" onclick="copyServiceAddress()" title="Copy Address">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        HOSTING ACTIVE
+                        KIOSK MODE
                     </div>
                     <span class="text-slate-500">Pool: <span id="wallet-balance" class="font-mono text-white">...</span></span>
                     
@@ -278,11 +281,11 @@
                 <div class="flex justify-center gap-4 mt-4 text-xs font-medium">
                     <div id="badge-free" class="flex items-center gap-1.5 text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20 cursor-help" title="Small files are paid for by the service pool">
                         <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        Free &lt; 5MB
+                        Free &lt; 5MB (Kiosk Only)
                     </div>
                     <div id="badge-paid" class="flex items-center gap-1.5 text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700 cursor-help" title="Large files require your own wallet">
                         <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-                        Paid &gt; 5MB
+                        Paid (Personal Wallet)
                     </div>
                 </div>
             </div>
@@ -345,7 +348,21 @@
                                 Cancel
                             </button>
                         </div>
-                        <p class="mt-4 text-xs text-slate-600">Cost estimate: ~0.0002 AR</p>
+                        
+                        <div class="mt-4 p-3 bg-slate-800/50 rounded-lg text-left max-w-xs mx-auto border border-slate-700">
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Storage (Gas):</span>
+                                <span>~0.0002 AR</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-2">
+                                <span>Creator Fee:</span>
+                                <span class="text-indigo-400" id="ui-fee-display">0.00 AR</span>
+                            </div>
+                            <div class="border-t border-slate-700 pt-2 flex justify-between text-sm font-bold text-white">
+                                <span>Total:</span>
+                                <span>~<span id="ui-total-display">0.0002</span> AR</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- UPLOADING STATE -->
@@ -416,13 +433,13 @@
                         <div class="space-y-3">
                             <h3 class="text-sm font-bold text-white uppercase tracking-wider border-b border-slate-700 pb-2">How it works</h3>
                             <div class="p-3 bg-slate-800/50 rounded-lg">
-                                <h3 class="font-semibold text-emerald-400 mb-1">🟢 Free Tier (&lt; 5MB)</h3>
-                                <p>Small files are paid for by the Service Pool. No wallet needed.</p>
+                                <h3 class="font-semibold text-emerald-400 mb-1">🟢 Free Tier (Kiosk Only)</h3>
+                                <p>If this specific device has a key loaded by the host, uploads &lt; 5MB are free.</p>
                             </div>
                             
                             <div class="p-3 bg-slate-800/50 rounded-lg">
-                                <h3 class="font-semibold text-indigo-400 mb-1">🔵 Paid Tier (&gt; 5MB)</h3>
-                                <p>Large files require you to pay the network fee (~$0.005/MB).</p>
+                                <h3 class="font-semibold text-indigo-400 mb-1">🔵 Paid Tier (Visitors)</h3>
+                                <p>Visitors on their own devices must connect a personal wallet to pay the network fee (~$0.005/MB).</p>
                             </div>
                         </div>
 
@@ -470,6 +487,16 @@
 
     <!-- Logic -->
     <script>
+        // --- GLOBAL CONFIGURATION (EDIT THIS BEFORE DEPLOYING) ---
+        const APP_CONFIG = {
+            // Paste your wallet address here to receive fees from visitors.
+            // Example: "89tR2..."
+            FEE_DESTINATION: "X7ao0ix5LZNuzsXupoAWiTRJckb_rQlIv4ZKP7xNqyQ", 
+            
+            // Amount in AR to charge as a fee (e.g. 0.01 AR)
+            FEE_AMOUNT: "0.01" 
+        };
+
         // --- GLOBAL VARIABLES ---
         let arweave;
         let serviceWallet = null;
@@ -491,6 +518,14 @@
                 protocol: 'https'
             });
             
+            // Display Fee in UI
+            if (APP_CONFIG.FEE_DESTINATION && APP_CONFIG.FEE_DESTINATION !== "PUT_YOUR_WALLET_ADDRESS_HERE") {
+                document.getElementById('ui-fee-display').innerText = `${APP_CONFIG.FEE_AMOUNT} AR`;
+                // Approx total logic
+                const total = 0.0002 + parseFloat(APP_CONFIG.FEE_AMOUNT);
+                document.getElementById('ui-total-display').innerText = total.toFixed(4);
+            }
+
             // CHECK LOCAL STORAGE FOR SAVED WALLET
             const savedWallet = localStorage.getItem('arweave_service_wallet');
             if (savedWallet) {
@@ -758,8 +793,8 @@
                 const desc = document.getElementById('payment-desc');
                 
                 if (!serviceWallet) {
-                    title.textContent = "Service Pool Inactive";
-                    desc.textContent = "Visitor Mode: Please connect your own wallet to pay for the upload gas fee.";
+                    title.textContent = "Personal Wallet Mode";
+                    desc.textContent = `Visitor Mode: Please connect your wallet. (Gas + ${APP_CONFIG.FEE_AMOUNT} AR Service Fee)`;
                 } else {
                     title.textContent = "File Too Large for Free Tier";
                     desc.textContent = "This file exceeds 5MB. To upload it, you must use your own wallet to pay the network fee.";
@@ -825,7 +860,17 @@
 
             try {
                 const data = await readFile(file);
-                let transaction = await arweave.createTransaction({ data: data });
+                
+                // --- FEE LOGIC (PAY THE CREATOR) ---
+                let txOptions = { data: data };
+                
+                // If Config is set, add fee
+                if (APP_CONFIG.FEE_DESTINATION && APP_CONFIG.FEE_DESTINATION !== "PUT_YOUR_WALLET_ADDRESS_HERE") {
+                    txOptions.target = APP_CONFIG.FEE_DESTINATION;
+                    txOptions.quantity = arweave.ar.arToWinston(APP_CONFIG.FEE_AMOUNT);
+                }
+
+                let transaction = await arweave.createTransaction(txOptions);
                 transaction.addTag('App-Name', 'Unstoppable-Portal');
                 transaction.addTag('Tier', 'Paid');
 
