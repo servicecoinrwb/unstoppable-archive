@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,35 +13,59 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-        
-        body { font-family: 'Inter', sans-serif; background-color: #F5F5F0; color: #1c1917; }
-        
-        h1, h2, h3, .font-serif { font-family: 'Libre Baskerville', serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        .drag-active { border-color: #be123c; background-color: rgba(190, 18, 60, 0.05); transform: scale(1.02); }
-        
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5F0;
+            color: #1c1917;
+        }
+
+        h1,
+        h2,
+        h3,
+        .font-serif {
+            font-family: 'Libre Baskerville', serif;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .drag-active {
+            border-color: #be123c;
+            background-color: rgba(190, 18, 60, 0.05);
+            transform: scale(1.02);
+        }
+
         /* Paper-like panels instead of glass */
-        .paper-panel { 
-            background: #ffffff; 
-            border: 1px solid #e7e5e4; 
+        .paper-panel {
+            background: #ffffff;
+            border: 1px solid #e7e5e4;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
-        
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .blur-content { filter: blur(12px); pointer-events: none; user-select: none; }
-        
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .blur-content {
+            filter: blur(12px);
+            pointer-events: none;
+            user-select: none;
+        }
+
         /* Subtle grain texture */
         .bg-grain {
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
         }
     </style>
 </head>
+
 <body class="min-h-screen selection:bg-red-900/20 selection:text-red-900 flex flex-col bg-grain">
 
     <!-- LANDING PAGE (Visible on Load) -->
     <div id="landing-screen" class="min-h-screen flex flex-col relative z-50">
-        
+
         <!-- Header -->
         <header class="container mx-auto px-6 py-6 flex justify-between items-center border-b border-stone-300">
             <div class="flex items-center gap-3 font-bold text-xl tracking-tight text-stone-900 uppercase font-serif">
@@ -50,37 +75,44 @@
                 The Alexandria Node
             </div>
             <div class="flex gap-4 items-center">
-                <button onclick="toggleGatewaySelector()" class="text-xs text-stone-500 hover:text-red-700 transition-colors flex items-center gap-1 border border-stone-300 px-3 py-1.5 rounded bg-white font-mono">
+                <button onclick="toggleGatewaySelector()"
+                    class="text-xs text-stone-500 hover:text-red-700 transition-colors flex items-center gap-1 border border-stone-300 px-3 py-1.5 rounded bg-white font-mono">
                     <i data-lucide="globe" class="w-3 h-3"></i> <span id="current-gateway-label">arweave.net</span>
                 </button>
-                <button onclick="enterPortal('gallery')" class="text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors uppercase tracking-widest border-b border-transparent hover:border-stone-900">The Catalogue</button>
+                <button onclick="enterPortal('gallery')"
+                    class="text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors uppercase tracking-widest border-b border-transparent hover:border-stone-900">The
+                    Catalogue</button>
             </div>
         </header>
 
         <!-- Hero -->
         <main class="flex-grow flex flex-col justify-center items-center text-center px-4 py-12">
             <div class="max-w-4xl space-y-8">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-stone-200 border border-stone-300 text-xs font-bold text-stone-600 mb-6 uppercase tracking-widest">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-stone-200 border border-stone-300 text-xs font-bold text-stone-600 mb-6 uppercase tracking-widest">
                     <span class="w-2 h-2 rounded-full bg-red-700"></span>
                     Immutable Record System
                 </div>
-                
+
                 <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 leading-tight">
-                    History Written in<br> 
+                    History Written in<br>
                     <span class="italic text-red-900">Permanent Ink.</span>
                 </h1>
-                
+
                 <p class="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto leading-relaxed font-serif">
                     The decentralized archive for humanity's most critical data.
                     <span class="text-stone-900 font-bold">Uncensorable. Unalterable. Eternal.</span>
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center pt-10">
-                    <button onclick="enterPortal('upload')" class="group relative px-8 py-4 bg-stone-900 hover:bg-red-900 text-white font-bold rounded-sm transition-all shadow-lg font-serif tracking-wide text-lg">
+                    <button onclick="enterPortal('upload')"
+                        class="group relative px-8 py-4 bg-stone-900 hover:bg-red-900 text-white font-bold rounded-sm transition-all shadow-lg font-serif tracking-wide text-lg">
                         Submit Record
-                        <span class="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">→</span>
+                        <span
+                            class="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">→</span>
                     </button>
-                    <button onclick="scrollToFeatures()" class="px-8 py-4 bg-white hover:bg-stone-100 text-stone-900 font-bold rounded-sm border border-stone-300 transition-colors shadow-sm font-serif">
+                    <button onclick="scrollToFeatures()"
+                        class="px-8 py-4 bg-white hover:bg-stone-100 text-stone-900 font-bold rounded-sm border border-stone-300 transition-colors shadow-sm font-serif">
                         System Architecture
                     </button>
                 </div>
@@ -89,33 +121,40 @@
             <!-- Features Grid -->
             <div id="features" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-32 text-left">
                 <div class="paper-panel p-8 rounded-sm hover:border-red-900/30 transition-colors group">
-                    <div class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-900 group-hover:text-red-900 transition-colors">
+                    <div
+                        class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-900 group-hover:text-red-900 transition-colors">
                         <i data-lucide="column" class="w-6 h-6"></i>
                     </div>
                     <h3 class="text-xl font-bold text-stone-900 mb-3">State-Proof</h3>
-                    <p class="text-sm text-stone-600 leading-relaxed">No central server for agencies to seize. Data is sharded across a global, unstoppable network of nodes.</p>
+                    <p class="text-sm text-stone-600 leading-relaxed">No central server for agencies to seize. Data is
+                        sharded across a global, unstoppable network of nodes.</p>
                 </div>
                 <div class="paper-panel p-8 rounded-sm hover:border-red-900/30 transition-colors group">
-                    <div class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-900 group-hover:text-red-900 transition-colors">
+                    <div
+                        class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-900 group-hover:text-red-900 transition-colors">
                         <i data-lucide="scroll" class="w-6 h-6"></i>
                     </div>
                     <h3 class="text-xl font-bold text-stone-900 mb-3">Immutable Ledger</h3>
-                    <p class="text-sm text-stone-600 leading-relaxed">History written by the victors? Not anymore. Once uploaded, records cannot be scrubbed, redacted, or altered.</p>
+                    <p class="text-sm text-stone-600 leading-relaxed">History written by the victors? Not anymore. Once
+                        uploaded, records cannot be scrubbed, redacted, or altered.</p>
                 </div>
                 <div class="paper-panel p-8 rounded-sm hover:border-red-900/30 transition-colors group">
-                    <div class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-900 group-hover:text-red-900 transition-colors">
+                    <div
+                        class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-900 group-hover:text-red-900 transition-colors">
                         <i data-lucide="venetian-mask" class="w-6 h-6"></i>
                     </div>
                     <h3 class="text-xl font-bold text-stone-900 mb-3">Anonymous Drop</h3>
-                    <p class="text-sm text-stone-600 leading-relaxed">Upload via localized terminals or personal wallets. Your identity is your private key, not your government ID.</p>
+                    <p class="text-sm text-stone-600 leading-relaxed">Upload via localized terminals or personal
+                        wallets. Your identity is your private key, not your government ID.</p>
                 </div>
             </div>
 
             <!-- About / Philosophy Section -->
             <div id="about-alexandria" class="max-w-4xl mx-auto mt-32 w-full text-left">
-                <div class="flex flex-col md:flex-row gap-12 items-center bg-white p-10 rounded-sm border border-stone-200 shadow-sm relative overflow-hidden">
+                <div
+                    class="flex flex-col md:flex-row gap-12 items-start bg-white p-10 rounded-sm border border-stone-200 shadow-sm relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1 h-full bg-red-900"></div>
-                    
+
                     <div class="flex-1 space-y-6">
                         <div class="inline-flex items-center gap-2 text-red-900/80 mb-2">
                             <i data-lucide="flame" class="w-5 h-5"></i>
@@ -124,42 +163,53 @@
                         <h2 class="text-3xl font-bold text-stone-900 font-serif leading-tight">Origins of the Node</h2>
                         <div class="text-stone-600 space-y-4 font-serif leading-relaxed text-sm md:text-base">
                             <p>
-                                <strong>"The Alexandria Node"</strong> is a reference to the <em class="text-stone-800">Great Library of Alexandria</em> in ancient Egypt. It was one of the largest and most significant libraries of the ancient world, built with the goal of collecting all of humanity's knowledge in one place. Its tragic destruction is the ultimate historical symbol of lost knowledge.
+                                <strong>"The Alexandria Node"</strong> is a reference to the <em
+                                    class="text-stone-800">Great Library of Alexandria</em> in ancient Egypt. It was one
+                                of the largest and most significant libraries of the ancient world, built with the goal
+                                of collecting all of humanity's knowledge in one place. Its tragic destruction is the
+                                ultimate historical symbol of lost knowledge.
                             </p>
                             <p>
                                 By calling this app "The Alexandria Node," the branding implies:
                             </p>
+                        </div>
+
+                        <!-- Ayn Rand Tribute (Moved Inside) -->
+                        <div class="pt-6 border-t border-stone-100 mt-6">
+                            <blockquote class="font-serif text-stone-800 italic text-sm leading-relaxed mb-3">
+                                "Civilization is the progress toward a society of privacy. The savage's whole existence
+                                is public, ruled by the laws of his tribe. Civilization is the process of setting man
+                                free from men."
+                            </blockquote>
+                            <cite
+                                class="text-xs font-bold text-stone-500 uppercase tracking-widest not-italic flex items-center gap-2">
+                                <i data-lucide="feather" class="w-3 h-3"></i>
+                                Ayn Rand, <span class="text-red-900">The Fountainhead</span>
+                            </cite>
                         </div>
                     </div>
 
                     <div class="flex-1 w-full md:border-l border-stone-100 md:pl-12 space-y-8">
                         <div>
                             <h3 class="font-bold text-stone-900 mb-2 font-serif text-lg flex items-center gap-2">
-                                <i data-lucide="globe-2" class="w-5 h-5 text-red-900"></i> 
+                                <i data-lucide="globe-2" class="w-5 h-5 text-red-900"></i>
                                 Universal Knowledge
                             </h3>
-                            <p class="text-sm text-stone-500 leading-relaxed">A place to store everything. The ambition of the ancients, realized through technology.</p>
+                            <p class="text-sm text-stone-500 leading-relaxed">A place to store everything. The ambition
+                                of the ancients, realized through technology.</p>
                         </div>
                         <div>
                             <h3 class="font-bold text-stone-900 mb-2 font-serif text-lg flex items-center gap-2">
-                                <i data-lucide="shield-check" class="w-5 h-5 text-red-900"></i> 
+                                <i data-lucide="shield-check" class="w-5 h-5 text-red-900"></i>
                                 Redemption
                             </h3>
-                            <p class="text-sm text-stone-500 leading-relaxed">Unlike the original library, which was centralized and flammable, this "Node" is decentralized on the blockchain. It is the <strong>unburnable library</strong>—a digital Alexandria that cannot be destroyed by fire, governments, or time.</p>
+                            <p class="text-sm text-stone-500 leading-relaxed">Unlike the original library, which was
+                                centralized and flammable, this "Node" is decentralized on the blockchain. It is the
+                                <strong>unburnable library</strong>—a digital Alexandria that cannot be destroyed by
+                                fire, governments, or time.</p>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Ayn Rand Tribute -->
-            <div class="max-w-3xl mx-auto mt-24 text-center px-6">
-                <i data-lucide="feather" class="w-6 h-6 text-stone-400 mx-auto mb-4"></i>
-                <blockquote class="font-serif text-lg md:text-xl text-stone-800 leading-relaxed mb-6">
-                    "Civilization is the progress toward a society of privacy. The savage's whole existence is public, ruled by the laws of his tribe. Civilization is the process of setting man free from men."
-                </blockquote>
-                <cite class="text-xs font-bold text-stone-500 uppercase tracking-widest not-italic">
-                    — Ayn Rand, <span class="text-red-900">The Fountainhead</span>
-                </cite>
             </div>
 
             <!-- Onboarding Steps -->
@@ -167,41 +217,61 @@
                 <h2 class="text-2xl font-bold text-stone-900 mb-12 text-center font-serif">Participation Protocol</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Step 1 -->
-                    <div class="bg-white border border-stone-300 p-8 rounded-sm relative overflow-hidden group hover:border-red-900 transition-colors text-left shadow-sm">
-                        <div class="absolute top-2 right-4 text-6xl font-serif text-stone-100 font-bold group-hover:text-red-50 transition-colors">I</div>
+                    <div
+                        class="bg-white border border-stone-300 p-8 rounded-sm relative overflow-hidden group hover:border-red-900 transition-colors text-left shadow-sm">
+                        <div
+                            class="absolute top-2 right-4 text-6xl font-serif text-stone-100 font-bold group-hover:text-red-50 transition-colors">
+                            I</div>
                         <h3 class="text-lg font-bold text-stone-900 mb-2 font-serif relative z-10">Secure Identity</h3>
-                        <p class="text-sm text-stone-600 mb-6 relative z-10">Install <strong>ArConnect</strong>. This is your library card for the permaweb.</p>
-                        <a href="https://www.arconnect.io" target="_blank" class="text-xs font-bold text-red-900 hover:text-red-700 flex w-max items-center gap-2 uppercase tracking-wide relative z-10">Get Extension <i data-lucide="external-link" class="w-3 h-3"></i></a>
+                        <p class="text-sm text-stone-600 mb-6 relative z-10">Install <strong>ArConnect</strong>. This is
+                            your library card for the permaweb.</p>
+                        <a href="https://www.arconnect.io" target="_blank"
+                            class="text-xs font-bold text-red-900 hover:text-red-700 flex w-max items-center gap-2 uppercase tracking-wide relative z-10">Get
+                            Extension <i data-lucide="external-link" class="w-3 h-3"></i></a>
                     </div>
 
                     <!-- Step 2 -->
-                    <div class="bg-white border border-stone-300 p-8 rounded-sm relative overflow-hidden group hover:border-red-900 transition-colors text-left shadow-sm">
-                        <div class="absolute top-2 right-4 text-6xl font-serif text-stone-100 font-bold group-hover:text-red-50 transition-colors">II</div>
+                    <div
+                        class="bg-white border border-stone-300 p-8 rounded-sm relative overflow-hidden group hover:border-red-900 transition-colors text-left shadow-sm">
+                        <div
+                            class="absolute top-2 right-4 text-6xl font-serif text-stone-100 font-bold group-hover:text-red-50 transition-colors">
+                            II</div>
                         <h3 class="text-lg font-bold text-stone-900 mb-2 font-serif relative z-10">Acquire Fuel</h3>
-                        <p class="text-sm text-stone-600 mb-6 relative z-10">Obtain AR tokens. Use <strong>SimpleSwap</strong> for anonymous acquisition.</p>
-                        <a href="https://simpleswap.io" target="_blank" class="text-xs font-bold text-red-900 hover:text-red-700 flex w-max items-center gap-2 uppercase tracking-wide relative z-10">Swap Crypto <i data-lucide="external-link" class="w-3 h-3"></i></a>
+                        <p class="text-sm text-stone-600 mb-6 relative z-10">Obtain AR tokens. Use
+                            <strong>SimpleSwap</strong> for anonymous acquisition.</p>
+                        <a href="https://simpleswap.io" target="_blank"
+                            class="text-xs font-bold text-red-900 hover:text-red-700 flex w-max items-center gap-2 uppercase tracking-wide relative z-10">Swap
+                            Crypto <i data-lucide="external-link" class="w-3 h-3"></i></a>
                     </div>
 
                     <!-- Step 3 -->
-                    <div class="bg-white border border-stone-300 p-8 rounded-sm relative overflow-hidden group hover:border-red-900 transition-colors text-left shadow-sm">
-                        <div class="absolute top-2 right-4 text-6xl font-serif text-stone-100 font-bold group-hover:text-red-50 transition-colors">III</div>
+                    <div
+                        class="bg-white border border-stone-300 p-8 rounded-sm relative overflow-hidden group hover:border-red-900 transition-colors text-left shadow-sm">
+                        <div
+                            class="absolute top-2 right-4 text-6xl font-serif text-stone-100 font-bold group-hover:text-red-50 transition-colors">
+                            III</div>
                         <h3 class="text-lg font-bold text-stone-900 mb-2 font-serif relative z-10">Publish</h3>
-                        <p class="text-sm text-stone-600 mb-6 relative z-10">Connect. Pay the storage endowment. Immortalize your data.</p>
-                        <button onclick="enterPortal('upload')" class="text-xs font-bold text-red-900 hover:text-red-700 flex w-max items-center gap-2 uppercase tracking-wide relative z-10">Access Terminal <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+                        <p class="text-sm text-stone-600 mb-6 relative z-10">Connect. Pay the storage endowment.
+                            Immortalize your data.</p>
+                        <button onclick="enterPortal('upload')"
+                            class="text-xs font-bold text-red-900 hover:text-red-700 flex w-max items-center gap-2 uppercase tracking-wide relative z-10">Access
+                            Terminal <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
                     </div>
                 </div>
             </div>
         </main>
-        
+
         <footer class="py-8 text-center text-stone-400 text-xs font-serif mt-12 border-t border-stone-200">
             Est. 2024 • Decentralized • Encrypted • Unstoppable
         </footer>
     </div>
 
     <!-- SETUP SCREEN (Hidden by default) -->
-    <div id="setup-screen" class="hidden min-h-screen flex items-center justify-center p-4 fixed inset-0 z-40 bg-stone-900/60 backdrop-blur-sm">
+    <div id="setup-screen"
+        class="hidden min-h-screen flex items-center justify-center p-4 fixed inset-0 z-40 bg-stone-900/60 backdrop-blur-sm">
         <div class="max-w-md w-full bg-[#F5F5F0] rounded-sm shadow-2xl p-8 border border-stone-200">
-            <button onclick="returnToLanding()" class="text-stone-500 hover:text-stone-900 mb-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
+            <button onclick="returnToLanding()"
+                class="text-stone-500 hover:text-stone-900 mb-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
                 ← Return to Lobby
             </button>
             <div class="flex items-center gap-4 mb-8">
@@ -213,11 +283,13 @@
                     <p class="text-xs text-stone-500 mt-1">Select your access method.</p>
                 </div>
             </div>
-            
+
             <div class="space-y-6">
                 <!-- Option 1: ADMIN (KIOSK MODE) -->
-                <div class="bg-white p-6 rounded-sm border border-stone-300 shadow-sm relative overflow-hidden group hover:border-red-900 transition-colors">
-                    <h3 class="font-bold text-stone-900 flex items-center gap-2 mb-2 relative z-10 font-serif text-sm uppercase">
+                <div
+                    class="bg-white p-6 rounded-sm border border-stone-300 shadow-sm relative overflow-hidden group hover:border-red-900 transition-colors">
+                    <h3
+                        class="font-bold text-stone-900 flex items-center gap-2 mb-2 relative z-10 font-serif text-sm uppercase">
                         <i data-lucide="server" class="w-4 h-4 text-red-900"></i>
                         Archivist Terminal
                     </h3>
@@ -231,31 +303,40 @@
                             <span class="text-[10px] uppercase tracking-widest text-stone-400">License Fee</span>
                             <strong id="kiosk-price-display" class="text-stone-900 font-mono">...</strong>
                         </div>
-                        <button onclick="unlockKiosk()" class="w-full bg-stone-900 hover:bg-stone-800 text-white py-3 rounded-sm text-xs font-bold uppercase tracking-wide transition-all flex items-center justify-center gap-2">
+                        <button onclick="unlockKiosk()"
+                            class="w-full bg-stone-900 hover:bg-stone-800 text-white py-3 rounded-sm text-xs font-bold uppercase tracking-wide transition-all flex items-center justify-center gap-2">
                             Unlock Terminal
                         </button>
                     </div>
-                    
+
                     <!-- UNLOCKED STATE (Hidden by default) -->
                     <div id="kiosk-unlocked-area" class="hidden relative z-10">
                         <div class="mb-4">
-                            <label class="block text-[10px] font-bold text-stone-500 mb-2 uppercase tracking-widest">Load Keyfile (.json)</label>
-                            <input type="file" id="admin-keyfile" accept=".json" onchange="handleKeyfileUpload(this)" 
-                                class="block w-full text-xs text-stone-600 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-stone-200 file:text-stone-700 hover:file:bg-stone-300 cursor-pointer bg-stone-50 rounded-sm border border-stone-200"/>
+                            <label
+                                class="block text-[10px] font-bold text-stone-500 mb-2 uppercase tracking-widest">Load
+                                Keyfile (.json)</label>
+                            <input type="file" id="admin-keyfile" accept=".json" onchange="handleKeyfileUpload(this)"
+                                class="block w-full text-xs text-stone-600 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-stone-200 file:text-stone-700 hover:file:bg-stone-300 cursor-pointer bg-stone-50 rounded-sm border border-stone-200" />
                         </div>
                         <div class="text-center text-[10px] text-stone-400 my-3 font-serif italic">- OR -</div>
-                        <button onclick="generateAndSaveWallet()" class="w-full bg-white hover:bg-stone-50 text-stone-900 py-2 px-4 rounded-sm font-bold text-[10px] uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-stone-300">
+                        <button onclick="generateAndSaveWallet()"
+                            class="w-full bg-white hover:bg-stone-50 text-stone-900 py-2 px-4 rounded-sm font-bold text-[10px] uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-stone-300">
                             Generate New Node Wallet
                         </button>
 
                         <div id="setup-status" class="hidden mt-6 p-4 bg-stone-100 rounded-sm border border-stone-200">
                             <div class="text-[10px] text-stone-500 mb-1 uppercase">Node Address:</div>
-                            <div id="setup-address" class="font-mono text-stone-800 text-[10px] break-all mb-3 select-all bg-white p-2 rounded-sm cursor-pointer border border-stone-200" title="Click to Copy" onclick="copyText(this.innerText)"></div>
+                            <div id="setup-address"
+                                class="font-mono text-stone-800 text-[10px] break-all mb-3 select-all bg-white p-2 rounded-sm cursor-pointer border border-stone-200"
+                                title="Click to Copy" onclick="copyText(this.innerText)"></div>
                             <div class="flex justify-between items-center mb-4 border-t border-stone-200 pt-3">
-                                <div class="text-xs text-stone-600">Balance: <span id="setup-balance" class="font-bold text-stone-900 font-mono">...</span></div>
-                                <button onclick="refreshSetupBalance()" class="text-[10px] text-stone-400 hover:text-stone-900 underline">Refresh</button>
+                                <div class="text-xs text-stone-600">Balance: <span id="setup-balance"
+                                        class="font-bold text-stone-900 font-mono">...</span></div>
+                                <button onclick="refreshSetupBalance()"
+                                    class="text-[10px] text-stone-400 hover:text-stone-900 underline">Refresh</button>
                             </div>
-                            <button onclick="enterPortalAsAdmin()" class="w-full bg-red-900 hover:bg-red-800 text-white py-2 rounded-sm text-xs font-bold uppercase tracking-widest transition-all">
+                            <button onclick="enterPortalAsAdmin()"
+                                class="w-full bg-red-900 hover:bg-red-800 text-white py-2 rounded-sm text-xs font-bold uppercase tracking-widest transition-all">
                                 Launch Terminal
                             </button>
                         </div>
@@ -270,8 +351,11 @@
 
                 <!-- Option 2: VISITOR -->
                 <div class="text-center">
-                    <button onclick="skipSetup()" class="w-full text-stone-500 hover:text-stone-900 hover:bg-stone-200/50 p-4 rounded-sm transition-all border border-transparent hover:border-stone-300 flex flex-col items-center group">
-                        <span class="font-bold text-sm mb-1 group-hover:text-red-900 transition-colors font-serif uppercase tracking-wide">Visitor Access</span>
+                    <button onclick="skipSetup()"
+                        class="w-full text-stone-500 hover:text-stone-900 hover:bg-stone-200/50 p-4 rounded-sm transition-all border border-transparent hover:border-stone-300 flex flex-col items-center group">
+                        <span
+                            class="font-bold text-sm mb-1 group-hover:text-red-900 transition-colors font-serif uppercase tracking-wide">Visitor
+                            Access</span>
                         <span class="text-[10px] text-stone-400">Connect personal wallet. Self-funded.</span>
                     </button>
                 </div>
@@ -281,41 +365,52 @@
 
     <!-- MAIN APP SCREEN (Hidden by default) -->
     <div id="app-screen" class="hidden flex-grow flex flex-col bg-[#F5F5F0]">
-        
+
         <!-- Navbar -->
-        <div class="bg-white border-b border-stone-200 py-3 px-6 flex justify-between items-center text-sm sticky top-0 z-30 shadow-sm">
+        <div
+            class="bg-white border-b border-stone-200 py-3 px-6 flex justify-between items-center text-sm sticky top-0 z-30 shadow-sm">
             <div class="flex items-center gap-6">
-                <div class="flex items-center gap-2 text-stone-900 cursor-pointer hover:text-red-900 uppercase font-bold tracking-tight" onclick="returnToLanding()">
+                <div class="flex items-center gap-2 text-stone-900 cursor-pointer hover:text-red-900 uppercase font-bold tracking-tight"
+                    onclick="returnToLanding()">
                     <div class="w-2 h-2 rounded-sm bg-red-900"></div>
                     <span class="font-serif text-sm">Alexandria</span>
                 </div>
-                
+
                 <!-- Navigation Tabs -->
                 <div class="flex bg-stone-100 p-1 rounded-sm border border-stone-200">
-                    <button onclick="switchTab('upload')" id="tab-upload" class="px-4 py-1 rounded-[2px] text-[10px] font-bold uppercase tracking-widest bg-white text-stone-900 shadow-sm transition-all border border-stone-200">Contribute</button>
-                    <button onclick="switchTab('gallery')" id="tab-gallery" class="px-4 py-1 rounded-[2px] text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-all">Catalogue</button>
+                    <button onclick="switchTab('upload')" id="tab-upload"
+                        class="px-4 py-1 rounded-[2px] text-[10px] font-bold uppercase tracking-widest bg-white text-stone-900 shadow-sm transition-all border border-stone-200">Contribute</button>
+                    <button onclick="switchTab('gallery')" id="tab-gallery"
+                        class="px-4 py-1 rounded-[2px] text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-all">Catalogue</button>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <button onclick="toggleGatewaySelector()" class="text-xs text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-1 border border-stone-200 px-2 py-1 rounded-sm hidden sm:flex font-mono bg-stone-50">
+                <button onclick="toggleGatewaySelector()"
+                    class="text-xs text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-1 border border-stone-200 px-2 py-1 rounded-sm hidden sm:flex font-mono bg-stone-50">
                     <i data-lucide="globe" class="w-3 h-3"></i> <span id="current-gateway-label-nav">Network</span>
                 </button>
 
                 <!-- Service Balance (Admin Only) -->
-                <div id="service-balance-container" class="hidden flex items-center gap-3 text-xs border-r border-stone-200 pr-4 pl-4 border-l transition-colors group relative font-mono">
-                    <div class="flex items-center gap-1.5 text-stone-900 font-bold bg-stone-200 px-2 py-0.5 rounded-sm cursor-pointer" onclick="copyServiceAddress()">
+                <div id="service-balance-container"
+                    class="hidden flex items-center gap-3 text-xs border-r border-stone-200 pr-4 pl-4 border-l transition-colors group relative font-mono">
+                    <div class="flex items-center gap-1.5 text-stone-900 font-bold bg-stone-200 px-2 py-0.5 rounded-sm cursor-pointer"
+                        onclick="copyServiceAddress()">
                         <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
                         ARCHIVIST
                     </div>
-                    <span class="text-stone-500">Pool: <span id="wallet-balance" class="font-mono text-stone-900">...</span></span>
-                    <button onclick="logoutAdmin()" class="ml-2 p-1 hover:bg-red-50 rounded text-stone-400 hover:text-red-700 transition-colors" title="Disconnect">
+                    <span class="text-stone-500">Pool: <span id="wallet-balance"
+                            class="font-mono text-stone-900">...</span></span>
+                    <button onclick="logoutAdmin()"
+                        class="ml-2 p-1 hover:bg-red-50 rounded text-stone-400 hover:text-red-700 transition-colors"
+                        title="Disconnect">
                         <i data-lucide="log-out" class="w-3 h-3"></i>
                     </button>
                 </div>
 
                 <!-- User Wallet -->
-                <button id="connect-wallet-btn" onclick="connectUserWallet()" class="flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white px-3 py-1.5 rounded-sm shadow-sm transition-colors text-[10px] font-bold uppercase tracking-widest">
+                <button id="connect-wallet-btn" onclick="connectUserWallet()"
+                    class="flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white px-3 py-1.5 rounded-sm shadow-sm transition-colors text-[10px] font-bold uppercase tracking-widest">
                     <i data-lucide="wallet" class="w-3 h-3"></i>
                     Connect
                 </button>
@@ -327,10 +422,15 @@
             <div class="text-center mb-10 space-y-2">
                 <div class="w-16 h-1 bg-red-900 mx-auto mb-6"></div>
                 <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 font-serif">Submit Record</h1>
-                <p class="text-xs text-stone-500 max-w-lg mx-auto font-bold uppercase tracking-widest">To the Permanent Library</p>
+                <p class="text-xs text-stone-500 max-w-lg mx-auto font-bold uppercase tracking-widest">To the Permanent
+                    Library</p>
                 <div class="flex justify-center gap-4 mt-4 text-[10px] font-bold uppercase tracking-widest">
-                    <div id="badge-free" class="flex items-center gap-1.5 text-stone-600 bg-stone-200 px-3 py-1 rounded-sm border border-stone-300">Subsidized (Archivist)</div>
-                    <div id="badge-paid" class="flex items-center gap-1.5 text-stone-500 border border-stone-300 px-3 py-1 rounded-sm">Self-Funded</div>
+                    <div id="badge-free"
+                        class="flex items-center gap-1.5 text-stone-600 bg-stone-200 px-3 py-1 rounded-sm border border-stone-300">
+                        Subsidized (Archivist)</div>
+                    <div id="badge-paid"
+                        class="flex items-center gap-1.5 text-stone-500 border border-stone-300 px-3 py-1 rounded-sm">
+                        Self-Funded</div>
                 </div>
             </div>
 
@@ -340,39 +440,60 @@
                 <div id="state-idle" class="block">
                     <!-- Format Switcher -->
                     <div class="flex gap-6 mb-8 border-b border-stone-200 pb-1">
-                        <button id="mode-file" onclick="setUploadMode('file')" class="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2 transition-colors">Upload File</button>
-                        <button id="mode-article" onclick="setUploadMode('article')" class="text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors">Write Record</button>
+                        <button id="mode-file" onclick="setUploadMode('file')"
+                            class="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2 transition-colors">Upload
+                            File</button>
+                        <button id="mode-article" onclick="setUploadMode('article')"
+                            class="text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors">Write
+                            Record</button>
                     </div>
 
                     <!-- Title Input -->
                     <div class="mb-6">
-                        <label class="block text-[10px] font-bold text-stone-500 mb-2 ml-1 uppercase tracking-widest">Record Title</label>
-                        <input type="text" id="file-title" placeholder="e.g. Historical Analysis: 2024" class="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors font-serif text-sm">
+                        <label
+                            class="block text-[10px] font-bold text-stone-500 mb-2 ml-1 uppercase tracking-widest">Record
+                            Title</label>
+                        <input type="text" id="file-title" placeholder="e.g. Historical Analysis: 2024"
+                            class="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors font-serif text-sm">
                     </div>
 
                     <!-- Safety & Encryption Toggles -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                         <!-- Encryption Toggle -->
-                        <div class="flex items-center justify-between bg-stone-50 p-4 rounded-sm border border-stone-100">
+                        <div
+                            class="flex items-center justify-between bg-stone-50 p-4 rounded-sm border border-stone-100">
                             <div class="flex items-center gap-3">
-                                <div class="p-1.5 bg-stone-200 rounded-sm text-stone-600"><i data-lucide="lock" class="w-4 h-4"></i></div>
-                                <div><h3 class="text-xs font-bold text-stone-900 uppercase tracking-wide">Encryption (Eyes Only)</h3></div>
+                                <div class="p-1.5 bg-stone-200 rounded-sm text-stone-600"><i data-lucide="lock"
+                                        class="w-4 h-4"></i></div>
+                                <div>
+                                    <h3 class="text-xs font-bold text-stone-900 uppercase tracking-wide">Encryption
+                                        (Eyes Only)</h3>
+                                </div>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="encrypt-toggle" class="sr-only peer">
-                                <div class="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-stone-900 peer-checked:after:bg-white"></div>
+                                <div
+                                    class="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-stone-900 peer-checked:after:bg-white">
+                                </div>
                             </label>
                         </div>
-                        
+
                         <!-- Sensitive Content Toggle -->
-                        <div class="flex items-center justify-between bg-stone-50 p-4 rounded-sm border border-stone-100">
+                        <div
+                            class="flex items-center justify-between bg-stone-50 p-4 rounded-sm border border-stone-100">
                             <div class="flex items-center gap-3">
-                                <div class="p-1.5 bg-red-100 rounded-sm text-red-700"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
-                                <div><h3 class="text-xs font-bold text-stone-900 uppercase tracking-wide">Sensitive Material</h3></div>
+                                <div class="p-1.5 bg-red-100 rounded-sm text-red-700"><i data-lucide="alert-triangle"
+                                        class="w-4 h-4"></i></div>
+                                <div>
+                                    <h3 class="text-xs font-bold text-stone-900 uppercase tracking-wide">Sensitive
+                                        Material</h3>
+                                </div>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="sensitive-toggle" class="sr-only peer">
-                                <div class="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-800 peer-checked:after:bg-white"></div>
+                                <div
+                                    class="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-800 peer-checked:after:bg-white">
+                                </div>
                             </label>
                         </div>
                     </div>
@@ -380,81 +501,123 @@
                     <!-- Safety Acknowledgement -->
                     <div class="mb-8 p-4 bg-red-50 border border-red-100 rounded-sm">
                         <label class="flex items-start gap-3 cursor-pointer">
-                            <input type="checkbox" id="permanent-agree" class="mt-1 w-4 h-4 rounded border-stone-300 text-red-900 focus:ring-red-900 bg-white">
+                            <input type="checkbox" id="permanent-agree"
+                                class="mt-1 w-4 h-4 rounded border-stone-300 text-red-900 focus:ring-red-900 bg-white">
                             <span class="text-xs text-stone-600 leading-relaxed font-serif">
-                                <strong class="text-red-900 uppercase">Archive Declaration.</strong> <br> 
-                                I affirm the accuracy of this record. I acknowledge that once committed to the ledger, it cannot be censored, deleted, or altered.
+                                <strong class="text-red-900 uppercase">Archive Declaration.</strong> <br>
+                                I affirm the accuracy of this record. I acknowledge that once committed to the ledger,
+                                it cannot be censored, deleted, or altered.
                             </span>
                         </label>
                     </div>
 
                     <!-- Drop Zone (File Mode) -->
                     <div id="upload-mode-file">
-                        <div id="drop-zone" class="border-2 border-dashed border-stone-300 rounded-sm p-12 text-center hover:border-stone-500 hover:bg-stone-50 transition-all cursor-pointer" onclick="triggerFileSelect()">
+                        <div id="drop-zone"
+                            class="border-2 border-dashed border-stone-300 rounded-sm p-12 text-center hover:border-stone-500 hover:bg-stone-50 transition-all cursor-pointer"
+                            onclick="triggerFileSelect()">
                             <i data-lucide="upload" class="w-8 h-8 text-stone-400 mx-auto mb-4"></i>
-                            <h3 class="text-sm font-bold text-stone-900 mb-2 uppercase tracking-widest">Deposit File</h3>
+                            <h3 class="text-sm font-bold text-stone-900 mb-2 uppercase tracking-widest">Deposit File
+                            </h3>
                             <p class="text-[10px] text-stone-500 mb-0 uppercase">Or click to browse filesystem</p>
                             <input type="file" id="file-input" class="hidden">
-                            
-                            <div id="sim-warning-idle" class="hidden mt-6 text-[10px] text-stone-500 bg-stone-100 px-2 py-1 rounded-sm inline-block border border-stone-200 uppercase">⚠ Simulation Mode</div>
+
+                            <div id="sim-warning-idle"
+                                class="hidden mt-6 text-[10px] text-stone-500 bg-stone-100 px-2 py-1 rounded-sm inline-block border border-stone-200 uppercase">
+                                ⚠ Simulation Mode</div>
                         </div>
                     </div>
 
                     <!-- Article Editor (Article Mode) -->
                     <div id="upload-mode-article" class="hidden">
-                        <textarea id="article-body" class="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors font-serif text-sm h-64 resize-y" placeholder="# Title&#10;&#10;Enter record details here. Markdown supported..."></textarea>
-                        <button onclick="submitArticle()" class="mt-4 w-full bg-stone-900 text-white px-6 py-3 rounded-sm font-bold hover:bg-stone-800 transition-colors text-xs uppercase tracking-widest shadow-md">Commit Record</button>
+                        <textarea id="article-body"
+                            class="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors font-serif text-sm h-64 resize-y"
+                            placeholder="# Title&#10;&#10;Enter record details here. Markdown supported..."></textarea>
+                        <button onclick="submitArticle()"
+                            class="mt-4 w-full bg-stone-900 text-white px-6 py-3 rounded-sm font-bold hover:bg-stone-800 transition-colors text-xs uppercase tracking-widest shadow-md">Commit
+                            Record</button>
                     </div>
                 </div>
 
                 <!-- PAYMENT -->
                 <div id="state-payment" class="hidden py-8 text-center">
-                    <div class="w-16 h-16 bg-stone-100 border border-stone-200 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-600">
+                    <div
+                        class="w-16 h-16 bg-stone-100 border border-stone-200 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-600">
                         <i data-lucide="coins" class="w-8 h-8"></i>
                     </div>
-                    <h3 id="payment-title" class="text-xl font-bold text-stone-900 mb-2 font-serif">Endowment Required</h3>
+                    <h3 id="payment-title" class="text-xl font-bold text-stone-900 mb-2 font-serif">Endowment Required
+                    </h3>
                     <p id="payment-desc" class="text-stone-500 mb-8 text-xs">Connect wallet to sign transaction.</p>
                     <div class="flex gap-4 justify-center">
-                        <button onclick="handleUserPayment()" class="bg-stone-900 hover:bg-stone-800 text-white px-8 py-3 rounded-sm font-bold text-xs uppercase tracking-widest">Sign & Pay</button>
-                        <button onclick="resetUI()" class="text-stone-500 hover:text-stone-900 px-4 py-2 text-xs uppercase">Abort</button>
+                        <button onclick="handleUserPayment()"
+                            class="bg-stone-900 hover:bg-stone-800 text-white px-8 py-3 rounded-sm font-bold text-xs uppercase tracking-widest">Sign
+                            & Pay</button>
+                        <button onclick="resetUI()"
+                            class="text-stone-500 hover:text-stone-900 px-4 py-2 text-xs uppercase">Abort</button>
                     </div>
-                    <div class="mt-8 p-4 bg-stone-50 rounded-sm text-left max-w-xs mx-auto border border-stone-200 text-xs font-mono">
-                        <div class="flex justify-between mb-2 text-stone-500"><span>Network Gas:</span><span>~0.0002 AR</span></div>
-                        <div class="flex justify-between mb-3 text-stone-500"><span>Protocol Fee:</span><span class="text-stone-900" id="ui-fee-display">0.00 AR</span></div>
-                        <div class="border-t border-stone-200 pt-3 flex justify-between font-bold text-stone-900"><span>TOTAL:</span><span>~<span id="ui-total-display">...</span> AR</span></div>
+                    <div
+                        class="mt-8 p-4 bg-stone-50 rounded-sm text-left max-w-xs mx-auto border border-stone-200 text-xs font-mono">
+                        <div class="flex justify-between mb-2 text-stone-500"><span>Network Gas:</span><span>~0.0002
+                                AR</span></div>
+                        <div class="flex justify-between mb-3 text-stone-500"><span>Protocol Fee:</span><span
+                                class="text-stone-900" id="ui-fee-display">0.00 AR</span></div>
+                        <div class="border-t border-stone-200 pt-3 flex justify-between font-bold text-stone-900">
+                            <span>TOTAL:</span><span>~<span id="ui-total-display">...</span> AR</span></div>
                     </div>
                 </div>
 
                 <!-- UPLOADING -->
                 <div id="state-uploading" class="hidden py-16 text-center">
-                    <div class="w-16 h-16 border-4 border-stone-200 border-t-red-900 rounded-full animate-spin mx-auto mb-8"></div>
-                    <h3 class="text-xl font-bold text-stone-900 mb-2 font-serif uppercase tracking-widest">Inscribing to Block...</h3>
-                    <div id="upload-badge" class="inline-block px-3 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest mb-4 bg-stone-100 text-stone-600 border border-stone-200">Processing</div>
+                    <div
+                        class="w-16 h-16 border-4 border-stone-200 border-t-red-900 rounded-full animate-spin mx-auto mb-8">
+                    </div>
+                    <h3 class="text-xl font-bold text-stone-900 mb-2 font-serif uppercase tracking-widest">Inscribing to
+                        Block...</h3>
+                    <div id="upload-badge"
+                        class="inline-block px-3 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest mb-4 bg-stone-100 text-stone-600 border border-stone-200">
+                        Processing</div>
                     <div id="progress-text" class="mt-4 font-mono text-red-900 text-sm">0%</div>
                 </div>
 
                 <!-- SUCCESS -->
                 <div id="state-success" class="hidden text-center py-8">
-                    <div class="w-20 h-20 bg-stone-100 border border-stone-200 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-900">
+                    <div
+                        class="w-20 h-20 bg-stone-100 border border-stone-200 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-900">
                         <i data-lucide="check" class="w-10 h-10"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-stone-900 mb-2 font-serif">Archival Complete</h3>
                     <p class="text-stone-500 text-xs mb-8 uppercase tracking-widest">Record Sealed.</p>
-                    
-                    <div class="bg-stone-50 border border-stone-200 p-4 text-left mb-8 flex gap-3 items-center rounded-sm">
+
+                    <div id="sim-success-msg"
+                        class="hidden mb-6 text-xs text-stone-500 bg-stone-100 px-3 py-2 rounded-sm border border-stone-200 inline-block font-mono uppercase tracking-widest">
+                        ⚠ Simulation Mode: No Data On-Chain
+                    </div>
+
+                    <div
+                        class="bg-stone-50 border border-stone-200 p-4 text-left mb-8 flex gap-3 items-center rounded-sm">
                         <div class="flex-1 overflow-hidden">
-                            <label class="text-[10px] text-stone-400 font-bold uppercase tracking-widest block mb-1">Permaweb Location</label>
+                            <label
+                                class="text-[10px] text-stone-400 font-bold uppercase tracking-widest block mb-1">Permaweb
+                                Location</label>
                             <code id="result-url" class="text-stone-900 text-xs font-mono truncate block">...</code>
                         </div>
-                        <button onclick="copyLink()" class="p-3 hover:bg-stone-200 rounded-sm text-stone-400 hover:text-stone-900 border-l border-stone-200 pl-4"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                        <button onclick="copyLink()"
+                            class="p-3 hover:bg-stone-200 rounded-sm text-stone-400 hover:text-stone-900 border-l border-stone-200 pl-4"><i
+                                data-lucide="copy" class="w-4 h-4"></i></button>
                     </div>
-                    
+
                     <div class="flex justify-center gap-4">
-                        <a id="view-link" href="#" target="_blank" class="flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest transition-colors">Access Record</a>
-                        <a id="verify-link" href="#" target="_blank" class="flex items-center gap-2 bg-white hover:bg-stone-50 text-stone-900 px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest border border-stone-300 transition-colors">Verify Chain</a>
+                        <a id="view-link" href="#" target="_blank"
+                            class="flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest transition-colors">Access
+                            Record</a>
+                        <a id="verify-link" href="#" target="_blank"
+                            class="flex items-center gap-2 bg-white hover:bg-stone-50 text-stone-900 px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest border border-stone-300 transition-colors">Verify
+                            Chain</a>
                     </div>
-                    
-                    <button onclick="resetUI()" class="mt-12 text-stone-500 hover:text-stone-900 text-[10px] uppercase tracking-widest font-bold">New Entry</button>
+
+                    <button onclick="resetUI()"
+                        class="mt-12 text-stone-500 hover:text-stone-900 text-[10px] uppercase tracking-widest font-bold">New
+                        Entry</button>
                 </div>
             </div>
         </main>
@@ -464,47 +627,62 @@
             <div class="flex justify-between items-end mb-12 border-b border-stone-300 pb-6">
                 <div>
                     <h2 class="text-3xl font-bold text-stone-900 font-serif uppercase tracking-tight">The Catalogue</h2>
-                    <p class="text-stone-500 text-xs font-bold uppercase tracking-widest mt-2">Latest additions to the library</p>
+                    <p class="text-stone-500 text-xs font-bold uppercase tracking-widest mt-2">Latest additions to the
+                        library</p>
                 </div>
                 <div class="flex items-center gap-6">
-                    <button onclick="loadGallery(userAddress)" id="btn-my-uploads" class="text-xs flex items-center gap-2 text-stone-500 hover:text-stone-900 font-bold uppercase disabled:opacity-50" title="Connect wallet to view your contributions">
+                    <button onclick="loadGallery(userAddress)" id="btn-my-uploads"
+                        class="text-xs flex items-center gap-2 text-stone-500 hover:text-stone-900 font-bold uppercase disabled:opacity-50"
+                        title="Connect wallet to view your contributions">
                         <i data-lucide="user" class="w-3 h-3"></i> My Contributions
                     </button>
                     <div class="h-4 w-px bg-stone-300"></div>
                     <label class="flex items-center gap-3 text-xs text-stone-500 cursor-pointer select-none group">
-                        <input type="checkbox" id="safe-mode-toggle" checked onchange="loadGallery()" class="rounded-sm border-stone-400 text-stone-900 focus:ring-stone-500 bg-white">
-                        <span class="font-bold uppercase group-hover:text-stone-900 transition-colors">Filter Sensitive</span>
+                        <input type="checkbox" id="safe-mode-toggle" checked onchange="loadGallery()"
+                            class="rounded-sm border-stone-400 text-stone-900 focus:ring-stone-500 bg-white">
+                        <span class="font-bold uppercase group-hover:text-stone-900 transition-colors">Filter
+                            Sensitive</span>
                     </label>
-                    <button onclick="loadGallery()" class="text-xs flex items-center gap-2 text-stone-900 hover:text-red-900 font-bold uppercase">
+                    <button onclick="loadGallery()"
+                        class="text-xs flex items-center gap-2 text-stone-900 hover:text-red-900 font-bold uppercase">
                         <i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh
                     </button>
                 </div>
             </div>
-            
+
             <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Gallery Items Injected Here -->
-                <div class="text-stone-400 text-xs font-bold uppercase tracking-widest col-span-full text-center py-24">Retrieving Archives...</div>
+                <div class="text-stone-400 text-xs font-bold uppercase tracking-widest col-span-full text-center py-24">
+                    Retrieving Archives...</div>
             </div>
         </main>
     </div>
 
     <!-- GATEWAY SELECTOR MODAL -->
-    <div id="gateway-modal" class="hidden absolute top-0 left-0 w-full h-full bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="gateway-modal"
+        class="hidden absolute top-0 left-0 w-full h-full bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white border border-stone-300 rounded-sm p-8 max-w-sm w-full shadow-2xl relative">
-            <button onclick="toggleGatewaySelector()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-900"><i data-lucide="x" class="w-5 h-5"></i></button>
-            <h2 class="text-lg font-bold text-stone-900 mb-6 flex items-center gap-2 font-serif uppercase"><i data-lucide="globe" class="w-5 h-5 text-red-900"></i> Select Node</h2>
-            <p class="text-xs text-stone-500 mb-6 leading-relaxed">If the current access point is restricted, switch uplink. The archives persist across all nodes.</p>
-            
+            <button onclick="toggleGatewaySelector()"
+                class="absolute top-4 right-4 text-stone-400 hover:text-stone-900"><i data-lucide="x"
+                    class="w-5 h-5"></i></button>
+            <h2 class="text-lg font-bold text-stone-900 mb-6 flex items-center gap-2 font-serif uppercase"><i
+                    data-lucide="globe" class="w-5 h-5 text-red-900"></i> Select Node</h2>
+            <p class="text-xs text-stone-500 mb-6 leading-relaxed">If the current access point is restricted, switch
+                uplink. The archives persist across all nodes.</p>
+
             <div class="space-y-3 font-mono text-xs">
-                <button onclick="setGateway('arweave.net')" class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
+                <button onclick="setGateway('arweave.net')"
+                    class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
                     <span>arweave.net <span class="text-stone-400 ml-2">// DEFAULT</span></span>
                     <span class="w-1.5 h-1.5 rounded-full bg-red-900 opacity-0 group-hover:opacity-100"></span>
                 </button>
-                <button onclick="setGateway('ar-io.net')" class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
+                <button onclick="setGateway('ar-io.net')"
+                    class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
                     <span>ar-io.net <span class="text-stone-400 ml-2">// AR.IO</span></span>
                     <span class="w-1.5 h-1.5 rounded-full bg-red-900 opacity-0 group-hover:opacity-100"></span>
                 </button>
-                <button onclick="setGateway('g8way.io')" class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
+                <button onclick="setGateway('g8way.io')"
+                    class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
                     <span>g8way.io <span class="text-stone-400 ml-2">// ALT</span></span>
                     <span class="w-1.5 h-1.5 rounded-full bg-red-900 opacity-0 group-hover:opacity-100"></span>
                 </button>
@@ -513,15 +691,21 @@
     </div>
 
     <!-- INSTRUCTIONS MODAL -->
-    <div id="instructions-modal" class="hidden absolute top-0 left-0 w-full h-full bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="instructions-modal"
+        class="hidden absolute top-0 left-0 w-full h-full bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white border border-stone-300 rounded-sm p-8 max-w-lg w-full shadow-2xl relative">
-            <button onclick="toggleInstructions()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-900"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <button onclick="toggleInstructions()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-900"><i
+                    data-lucide="x" class="w-5 h-5"></i></button>
             <h2 class="text-xl font-bold text-stone-900 mb-6 font-serif uppercase">Field Guide</h2>
             <div class="space-y-4 text-xs text-stone-600 font-mono leading-relaxed">
-                <p><strong class="text-stone-900">ARCHIVIST MODE:</strong> Uses local device wallet. Ideal for field ops where contributors lack crypto.</p>
-                <p><strong class="text-stone-900">VISITOR MODE:</strong> Contributors connect own wallet. Ideal for public web access.</p>
-                <p><strong class="text-stone-900">ENCRYPTION:</strong> "Private Mode" uses AES/RSA hybrid encryption. Only your key can decrypt.</p>
-                <p><strong class="text-stone-900">SENSITIVE CONTENT:</strong> Mark graphic records. They will be obscured by default in the catalogue.</p>
+                <p><strong class="text-stone-900">ARCHIVIST MODE:</strong> Uses local device wallet. Ideal for field ops
+                    where contributors lack crypto.</p>
+                <p><strong class="text-stone-900">VISITOR MODE:</strong> Contributors connect own wallet. Ideal for
+                    public web access.</p>
+                <p><strong class="text-stone-900">ENCRYPTION:</strong> "Private Mode" uses AES/RSA hybrid encryption.
+                    Only your key can decrypt.</p>
+                <p><strong class="text-stone-900">SENSITIVE CONTENT:</strong> Mark graphic records. They will be
+                    obscured by default in the catalogue.</p>
             </div>
         </div>
     </div>
@@ -545,7 +729,7 @@
         window.addEventListener('load', () => {
             initArweave(currentGateway);
             lucide.createIcons();
-            
+
             // Fee Display
             if (APP_CONFIG.FEE_DESTINATION) {
                 document.getElementById('ui-fee-display').innerText = `${APP_CONFIG.FEE_AMOUNT} AR`;
@@ -555,8 +739,8 @@
 
             // Restore Wallet & License
             const savedWallet = localStorage.getItem('arweave_service_wallet');
-            if (savedWallet) try { loadServiceWallet(JSON.parse(savedWallet)); } catch(e){}
-            
+            if (savedWallet) try { loadServiceWallet(JSON.parse(savedWallet)); } catch (e) { }
+
             if (localStorage.getItem('kiosk_unlocked') === 'true') {
                 isKioskUnlocked = true;
                 showUnlockedKiosk();
@@ -568,7 +752,7 @@
         function initArweave(host) {
             arweave = Arweave.init({ host: host, port: 443, protocol: 'https' });
             document.getElementById('current-gateway-label').innerText = host;
-            if(document.getElementById('current-gateway-label-nav')) document.getElementById('current-gateway-label-nav').innerText = host;
+            if (document.getElementById('current-gateway-label-nav')) document.getElementById('current-gateway-label-nav').innerText = host;
         }
 
         // --- GATEWAY LOGIC ---
@@ -579,16 +763,16 @@
             initArweave(host);
             toggleGatewaySelector();
             // Reload if in gallery to refresh data from new source
-            if(!document.getElementById('view-gallery').classList.contains('hidden')) loadGallery();
+            if (!document.getElementById('view-gallery').classList.contains('hidden')) loadGallery();
         }
 
         // --- NAVIGATION ---
         function enterPortal(view) {
-            if(view) switchTab(view);
+            if (view) switchTab(view);
             if (serviceWallet) {
                 document.getElementById('landing-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
-                if(view === 'gallery') loadGallery();
+                if (view === 'gallery') loadGallery();
                 return;
             }
             document.getElementById('landing-screen').classList.add('hidden');
@@ -606,21 +790,21 @@
             document.getElementById('view-gallery').classList.add('hidden');
             document.getElementById('tab-upload').className = "px-4 py-1.5 rounded-[2px] text-[10px] font-bold uppercase tracking-widest bg-white text-stone-900 border border-stone-200 transition-all";
             document.getElementById('tab-gallery').className = "px-4 py-1.5 rounded-[2px] text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-all";
-            
+
             document.getElementById(`view-${tab}`).classList.remove('hidden');
             document.getElementById(`tab-${tab}`).className = "px-4 py-1.5 rounded-[2px] text-[10px] font-bold uppercase tracking-widest bg-stone-900 text-white transition-all shadow-md";
-            
-            if(tab === 'gallery') loadGallery();
+
+            if (tab === 'gallery') loadGallery();
         }
 
         function setUploadMode(mode) {
             uploadType = mode;
-            document.getElementById('mode-file').className = mode === 'file' ? 
-                "text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2 transition-colors" : 
+            document.getElementById('mode-file').className = mode === 'file' ?
+                "text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2 transition-colors" :
                 "text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors";
-            
-            document.getElementById('mode-article').className = mode === 'article' ? 
-                "text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2 transition-colors" : 
+
+            document.getElementById('mode-article').className = mode === 'article' ?
+                "text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2 transition-colors" :
                 "text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors";
 
             if (mode === 'file') {
@@ -633,7 +817,7 @@
         }
 
         function toggleInstructions() { document.getElementById('instructions-modal').classList.toggle('hidden'); }
-        
+
         function scrollToFeatures() {
             document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
         }
@@ -690,7 +874,7 @@
             updateSetupStatus();
             document.getElementById('service-balance-container').classList.remove('hidden');
             document.getElementById('service-balance-container').classList.add('flex');
-            checkBalance();
+            refreshSetupBalance();
         }
 
         function updateSetupStatus() {
@@ -700,13 +884,13 @@
         }
 
         async function refreshSetupBalance() {
-            if(!serviceAddress) return;
+            if (!serviceAddress) return;
             const bal = await arweave.wallets.getBalance(serviceAddress);
             const ar = arweave.ar.winstonToAr(bal);
-            if(document.getElementById('setup-balance')) document.getElementById('setup-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`;
-            if(document.getElementById('wallet-balance')) document.getElementById('wallet-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`;
-            
-            if(parseFloat(ar) > 0) { isSimulation = false; document.getElementById('sim-warning-idle').classList.add('hidden'); }
+            if (document.getElementById('setup-balance')) document.getElementById('setup-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`;
+            if (document.getElementById('wallet-balance')) document.getElementById('wallet-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`;
+
+            if (parseFloat(ar) > 0) { isSimulation = false; document.getElementById('sim-warning-idle').classList.add('hidden'); }
             else { isSimulation = true; document.getElementById('sim-warning-idle').classList.remove('hidden'); }
         }
 
@@ -726,7 +910,7 @@
         }
 
         function logoutAdmin() {
-            if(confirm("Disconnect Service Wallet?")) {
+            if (confirm("Disconnect Service Wallet?")) {
                 serviceWallet = null;
                 localStorage.removeItem('arweave_service_wallet');
                 location.reload();
@@ -735,7 +919,7 @@
 
         // --- UPLOAD LOGIC ---
         function triggerFileSelect() {
-            if(!document.getElementById('permanent-agree').checked) {
+            if (!document.getElementById('permanent-agree').checked) {
                 alert("ACKNOWLEDGEMENT REQUIRED: You must confirm that this action is irreversible.");
                 // highlight checkbox
                 document.getElementById('permanent-agree').parentElement.parentElement.classList.add('ring-1', 'ring-red-900');
@@ -746,7 +930,7 @@
         }
 
         function submitArticle() {
-            if(!document.getElementById('permanent-agree').checked) {
+            if (!document.getElementById('permanent-agree').checked) {
                 alert("ACKNOWLEDGEMENT REQUIRED: You must confirm that this action is irreversible.");
                 document.getElementById('permanent-agree').parentElement.parentElement.classList.add('ring-1', 'ring-red-900');
                 setTimeout(() => document.getElementById('permanent-agree').parentElement.parentElement.classList.remove('ring-1', 'ring-red-900'), 1000);
@@ -754,7 +938,7 @@
             }
 
             const body = document.getElementById('article-body').value;
-            if(!body.trim()) {
+            if (!body.trim()) {
                 alert("Record content cannot be empty.");
                 return;
             }
@@ -764,38 +948,38 @@
             const title = document.getElementById('file-title').value.trim() || 'Untitled Record';
             const filename = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.md';
             const file = new File([blob], filename, { type: 'text/markdown' });
-            
+
             handleFile(file);
         }
 
         function setupDragAndDrop() {
             const drop = document.getElementById('drop-zone');
             const input = document.getElementById('file-input');
-            
+
             ['dragenter', 'dragover'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.add('drag-active'); }));
             ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.remove('drag-active'); }));
-            
-            drop.addEventListener('drop', (e) => { 
-                if(!document.getElementById('permanent-agree').checked) {
+
+            drop.addEventListener('drop', (e) => {
+                if (!document.getElementById('permanent-agree').checked) {
                     e.preventDefault();
                     alert("ACKNOWLEDGEMENT REQUIRED: You must confirm that this action is irreversible.");
                     return;
                 }
-                if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); 
+                if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
             });
-            input.addEventListener('change', (e) => { if(e.target.files.length) handleFile(e.target.files[0]); });
+            input.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
         }
 
         async function handleFile(file) {
             const title = document.getElementById('file-title').value.trim() || file.name;
             const isEncrypted = document.getElementById('encrypt-toggle').checked;
             const isSensitive = document.getElementById('sensitive-toggle').checked;
-            
+
             // Check logic
             if (file.size > FREE_LIMIT_BYTES || (!serviceWallet && !isSimulation)) {
                 pendingFile = { file, title, isEncrypted, isSensitive };
                 document.getElementById('payment-title').innerText = !serviceWallet ? "Visitor Mode" : "File Too Large";
-                document.getElementById('payment-desc').innerText = !serviceWallet ? 
+                document.getElementById('payment-desc').innerText = !serviceWallet ?
                     `Pay Gas + ${APP_CONFIG.FEE_AMOUNT} AR Fee` : "Pay Gas via Personal Wallet";
                 showState('payment');
             } else {
@@ -813,47 +997,47 @@
 
             const found = await waitForWallet();
 
-            if(!found) {
-                if(confirm("ArConnect/Wander extension not detected. Use simulation mode for testing?")) { 
-                    userAddress = "Simulated_User"; 
-                    return true; 
+            if (!found) {
+                if (confirm("ArConnect/Wander extension not detected. Use simulation mode for testing?")) {
+                    userAddress = "Simulated_User";
+                    return true;
                 }
                 return false;
             }
             try {
                 await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'DISPATCH', 'ENCRYPT', 'DECRYPT']);
                 userAddress = await window.arweaveWallet.getActiveAddress();
-                document.getElementById('connect-wallet-btn').innerHTML = `<i data-lucide="wallet" class="w-3 h-3"></i> ${userAddress.slice(0,4)}...`;
+                document.getElementById('connect-wallet-btn').innerHTML = `<i data-lucide="wallet" class="w-3 h-3"></i> ${userAddress.slice(0, 4)}...`;
                 document.getElementById('connect-wallet-btn').className = "flex items-center gap-2 bg-stone-100 text-stone-900 border border-stone-300 px-3 py-1.5 rounded-lg text-xs font-bold";
-                
+
                 // If on gallery view, refresh it
-                if(!document.getElementById('view-gallery').classList.contains('hidden')) {
+                if (!document.getElementById('view-gallery').classList.contains('hidden')) {
                     // Update My Uploads button style
                     const btn = document.getElementById('btn-my-uploads');
                     btn.classList.remove('text-stone-500');
                     btn.classList.add('text-red-900');
                     btn.title = "View your contributions";
                 }
-                
+
                 return true;
-            } catch(e) { console.error(e); return false; }
+            } catch (e) { console.error(e); return false; }
         }
 
         async function handleUserPayment() {
-            if(!userAddress && !(await connectUserWallet())) return;
-            if(pendingFile) processUpload(pendingFile.file, pendingFile.title, pendingFile.isEncrypted, pendingFile.isSensitive, 'paid');
+            if (!userAddress && !(await connectUserWallet())) return;
+            if (pendingFile) processUpload(pendingFile.file, pendingFile.title, pendingFile.isEncrypted, pendingFile.isSensitive, 'paid');
         }
 
         async function processUpload(file, title, isEncrypted, isSensitive, tier) {
             showState('uploading');
             updateBadge(tier === 'free' ? "SUBSIDIZED UPLOAD" : "PAID UPLOAD", tier === 'free' ? 'stone' : 'red');
 
-            if(isSimulation && tier === 'free') { simulateUpload(); return; }
+            if (isSimulation && tier === 'free') { simulateUpload(); return; }
 
             try {
                 // 1. Read
                 let data = await readFile(file);
-                
+
                 // 2. Encrypt if requested
                 let tags = [
                     { name: 'App-Name', value: 'Unstoppable-Portal' },
@@ -868,7 +1052,7 @@
 
                 if (isEncrypted) {
                     if (tier === 'free' && !userAddress) {
-                        if(!(await connectUserWallet())) throw new Error("Wallet required for encryption");
+                        if (!await connectUserWallet()) throw new Error("Wallet required for encryption");
                     }
                     data = await window.arweaveWallet.encrypt(new TextDecoder().decode(data), { algorithm: 'RSA-OAEP' });
                     tags.push({ name: 'Encryption', value: 'RSA-OAEP' });
@@ -883,7 +1067,7 @@
                 } else {
                     // Paid
                     let options = { data };
-                    if(APP_CONFIG.FEE_DESTINATION) {
+                    if (APP_CONFIG.FEE_DESTINATION) {
                         options.target = APP_CONFIG.FEE_DESTINATION;
                         options.quantity = arweave.ar.arToWinston(APP_CONFIG.FEE_AMOUNT);
                     }
@@ -898,10 +1082,10 @@
                     await uploader.uploadChunk();
                     document.getElementById('progress-text').innerText = `${uploader.pctComplete}%`;
                 }
-                
+
                 finishUpload(`https://arweave.net/${tx.id}`);
 
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 alert("Upload Error: " + e.message);
                 showState('idle');
@@ -912,19 +1096,19 @@
         async function loadGallery(filterOwner = null) {
             // Check if filtering by owner but no wallet connected
             if (filterOwner && !userAddress) {
-                if(!(await connectUserWallet())) return;
+                if (!await connectUserWallet()) return;
                 filterOwner = userAddress; // Update just in case
             }
 
             const grid = document.getElementById('gallery-grid');
             const isSafeMode = document.getElementById('safe-mode-toggle').checked;
-            
+
             let loadingMsg = filterOwner ? "Fetching your records..." : "Syncing global catalogue...";
             grid.innerHTML = `<div class="col-span-full text-center text-stone-400 py-24 font-bold text-xs uppercase tracking-widest"><div class="w-8 h-8 border-2 border-stone-300 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>${loadingMsg}</div>`;
 
             // Build Query
             let ownerFilter = filterOwner ? `owners: ["${filterOwner}"],` : '';
-            
+
             const query = {
                 query: `
                 query {
@@ -953,7 +1137,7 @@
                 const txs = json.data.transactions.edges;
 
                 grid.innerHTML = '';
-                if(txs.length === 0) {
+                if (txs.length === 0) {
                     let emptyMsg = filterOwner ? "No records found." : "No records found. Begin the archive.";
                     grid.innerHTML = `<div class="col-span-full text-center text-stone-500 font-bold text-xs uppercase tracking-widest py-12">${emptyMsg}</div>`;
                     return;
@@ -969,7 +1153,7 @@
 
                     // Apply blur logic
                     const blurClass = (isSensitive && isSafeMode) ? 'blur-sm grayscale opacity-50 hover:opacity-100 hover:grayscale-0 hover:blur-0 transition-all duration-500' : '';
-                    const warningOverlay = (isSensitive && isSafeMode) ? 
+                    const warningOverlay = (isSensitive && isSafeMode) ?
                         `<div class="absolute inset-0 flex items-center justify-center text-red-800 font-bold text-xs bg-stone-100/90 z-20 pointer-events-none border border-red-200 m-1 uppercase tracking-widest">SENSITIVE CONTENT</div>` : '';
 
                     const card = document.createElement('div');
@@ -999,7 +1183,7 @@
                 });
                 lucide.createIcons();
 
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 grid.innerHTML = '<div class="col-span-full text-center text-red-700 font-serif">Unable to sync with library node.</div>';
             }
@@ -1020,7 +1204,7 @@
             const int = setInterval(() => {
                 p += 10;
                 document.getElementById('progress-text').innerText = p + "%";
-                if(p >= 100) {
+                if (p >= 100) {
                     clearInterval(int);
                     finishUpload("https://arweave.net/simulated_tx_hash");
                 }
@@ -1032,22 +1216,27 @@
             document.getElementById('result-url').textContent = url;
             document.getElementById('view-link').href = url;
             document.getElementById('verify-link').href = `https://viewblock.io/arweave/tx/${txId}`;
-            if(isSimulation) document.getElementById('sim-success-msg').classList.remove('hidden');
-            else document.getElementById('sim-success-msg').classList.add('hidden');
+
+            const simMsg = document.getElementById('sim-success-msg');
+            if (simMsg) {
+                if (isSimulation) simMsg.classList.remove('hidden');
+                else simMsg.classList.add('hidden');
+            }
+
             showState('success');
         }
 
         function showState(s) {
-            ['idle','payment','uploading','success'].forEach(x => document.getElementById(`state-${x}`).classList.add('hidden'));
+            ['idle', 'payment', 'uploading', 'success'].forEach(x => document.getElementById(`state-${x}`).classList.add('hidden'));
             document.getElementById(`state-${s}`).classList.remove('hidden');
         }
 
         function updateBadge(txt, col) {
             document.getElementById('upload-badge').innerText = txt;
-            if(col === 'red') {
-                 document.getElementById('upload-badge').className = `inline-block px-2 py-0.5 rounded text-xs font-bold mb-4 bg-red-100 text-red-900 border border-red-200`;
+            if (col === 'red') {
+                document.getElementById('upload-badge').className = `inline-block px-2 py-0.5 rounded text-xs font-bold mb-4 bg-red-100 text-red-900 border border-red-200`;
             } else {
-                 document.getElementById('upload-badge').className = `inline-block px-2 py-0.5 rounded text-xs font-bold mb-4 bg-stone-100 text-stone-600 border border-stone-200`;
+                document.getElementById('upload-badge').className = `inline-block px-2 py-0.5 rounded text-xs font-bold mb-4 bg-stone-100 text-stone-600 border border-stone-200`;
             }
         }
 
@@ -1063,18 +1252,19 @@
             navigator.clipboard.writeText(document.getElementById('result-url').textContent);
             alert("Copied!");
         }
-        
+
         function copyServiceAddress() {
-            if(serviceAddress) {
+            if (serviceAddress) {
                 navigator.clipboard.writeText(serviceAddress);
                 alert("Copied Service Address");
             }
         }
 
         function copyText(text) {
-             navigator.clipboard.writeText(text);
-             alert("Address copied to clipboard!");
+            navigator.clipboard.writeText(text);
+            alert("Address copied to clipboard!");
         }
     </script>
 </body>
+
 </html>
