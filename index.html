@@ -8,17 +8,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Arweave JS Bundle -->
     <script src="https://unpkg.com/arweave/bundles/web.bundle.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .drag-active { border-color: #10b981; background-color: rgba(16, 185, 129, 0.05); transform: scale(1.02); }
         .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-emerald-500/30 font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-emerald-500/30 font-sans flex flex-col">
 
     <!-- LANDING PAGE (Visible on Load) -->
-    <div id="landing-screen" class="min-h-screen flex flex-col relative overflow-hidden">
+    <div id="landing-screen" class="min-h-screen flex flex-col relative overflow-hidden z-50 bg-slate-950">
         <!-- Background Elements -->
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
             <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px]"></div>
@@ -31,7 +35,12 @@
                 <div class="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                 Public Archive
             </div>
-            <a href="https://arweave.org" target="_blank" class="text-sm text-slate-400 hover:text-white transition-colors">Powered by Arweave</a>
+            <div class="flex gap-4 items-center">
+                <button onclick="toggleGatewaySelector()" class="text-xs text-slate-500 hover:text-white transition-colors flex items-center gap-1 border border-slate-800 px-2 py-1 rounded">
+                    <i data-lucide="globe" class="w-3 h-3"></i> <span id="current-gateway-label">arweave.net</span>
+                </button>
+                <button onclick="enterPortal('gallery')" class="text-sm text-slate-400 hover:text-white transition-colors">Browse Gallery</button>
+            </div>
         </header>
 
         <!-- Hero -->
@@ -55,104 +64,27 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-                    <button onclick="enterPortal()" class="group relative px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40">
+                    <button onclick="enterPortal('upload')" class="group relative px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40">
                         Launch Archive Portal
                         <span class="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">→</span>
                     </button>
-                    <button onclick="scrollToFeatures()" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl border border-slate-700 transition-colors">
-                        How it works
+                    <button onclick="enterPortal('gallery')" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl border border-slate-700 transition-colors">
+                        View Gallery
                     </button>
                 </div>
             </div>
-
-            <!-- Features Grid -->
-            <div id="features" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-24 text-left">
-                <div class="glass-panel p-6 rounded-2xl">
-                    <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center mb-4 text-emerald-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Uncensorable</h3>
-                    <p class="text-sm text-slate-400">No central server. Data is stored across thousands of nodes globally. No one can take it down.</p>
-                </div>
-                <div class="glass-panel p-6 rounded-2xl">
-                    <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center mb-4 text-emerald-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Permanent</h3>
-                    <p class="text-sm text-slate-400">Pay once, store forever. An endowment model ensures your data persists for centuries.</p>
-                </div>
-                <div class="glass-panel p-6 rounded-2xl">
-                    <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center mb-4 text-emerald-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Easy Upload</h3>
-                    <p class="text-sm text-slate-400">Small files are subsidized by the community. Large files are paid directly by your wallet.</p>
-                </div>
-            </div>
-
-            <!-- Wallet Guide Section -->
-            <div id="wallet-guide" class="max-w-4xl mx-auto mt-24 mb-12 text-left px-6 w-full">
-                <h2 class="text-2xl font-bold text-white mb-8 text-center">Getting Set Up</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Step 1 -->
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
-                        <h3 class="text-xl font-semibold text-emerald-400 mb-4 flex items-center gap-2">
-                            <span class="w-8 h-8 bg-emerald-500/10 rounded-full flex items-center justify-center text-sm border border-emerald-500/20">1</span>
-                            Get a Wallet
-                        </h3>
-                        <p class="text-slate-400 mb-6 text-sm">You need an Arweave-compatible wallet to sign transactions and pay for permanent storage.</p>
-                        <a href="https://www.arconnect.io/" target="_blank" class="block w-full bg-slate-800 hover:bg-emerald-600/20 text-center py-3 rounded-lg transition-colors border border-slate-700 hover:border-emerald-500/50 text-white font-medium flex items-center justify-center gap-2">
-                            Download ArConnect
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-                        </a>
-                        <p class="text-xs text-slate-500 mt-3 text-center">Available for Chrome, Brave, Firefox & Mobile</p>
-                    </div>
-                    <!-- Step 2 -->
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
-                         <h3 class="text-xl font-semibold text-indigo-400 mb-4 flex items-center gap-2">
-                            <span class="w-8 h-8 bg-indigo-500/10 rounded-full flex items-center justify-center text-sm border border-indigo-500/20">2</span>
-                            Fund with AR
-                        </h3>
-                        <p class="text-slate-400 mb-4 text-sm">You need AR tokens to pay for data. 1GB costs approx $3-6 USD (one-time fee).</p>
-                        <ul class="space-y-3 text-sm text-slate-300">
-                            <li class="flex items-start gap-3 p-2 bg-slate-900 rounded border border-slate-800/50">
-                                <div class="bg-slate-800 p-1 rounded text-slate-400">
-                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01m6 0h.01m6 0h.01"/></svg>
-                                </div>
-                                <div>
-                                    <strong class="block text-white">Easiest: Exchanges</strong>
-                                    <span class="text-slate-500 text-xs">Buy AR on <span class="text-slate-300">Coinbase</span>, <span class="text-slate-300">Binance</span>, or <span class="text-slate-300">Kraken</span> and withdraw to your wallet address.</span>
-                                </div>
-                            </li>
-                            <li class="flex items-start gap-3 p-2 bg-slate-900 rounded border border-slate-800/50">
-                                <div class="bg-slate-800 p-1 rounded text-slate-400">
-                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
-                                </div>
-                                <div>
-                                    <strong class="block text-white">Alternative: Swap</strong>
-                                    <span class="text-slate-500 text-xs">Use a bridge like <a href="https://simpleswap.io" target="_blank" class="underline hover:text-white">SimpleSwap</a> to exchange BTC/ETH/SOL for AR.</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </main>
-
-        <footer class="py-8 text-center text-slate-600 text-sm">
-            Open Source • Decentralized • Public Good
-        </footer>
     </div>
 
     <!-- SETUP SCREEN (Hidden by default) -->
-    <div id="setup-screen" class="hidden min-h-screen flex items-center justify-center p-4">
+    <div id="setup-screen" class="hidden min-h-screen flex items-center justify-center p-4 fixed inset-0 z-40 bg-slate-950">
         <div class="max-w-md w-full bg-slate-900 rounded-2xl shadow-2xl p-8 border border-slate-700">
             <button onclick="returnToLanding()" class="text-slate-500 hover:text-white mb-6 flex items-center gap-2 text-sm">
                 ← Back
             </button>
             <div class="flex items-center gap-3 mb-6 text-white">
                 <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-emerald-400 border border-slate-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <i data-lucide="shield" class="w-6 h-6"></i>
                 </div>
                 <div>
                     <h1 class="text-2xl font-bold text-white">Choose Your Role</h1>
@@ -164,18 +96,17 @@
                 <!-- Option 1: ADMIN (KIOSK MODE) -->
                 <div class="bg-emerald-900/10 p-5 rounded-xl border border-emerald-500/20 relative overflow-hidden">
                     <h3 class="font-bold text-emerald-400 flex items-center gap-2 mb-2 relative z-10">
-                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
+                        <i data-lucide="server" class="w-4 h-4"></i>
                         Power User / Kiosk Mode
                     </h3>
                     <p class="text-xs text-slate-400 mb-4 leading-relaxed relative z-10">
-                        Load a funded keyfile to <strong>this device</strong> to enable free uploads for yourself or others on this machine.
+                        Load a funded keyfile to enable free uploads for yourself or others on this device.
                     </p>
 
                     <!-- LOCKED STATE (Paywall) -->
                     <div id="kiosk-locked-area" class="text-center py-4 relative z-10">
                         <div class="inline-flex items-center gap-2 bg-yellow-500/10 text-yellow-400 px-3 py-1 rounded-full text-xs font-bold mb-3 border border-yellow-500/20">
-                            <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            PREMIUM FEATURE
+                            PREMIUM
                         </div>
                         <p class="text-xs text-slate-400 mb-4">
                             Unlock Kiosk Mode to become a host.<br>One-time license fee: <strong id="kiosk-price-display" class="text-white">...</strong>
@@ -187,30 +118,23 @@
                     
                     <!-- UNLOCKED STATE (Hidden by default) -->
                     <div id="kiosk-unlocked-area" class="hidden relative z-10">
-                        <!-- Import -->
                         <div class="mb-3">
-                            <label class="block text-[10px] font-medium text-slate-500 mb-1 uppercase tracking-wider">Load Existing Keyfile (.json)</label>
+                            <label class="block text-[10px] font-medium text-slate-500 mb-1 uppercase tracking-wider">Load Keyfile (.json)</label>
                             <input type="file" id="admin-keyfile" accept=".json" onchange="handleKeyfileUpload(this)" 
                                 class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer bg-slate-950/50 rounded-lg"/>
                         </div>
-
                         <div class="text-center text-xs text-slate-600 my-2">- OR -</div>
-
-                        <!-- Generate -->
                         <button onclick="generateAndSaveWallet()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-lg font-medium transition-colors text-xs flex items-center justify-center gap-2 border border-slate-700">
                             Generate New Service Wallet
                         </button>
 
-                        <!-- Status Area -->
                         <div id="setup-status" class="hidden mt-4 p-3 bg-slate-950 rounded-lg border border-emerald-500/30">
-                            <div class="text-[10px] text-slate-500 mb-1 uppercase font-semibold">Service Address (Fund this):</div>
+                            <div class="text-[10px] text-slate-500 mb-1 uppercase font-semibold">Service Address:</div>
                             <div id="setup-address" class="font-mono text-emerald-400 text-[10px] break-all mb-2 select-all bg-emerald-900/10 p-1.5 rounded cursor-pointer" title="Click to Copy" onclick="copyText(this.innerText)"></div>
-                            
                             <div class="flex justify-between items-center">
                                 <div class="text-xs text-white">Balance: <span id="setup-balance" class="font-mono font-bold">...</span></div>
                                 <button onclick="refreshSetupBalance()" class="text-[10px] text-slate-400 hover:text-white underline">Refresh</button>
                             </div>
-                            
                             <button onclick="enterPortalAsAdmin()" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg text-sm font-bold transition-all shadow-lg shadow-emerald-500/20">
                                 Launch Kiosk Mode
                             </button>
@@ -227,11 +151,8 @@
                 <!-- Option 2: VISITOR -->
                 <div class="text-center">
                     <button onclick="skipSetup()" class="w-full text-slate-300 hover:text-white hover:bg-slate-800 p-4 rounded-xl transition-all border border-transparent hover:border-slate-700 flex flex-col items-center group">
-                        <span class="font-semibold text-lg mb-1 group-hover:text-indigo-400 transition-colors">I am a Visitor (Personal Wallet)</span>
-                        <span class="text-xs text-slate-500 mb-2">I will connect my own ArConnect wallet to pay for uploads.</span>
-                        <span class="text-[10px] text-slate-600 bg-slate-900/50 px-2 py-1 rounded border border-slate-800">
-                            Note: Does not require a keyfile upload.
-                        </span>
+                        <span class="font-semibold text-lg mb-1 group-hover:text-indigo-400 transition-colors">I am a Visitor</span>
+                        <span class="text-xs text-slate-500 mb-2">Connect my own ArConnect wallet.</span>
                     </button>
                 </div>
             </div>
@@ -239,335 +160,259 @@
     </div>
 
     <!-- MAIN APP SCREEN (Hidden by default) -->
-    <div id="app-screen" class="hidden min-h-screen flex flex-col">
+    <div id="app-screen" class="hidden flex-grow flex flex-col">
         
         <!-- Navbar -->
-        <div class="bg-slate-900 border-b border-slate-800 py-3 px-6 flex justify-between items-center text-sm sticky top-0 z-50">
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 text-slate-400 cursor-pointer" onclick="returnToLanding()">
+        <div class="bg-slate-900 border-b border-slate-800 py-3 px-6 flex justify-between items-center text-sm sticky top-0 z-30">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2 text-slate-400 cursor-pointer hover:text-white" onclick="returnToLanding()">
                     <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                     <span class="font-semibold text-white">Public Archive</span>
                 </div>
-                <!-- Enterprise Badge -->
-                <div class="hidden md:flex items-center gap-1.5 px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded border border-indigo-500/20 text-xs font-medium">
-                    Enterprise API Active
+                
+                <!-- Navigation Tabs -->
+                <div class="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+                    <button onclick="switchTab('upload')" id="tab-upload" class="px-4 py-1.5 rounded-md text-xs font-medium bg-slate-800 text-white transition-all">Upload</button>
+                    <button onclick="switchTab('gallery')" id="tab-gallery" class="px-4 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition-all">Gallery</button>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <!-- Instructions Button -->
-                <button onclick="toggleInstructions()" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
-                    <span class="hidden sm:inline">How to Use</span>
+                <button onclick="toggleGatewaySelector()" class="text-xs text-slate-500 hover:text-white transition-colors flex items-center gap-1 border border-slate-800 px-2 py-1 rounded hidden sm:flex">
+                    <i data-lucide="globe" class="w-3 h-3"></i> <span id="current-gateway-label-nav">Network</span>
                 </button>
 
                 <!-- Service Balance (Admin Only) -->
                 <div id="service-balance-container" class="hidden flex items-center gap-3 text-xs border-r border-slate-800 pr-4 pl-4 border-l transition-colors group relative">
-                    <div class="flex items-center gap-1.5 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded cursor-pointer" onclick="copyServiceAddress()" title="Copy Address">
+                    <div class="flex items-center gap-1.5 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded cursor-pointer" onclick="copyServiceAddress()">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        KIOSK MODE
+                        KIOSK
                     </div>
                     <span class="text-slate-500">Pool: <span id="wallet-balance" class="font-mono text-white">...</span></span>
-                    
-                    <!-- Disconnect Button -->
-                    <button onclick="logoutAdmin()" class="ml-2 p-1 hover:bg-red-500/20 rounded text-slate-600 hover:text-red-400 transition-colors" title="Disconnect Service Wallet">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    <button onclick="logoutAdmin()" class="ml-2 p-1 hover:bg-red-500/20 rounded text-slate-600 hover:text-red-400 transition-colors" title="Disconnect">
+                        <i data-lucide="log-out" class="w-3 h-3"></i>
                     </button>
                 </div>
 
-                <!-- User Wallet Connection -->
+                <!-- User Wallet -->
                 <button id="connect-wallet-btn" onclick="connectUserWallet()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors text-xs font-medium">
-                    <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
-                    Connect Personal Wallet
+                    <i data-lucide="wallet" class="w-3 h-3"></i>
+                    Connect Wallet
                 </button>
             </div>
         </div>
 
-        <!-- Content -->
-        <main class="container mx-auto px-4 py-12 md:py-20 max-w-2xl flex-grow relative">
-            
-            <div class="text-center mb-10 space-y-3">
-                <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-white">
-                    The Public Archive
-                </h1>
-                <p class="text-lg text-slate-400 max-w-lg mx-auto">
-                    Secure, permanent storage on the Permaweb.
-                </p>
-                
-                <!-- Pricing Tiers Badge -->
-                <div class="flex justify-center gap-4 mt-4 text-xs font-medium">
-                    <div id="badge-free" class="flex items-center gap-1.5 text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20 cursor-help" title="Small files are paid for by the service pool">
-                        <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        Free &lt; 5MB (Kiosk Only)
-                    </div>
-                    <div id="badge-paid" class="flex items-center gap-1.5 text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700 cursor-help" title="Large files require your own wallet">
-                        <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-                        Paid (Personal Wallet)
-                    </div>
+        <!-- UPLOAD VIEW -->
+        <main id="view-upload" class="container mx-auto px-4 py-12 md:py-20 max-w-2xl flex-grow relative">
+            <div class="text-center mb-8 space-y-3">
+                <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white">Archive Evidence</h1>
+                <p class="text-sm text-slate-400 max-w-lg mx-auto">Secure, permanent, and optionally encrypted.</p>
+                <div class="flex justify-center gap-4 mt-2 text-xs font-medium">
+                    <div id="badge-free" class="flex items-center gap-1.5 text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20">Free &lt; 5MB (Kiosk)</div>
+                    <div id="badge-paid" class="flex items-center gap-1.5 text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">Paid (Visitor)</div>
                 </div>
             </div>
 
             <!-- Upload Card -->
-            <div class="relative group">
-                <div id="glow-effect" class="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-cyan-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                
-                <div class="relative bg-slate-900 rounded-xl border border-slate-700 p-8 md:p-12 shadow-2xl">
-                    
-                    <!-- IDLE STATE -->
-                    <div id="state-idle" class="block">
-                        <div id="drop-zone" 
-                             class="border-2 border-dashed border-slate-700 rounded-xl p-10 text-center transition-all duration-300 hover:border-slate-600 hover:bg-slate-800/50">
-                            
-                            <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner pointer-events-none">
-                                <svg id="upload-icon" class="w-8 h-8 text-slate-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                            </div>
-                            
-                            <h3 class="text-xl font-semibold text-white mb-2 pointer-events-none">Upload Evidence</h3>
-                            <p class="text-slate-500 mb-8 pointer-events-none text-sm">
-                                Drag & drop or select file. <br/> 
-                                Permanent storage.
-                            </p>
-
-                            <div class="relative inline-block">
-                                <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                                <button class="bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-slate-200 transition-colors pointer-events-none">
-                                    Select File
-                                </button>
-                            </div>
-                            
-                            <!-- Messages -->
-                            <div id="error-message" class="hidden mt-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-400 text-sm justify-center">
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                                <span id="error-text">Error goes here</span>
-                            </div>
-
-                            <div id="sim-warning-idle" class="hidden mt-4 text-xs text-yellow-500 bg-yellow-900/10 px-2 py-1 rounded inline-block border border-yellow-500/20">
-                                ⚠ Simulation Mode: Service Wallet Empty
-                            </div>
-                        </div>
+            <div class="relative bg-slate-900 rounded-xl border border-slate-700 p-8 shadow-2xl">
+                <!-- IDLE -->
+                <div id="state-idle" class="block">
+                    <!-- Title Input -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-medium text-slate-400 mb-1 ml-1">FILE TITLE</label>
+                        <input type="text" id="file-title" placeholder="e.g. War Crimes Report 2026" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors">
                     </div>
 
-                    <!-- PAYMENT PROMPT STATE -->
-                    <div id="state-payment" class="hidden py-8 text-center">
-                        <div class="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-8 h-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
-                        </div>
-                        <h3 id="payment-title" class="text-xl font-semibold text-white mb-2">Upload Requires Payment</h3>
-                        <p id="payment-desc" class="text-slate-400 mb-6 max-w-xs mx-auto text-sm">
-                            To upload this file, you must use your own wallet to pay the network fee.
-                        </p>
-                        
-                        <div class="flex gap-3 justify-center">
-                             <button onclick="handleUserPayment()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg font-medium transition-colors shadow-lg shadow-indigo-500/20">
-                                Connect & Pay
-                            </button>
-                            <button onclick="resetUI()" class="text-slate-400 hover:text-white px-4 py-2.5 rounded-lg font-medium transition-colors">
-                                Cancel
-                            </button>
-                        </div>
-                        
-                        <div class="mt-4 p-3 bg-slate-800/50 rounded-lg text-left max-w-xs mx-auto border border-slate-700">
-                            <div class="flex justify-between text-xs text-slate-400 mb-1">
-                                <span>Storage (Gas):</span>
-                                <span>~0.0002 AR</span>
-                            </div>
-                            <div class="flex justify-between text-xs text-slate-400 mb-2">
-                                <span>Creator Fee:</span>
-                                <span class="text-indigo-400" id="ui-fee-display">0.00 AR</span>
-                            </div>
-                            <div class="border-t border-slate-700 pt-2 flex justify-between text-sm font-bold text-white">
-                                <span>Total:</span>
-                                <span>~<span id="ui-total-display">0.0002</span> AR</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- UPLOADING STATE -->
-                    <div id="state-uploading" class="hidden py-12 text-center">
-                        <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-                        <h3 class="text-xl font-semibold text-white mb-2">Archiving to Permaweb...</h3>
-                        <div id="upload-badge" class="inline-block px-2 py-0.5 rounded text-xs font-mono mb-4 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            SUBSIDIZED UPLOAD
-                        </div>
-                        <p class="text-slate-500 text-sm">
-                            Cryptographically signing and distributing to nodes.
-                        </p>
-                        <div id="progress-text" class="mt-4 font-mono text-emerald-400 text-sm">0%</div>
-                    </div>
-
-                    <!-- SUCCESS STATE -->
-                    <div id="state-success" class="hidden text-center py-6">
-                        <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-8 h-8 text-emerald-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        </div>
-                        
-                        <h3 class="text-2xl font-bold text-white mb-2">Upload Complete</h3>
-                        <div class="text-slate-400 mb-8 space-y-2 text-sm">
-                            <p>This file is now cryptographically sealed on the Arweave permaweb.</p>
-                            <p class="text-slate-500 text-xs">
-                                <strong>What happens next?</strong> The data is propagating to nodes worldwide. <br/>
-                                It will be retrievable forever using the link below.
-                            </p>
-                        </div>
-
-                         <div id="sim-success-msg" class="hidden mb-6 p-3 bg-yellow-900/20 border border-yellow-800/50 rounded-lg text-yellow-400 text-sm">
-                            <strong>Simulation Mode:</strong> No funds were detected, so this was a mock upload. Fund the service wallet to go live.
-                        </div>
-
-                        <div class="bg-slate-950 rounded-lg p-4 border border-slate-800 text-left mb-6">
-                            <label class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1 block">
-                                Permanent Arweave Link (Share This)
-                            </label>
+                    <!-- Safety & Encryption Toggles -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <!-- Encryption Toggle -->
+                        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800">
                             <div class="flex items-center gap-2">
-                                <code id="result-url" class="flex-1 text-emerald-400 text-sm font-mono truncate">
-                                    https://arweave.net/...
-                                </code>
-                                <button onclick="copyLink()" class="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors" title="Copy Link">
-                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                                </button>
+                                <div class="p-1.5 bg-slate-800 rounded text-indigo-400"><i data-lucide="lock" class="w-4 h-4"></i></div>
+                                <div><h3 class="text-xs font-medium text-white">Private Mode</h3></div>
                             </div>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                            <a id="view-link" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg font-medium transition-colors">
-                                View File
-                            </a>
-                            <a id="verify-link" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-5 py-2.5 rounded-lg font-medium transition-colors border border-slate-700">
-                                Verify on Blockchain
-                                <svg class="w-3 h-3 opacity-50" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-                            </a>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="encrypt-toggle" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
                         </div>
                         
-                        <button onclick="resetUI()" class="mt-6 text-slate-500 hover:text-white text-sm underline">
-                            Upload Another File
-                        </button>
+                        <!-- Sensitive Content Toggle -->
+                        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800">
+                            <div class="flex items-center gap-2">
+                                <div class="p-1.5 bg-slate-800 rounded text-red-400"><i data-lucide="eye-off" class="w-4 h-4"></i></div>
+                                <div><h3 class="text-xs font-medium text-white">Sensitive/Graphic</h3></div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="sensitive-toggle" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"></div>
+                            </label>
+                        </div>
                     </div>
+
+                    <!-- Safety Acknowledgement -->
+                    <div class="mb-6 p-3 bg-red-900/10 border border-red-500/20 rounded-lg">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="checkbox" id="permanent-agree" class="mt-1 w-4 h-4 rounded border-gray-600 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-xs text-slate-300 leading-snug">
+                                <strong>I understand this is permanent.</strong> <br> 
+                                Once uploaded, this file <u>cannot be deleted</u> or edited by anyone, ever.
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- Drop Zone -->
+                    <div id="drop-zone" class="border-2 border-dashed border-slate-700 rounded-xl p-10 text-center hover:border-slate-600 hover:bg-slate-800/50 transition-all">
+                        <i data-lucide="upload-cloud" class="w-10 h-10 text-slate-400 mx-auto mb-4"></i>
+                        <h3 class="text-lg font-medium text-white mb-1">Drop file here</h3>
+                        <p class="text-xs text-slate-500 mb-6">Max 5MB for free tier. Larger files require own wallet.</p>
+                        <input type="file" id="file-input" class="hidden">
+                        <button onclick="triggerFileSelect()" class="bg-white text-slate-900 px-6 py-2 rounded-lg font-semibold hover:bg-slate-200 transition-colors text-sm">Select File</button>
+                        
+                        <div id="sim-warning-idle" class="hidden mt-4 text-xs text-yellow-500 bg-yellow-900/10 px-2 py-1 rounded inline-block border border-yellow-500/20">⚠ Simulation Mode</div>
+                    </div>
+                </div>
+
+                <!-- PAYMENT -->
+                <div id="state-payment" class="hidden py-8 text-center">
+                    <div class="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-400">
+                        <i data-lucide="wallet" class="w-8 h-8"></i>
+                    </div>
+                    <h3 id="payment-title" class="text-xl font-semibold text-white mb-2">Payment Required</h3>
+                    <p id="payment-desc" class="text-slate-400 mb-6 text-sm">Connect wallet to proceed.</p>
+                    <div class="flex gap-3 justify-center">
+                        <button onclick="handleUserPayment()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-lg font-medium">Connect & Pay</button>
+                        <button onclick="resetUI()" class="text-slate-400 hover:text-white px-4 py-2">Cancel</button>
+                    </div>
+                    <div class="mt-4 p-3 bg-slate-800/50 rounded-lg text-left max-w-xs mx-auto border border-slate-700 text-xs">
+                        <div class="flex justify-between mb-1 text-slate-400"><span>Gas:</span><span>~0.0002 AR</span></div>
+                        <div class="flex justify-between mb-2 text-slate-400"><span>Fee:</span><span class="text-indigo-400" id="ui-fee-display">0.00 AR</span></div>
+                        <div class="border-t border-slate-700 pt-2 flex justify-between font-bold text-white"><span>Total:</span><span>~<span id="ui-total-display">...</span> AR</span></div>
+                    </div>
+                </div>
+
+                <!-- UPLOADING -->
+                <div id="state-uploading" class="hidden py-12 text-center">
+                    <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Archiving...</h3>
+                    <div id="upload-badge" class="inline-block px-2 py-0.5 rounded text-xs font-mono mb-4 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">INIT</div>
+                    <div id="progress-text" class="mt-4 font-mono text-emerald-400 text-sm">0%</div>
+                </div>
+
+                <!-- SUCCESS -->
+                <div id="state-success" class="hidden text-center py-6">
+                    <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-500">
+                        <i data-lucide="check" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Upload Complete</h3>
+                    <p class="text-slate-400 text-sm mb-6">File permanently stored on Arweave.</p>
+                    <div class="bg-slate-950 rounded-lg p-4 border border-slate-800 text-left mb-6 flex gap-2 items-center">
+                        <code id="result-url" class="flex-1 text-emerald-400 text-xs font-mono truncate">...</code>
+                        <button onclick="copyLink()" class="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                    </div>
+                    <div class="flex justify-center gap-3">
+                        <a id="view-link" href="#" target="_blank" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-lg font-medium text-sm">View File</a>
+                        <a id="verify-link" href="#" target="_blank" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2 rounded-lg font-medium text-sm border border-slate-700">Verify</a>
+                    </div>
+                    <button onclick="resetUI()" class="mt-6 text-slate-500 hover:text-white text-xs underline">Upload Another</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- GALLERY VIEW -->
+        <main id="view-gallery" class="hidden container mx-auto px-4 py-12 flex-grow">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Recent Uploads</h2>
+                    <p class="text-slate-400 text-sm">Feed from the permaweb</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer select-none">
+                        <input type="checkbox" id="safe-mode-toggle" checked onchange="loadGallery()" class="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500/50">
+                        Safe Mode (Hide Graphic)
+                    </label>
+                    <button onclick="loadGallery()" class="text-xs flex items-center gap-2 text-emerald-400 hover:text-emerald-300">
+                        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh
+                    </button>
                 </div>
             </div>
             
-            <!-- INSTRUCTIONS MODAL (Hidden by default) -->
-            <div id="instructions-modal" class="hidden absolute top-0 left-0 w-full h-full bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <div class="bg-slate-900 border border-slate-700 rounded-xl p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
-                    <button onclick="toggleInstructions()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
-                    
-                    <h2 class="text-xl font-bold text-white mb-6">Guide & Help</h2>
-                    
-                    <div class="space-y-6 text-slate-300 text-sm">
-                        <!-- Tiers -->
-                        <div class="space-y-3">
-                            <h3 class="text-sm font-bold text-white uppercase tracking-wider border-b border-slate-700 pb-2">How it works</h3>
-                            <div class="p-3 bg-slate-800/50 rounded-lg">
-                                <h3 class="font-semibold text-emerald-400 mb-1">🟢 Free Tier (Kiosk Only)</h3>
-                                <p>If this specific device has a key loaded by the host, uploads &lt; 5MB are free.</p>
-                            </div>
-                            
-                            <div class="p-3 bg-slate-800/50 rounded-lg">
-                                <h3 class="font-semibold text-indigo-400 mb-1">🔵 Paid Tier (Visitors)</h3>
-                                <p>Visitors on their own devices must connect a personal wallet to pay the network fee (~$0.005/MB).</p>
-                            </div>
-                        </div>
-
-                        <!-- Setup Guide -->
-                        <div class="space-y-3">
-                            <h3 class="text-sm font-bold text-white uppercase tracking-wider border-b border-slate-700 pb-2">Wallet Setup</h3>
-                            
-                            <div class="flex gap-4 items-start">
-                                <div class="bg-slate-800 w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">1</div>
-                                <div>
-                                    <strong class="block text-white">Download ArConnect</strong>
-                                    <p class="text-xs text-slate-400 mt-1">The leading browser extension for Arweave.</p>
-                                    <a href="https://www.arconnect.io/" target="_blank" class="text-xs text-emerald-400 hover:underline mt-1 block">Get Extension →</a>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-4 items-start">
-                                <div class="bg-slate-800 w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">2</div>
-                                <div>
-                                    <strong class="block text-white">Fund your Wallet</strong>
-                                    <p class="text-xs text-slate-400 mt-1">
-                                        <span class="block mb-1">• <strong>Exchanges:</strong> Buy AR on Binance/Coinbase and withdraw to your address.</span>
-                                        <span class="block">• <strong>Swap:</strong> Use <a href="https://simpleswap.io" target="_blank" class="text-indigo-400 hover:underline">SimpleSwap</a> to exchange ETH/BTC for AR.</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-3 bg-red-900/10 rounded-lg border border-red-500/20 text-center">
-                            <h3 class="font-semibold text-red-400 mb-1 text-xs uppercase">Warning</h3>
-                            <p class="text-xs">Uploads are <strong>permanent</strong>. They cannot be deleted.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6 text-center">
-                        <button onclick="toggleInstructions()" class="bg-white text-slate-900 px-6 py-2 rounded-lg font-semibold hover:bg-slate-200 transition-colors w-full">
-                            Close Guide
-                        </button>
-                    </div>
-                </div>
+            <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Gallery Items Injected Here -->
+                <div class="text-slate-500 text-sm col-span-full text-center py-12">Loading decentralized feed...</div>
             </div>
-
         </main>
     </div>
 
-    <!-- Logic -->
-    <script>
-        // --- GLOBAL CONFIGURATION (EDIT THIS BEFORE DEPLOYING) ---
-        const APP_CONFIG = {
-            // Paste your wallet address here to receive fees from visitors.
-            FEE_DESTINATION: "X7ao0ix5LZNuzsXupoAWiTRJckb_rQlIv4ZKP7xNqyQ", 
+    <!-- GATEWAY SELECTOR MODAL -->
+    <div id="gateway-modal" class="hidden absolute top-0 left-0 w-full h-full bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm w-full shadow-2xl relative">
+            <button onclick="toggleGatewaySelector()" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="globe" class="w-5 h-5 text-emerald-400"></i> Select Network</h2>
+            <p class="text-xs text-slate-400 mb-4">If one gateway is blocked or slow, switch to another. This does not affect data permanence.</p>
             
-            // Amount in AR to charge as a fee for visitors (e.g. 0.01 AR)
-            FEE_AMOUNT: "0.01",
+            <div class="space-y-2">
+                <button onclick="setGateway('arweave.net')" class="w-full text-left px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm text-white flex justify-between items-center group">
+                    <span>arweave.net <span class="text-slate-500 text-[10px] ml-2">(Default)</span></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 opacity-0 group-hover:opacity-100"></span>
+                </button>
+                <button onclick="setGateway('ar-io.net')" class="w-full text-left px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm text-white flex justify-between items-center group">
+                    <span>ar-io.net <span class="text-slate-500 text-[10px] ml-2">(AR.IO)</span></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 opacity-0 group-hover:opacity-100"></span>
+                </button>
+                <button onclick="setGateway('g8way.io')" class="w-full text-left px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm text-white flex justify-between items-center group">
+                    <span>g8way.io <span class="text-slate-500 text-[10px] ml-2">(Alternative)</span></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 opacity-0 group-hover:opacity-100"></span>
+                </button>
+            </div>
+        </div>
+    </div>
 
-            // One-Time Fee to unlock Kiosk Mode (becoming a Host)
-            KIOSK_PRICE: "0.5" 
+    <!-- INSTRUCTIONS MODAL -->
+    <div id="instructions-modal" class="hidden absolute top-0 left-0 w-full h-full bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-8 max-w-lg w-full shadow-2xl relative">
+            <button onclick="toggleInstructions()" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h2 class="text-xl font-bold text-white mb-4">Guide</h2>
+            <div class="space-y-4 text-sm text-slate-300">
+                <p><strong>Free Tier:</strong> Kiosk mode uses a pre-funded wallet on this device.</p>
+                <p><strong>Paid Tier:</strong> Visitors connect their own wallet.</p>
+                <p><strong>Encryption:</strong> Check "Private Mode" to encrypt files. Only YOU can decrypt them.</p>
+                <p><strong>Sensitive Content:</strong> Please mark graphic content. It will be blurred in the gallery for others unless they disable Safe Mode.</p>
+                <p><strong>Censorship Resistance:</strong> Use the "Network" button to switch gateways if one is blocked.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIG
+        const APP_CONFIG = {
+            FEE_DESTINATION: "X7ao0ix5LZNuzsXupoAWiTRJckb_rQlIv4ZKP7xNqyQ",
+            FEE_AMOUNT: "0.01",
+            KIOSK_PRICE: "0.5"
         };
 
-        // --- GLOBAL VARIABLES ---
-        let arweave;
-        let serviceWallet = null;
-        let serviceAddress = null;
-        let userAddress = null;
-        let isSimulation = false;
-        let isKioskUnlocked = false;
-        
-        // LIMIT
-        const FREE_LIMIT_BYTES = 5 * 1024 * 1024; // 5MB
+        // VARS
+        let arweave, serviceWallet, serviceAddress, userAddress;
+        let isSimulation = false, isKioskUnlocked = false, pendingFile = null;
+        let currentGateway = localStorage.getItem('ar_gateway') || 'arweave.net';
+        const FREE_LIMIT_BYTES = 5 * 1024 * 1024;
 
-        // Pending file if waiting for payment
-        let pendingFile = null;
-
-        // --- INIT ---
+        // INIT
         window.addEventListener('load', () => {
-            arweave = Arweave.init({
-                host: 'arweave.net',
-                port: 443,
-                protocol: 'https'
-            });
+            initArweave(currentGateway);
+            lucide.createIcons();
             
-            // Display Fee in UI
-            if (APP_CONFIG.FEE_DESTINATION && APP_CONFIG.FEE_DESTINATION !== "PUT_YOUR_WALLET_ADDRESS_HERE") {
+            // Fee Display
+            if (APP_CONFIG.FEE_DESTINATION) {
                 document.getElementById('ui-fee-display').innerText = `${APP_CONFIG.FEE_AMOUNT} AR`;
                 document.getElementById('kiosk-price-display').innerText = `${APP_CONFIG.KIOSK_PRICE} AR`;
-                // Approx total logic
-                const total = 0.0002 + parseFloat(APP_CONFIG.FEE_AMOUNT);
-                document.getElementById('ui-total-display').innerText = total.toFixed(4);
+                document.getElementById('ui-total-display').innerText = (0.0002 + parseFloat(APP_CONFIG.FEE_AMOUNT)).toFixed(4);
             }
 
-            // CHECK LOCAL STORAGE FOR SAVED WALLET
+            // Restore Wallet & License
             const savedWallet = localStorage.getItem('arweave_service_wallet');
-            if (savedWallet) {
-                try {
-                    const jwk = JSON.parse(savedWallet);
-                    loadServiceWallet(jwk);
-                } catch (e) {
-                    console.error("Failed to load saved wallet", e);
-                }
-            }
-
-            // CHECK KIOSK UNLOCK STATUS
+            if (savedWallet) try { loadServiceWallet(JSON.parse(savedWallet)); } catch(e){}
+            
             if (localStorage.getItem('kiosk_unlocked') === 'true') {
                 isKioskUnlocked = true;
                 showUnlockedKiosk();
@@ -576,15 +421,32 @@
             setupDragAndDrop();
         });
 
+        function initArweave(host) {
+            arweave = Arweave.init({ host: host, port: 443, protocol: 'https' });
+            document.getElementById('current-gateway-label').innerText = host;
+            if(document.getElementById('current-gateway-label-nav')) document.getElementById('current-gateway-label-nav').innerText = host;
+        }
+
+        // --- GATEWAY LOGIC ---
+        function toggleGatewaySelector() { document.getElementById('gateway-modal').classList.toggle('hidden'); }
+        function setGateway(host) {
+            localStorage.setItem('ar_gateway', host);
+            currentGateway = host;
+            initArweave(host);
+            toggleGatewaySelector();
+            // Reload if in gallery to refresh data from new source
+            if(!document.getElementById('view-gallery').classList.contains('hidden')) loadGallery();
+        }
+
         // --- NAVIGATION ---
-        function enterPortal() {
-            // If we already have a service wallet loaded, go straight to app
+        function enterPortal(view) {
+            if(view) switchTab(view);
             if (serviceWallet) {
                 document.getElementById('landing-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
+                if(view === 'gallery') loadGallery();
                 return;
             }
-            
             document.getElementById('landing-screen').classList.add('hidden');
             document.getElementById('setup-screen').classList.remove('hidden');
         }
@@ -595,376 +457,342 @@
             document.getElementById('landing-screen').classList.remove('hidden');
         }
 
-        function scrollToFeatures() {
-            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function toggleInstructions() {
-            const modal = document.getElementById('instructions-modal');
-            modal.classList.toggle('hidden');
-        }
-
-        async function enterPortalAsAdmin() {
-            if (!serviceWallet) {
-                alert("Please load or generate a wallet first.");
-                return;
-            }
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('app-screen').classList.remove('hidden');
+        function switchTab(tab) {
+            document.getElementById('view-upload').classList.add('hidden');
+            document.getElementById('view-gallery').classList.add('hidden');
+            document.getElementById('tab-upload').className = "px-4 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition-all";
+            document.getElementById('tab-gallery').className = "px-4 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition-all";
             
-            // SHOW THE SERVICE CONTROLS
-            document.getElementById('service-balance-container').classList.remove('hidden');
-            document.getElementById('service-balance-container').classList.add('flex');
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).className = "px-4 py-1.5 rounded-md text-xs font-medium bg-slate-800 text-white transition-all";
             
-            checkBalance();
+            if(tab === 'gallery') loadGallery();
         }
 
-        // --- ADMIN / SERVICE LOGIC ---
+        function toggleInstructions() { document.getElementById('instructions-modal').classList.toggle('hidden'); }
 
+        // --- KIOSK LOGIC ---
         function showUnlockedKiosk() {
             document.getElementById('kiosk-locked-area').classList.add('hidden');
             document.getElementById('kiosk-unlocked-area').classList.remove('hidden');
         }
 
         async function unlockKiosk() {
-            if (!APP_CONFIG.FEE_DESTINATION) {
-                alert("Error: Creator wallet not configured.");
-                return;
-            }
-
-            // 1. Connect User Wallet
             const connected = await connectUserWallet();
             if (!connected) return;
-
-            // 2. Create Transaction
             try {
                 let transaction = await arweave.createTransaction({
                     target: APP_CONFIG.FEE_DESTINATION,
                     quantity: arweave.ar.arToWinston(APP_CONFIG.KIOSK_PRICE)
                 });
-                
                 transaction.addTag('App-Name', 'Unstoppable-Portal');
                 transaction.addTag('Type', 'Kiosk-License-Fee');
-
-                // 3. Sign & Submit
                 await arweave.transactions.sign(transaction);
-                const response = await arweave.transactions.post(transaction);
-
-                if (response.status === 200 || response.status === 202) {
-                    // Success!
-                    alert("Payment Sent! Kiosk Mode Unlocked.");
-                    isKioskUnlocked = true;
-                    localStorage.setItem('kiosk_unlocked', 'true');
-                    showUnlockedKiosk();
-                } else {
-                    alert("Transaction failed. Please try again.");
-                }
-
-            } catch (e) {
-                console.error(e);
-                alert("Payment failed or cancelled.");
-            }
-        }
-        
-        // Load wallet helper
-        async function loadServiceWallet(jwk) {
-            serviceWallet = jwk;
-            serviceAddress = await arweave.wallets.jwkToAddress(jwk);
-            
-            // AUTO SAVE to Local Storage
-            localStorage.setItem('arweave_service_wallet', JSON.stringify(jwk));
-            
-            // If we are on Setup Screen, update status
-            if (!document.getElementById('setup-screen').classList.contains('hidden')) {
-                updateSetupStatus();
-            } else {
-                // If checking blindly on load, verify balance
-                checkBalance();
-                // Ensure UI is ready
-                document.getElementById('service-balance-container').classList.remove('hidden');
-                document.getElementById('service-balance-container').classList.add('flex');
-                document.getElementById('wallet-balance').innerText = '...'; 
-            }
+                await arweave.transactions.post(transaction);
+                alert("Payment Sent! Kiosk Mode Unlocked.");
+                isKioskUnlocked = true;
+                localStorage.setItem('kiosk_unlocked', 'true');
+                showUnlockedKiosk();
+            } catch (e) { alert("Payment failed."); }
         }
 
-        // Option A: Upload Keyfile
         function handleKeyfileUpload(input) {
-            const file = input.files[0];
-            if (!file) return;
-
             const reader = new FileReader();
             reader.onload = async (e) => {
                 try {
                     const jwk = JSON.parse(e.target.result);
                     await loadServiceWallet(jwk);
-                } catch (err) {
-                    console.error(err);
-                    alert("Invalid JSON keyfile.");
-                }
+                } catch (err) { alert("Invalid keyfile."); }
             };
-            reader.readAsText(file);
+            reader.readAsText(input.files[0]);
         }
 
-        // Option B: Generate & Save
         async function generateAndSaveWallet() {
-            try {
-                // 1. Generate
-                const jwk = await arweave.wallets.generate();
-                await loadServiceWallet(jwk);
-                
-                // 2. Trigger Download
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jwk));
-                const downloadAnchorNode = document.createElement('a');
-                downloadAnchorNode.setAttribute("href", dataStr);
-                downloadAnchorNode.setAttribute("download", "arweave-keyfile.json");
-                document.body.appendChild(downloadAnchorNode);
-                downloadAnchorNode.click();
-                downloadAnchorNode.remove();
-                
-            } catch (e) {
-                console.error("Wallet generation failed:", e);
-                alert("Failed to generate wallet.");
-            }
-        }
-        
-        function logoutAdmin() {
-            if(confirm("Are you sure you want to disconnect the Service Wallet? You will need to re-upload the keyfile to act as host.")) {
-                serviceWallet = null;
-                serviceAddress = null;
-                localStorage.removeItem('arweave_service_wallet');
-                location.reload(); // Simplest way to reset state
-            }
+            const jwk = await arweave.wallets.generate();
+            await loadServiceWallet(jwk);
+            const a = document.createElement('a');
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jwk));
+            a.download = "arweave-keyfile.json";
+            a.click();
         }
 
-        async function updateSetupStatus() {
+        async function loadServiceWallet(jwk) {
+            serviceWallet = jwk;
+            serviceAddress = await arweave.wallets.jwkToAddress(jwk);
+            localStorage.setItem('arweave_service_wallet', JSON.stringify(jwk));
+            updateSetupStatus();
+            document.getElementById('service-balance-container').classList.remove('hidden');
+            document.getElementById('service-balance-container').classList.add('flex');
+            checkBalance();
+        }
+
+        function updateSetupStatus() {
             document.getElementById('setup-status').classList.remove('hidden');
             document.getElementById('setup-address').innerText = serviceAddress;
-            await refreshSetupBalance();
+            refreshSetupBalance();
         }
 
         async function refreshSetupBalance() {
-            if (!serviceAddress) return;
-            const balEl = document.getElementById('setup-balance');
-            balEl.innerText = "Checking...";
-            try {
-                const winston = await arweave.wallets.getBalance(serviceAddress);
-                const ar = arweave.ar.winstonToAr(winston);
-                balEl.innerText = `${parseFloat(ar).toFixed(4)} AR`;
-            } catch (e) {
-                balEl.innerText = "Error";
-            }
+            if(!serviceAddress) return;
+            const bal = await arweave.wallets.getBalance(serviceAddress);
+            const ar = arweave.ar.winstonToAr(bal);
+            if(document.getElementById('setup-balance')) document.getElementById('setup-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`;
+            if(document.getElementById('wallet-balance')) document.getElementById('wallet-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`;
+            
+            if(parseFloat(ar) > 0) { isSimulation = false; document.getElementById('sim-warning-idle').classList.add('hidden'); }
+            else { isSimulation = true; document.getElementById('sim-warning-idle').classList.remove('hidden'); }
+        }
+
+        function enterPortalAsAdmin() {
+            if (!serviceWallet) { alert("Load wallet first."); return; }
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
         }
 
         function skipSetup() {
-            // VISITOR MODE (No Service Wallet)
             serviceWallet = null;
-            serviceAddress = null;
-            isSimulation = false; 
-
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.remove('hidden');
-            // HIDE SERVICE CONTROLS
             document.getElementById('service-balance-container').classList.add('hidden');
-            document.getElementById('service-balance-container').classList.remove('flex');
-            
             document.getElementById('badge-free').classList.add('opacity-50', 'grayscale');
-            document.getElementById('badge-paid').classList.remove('text-slate-400', 'bg-slate-800');
-            document.getElementById('badge-paid').classList.add('text-indigo-400', 'bg-indigo-500/10', 'border-indigo-500/20');
+            document.getElementById('badge-paid').className = "flex items-center gap-1.5 text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20";
         }
 
-        async function checkBalance() {
-            if (!serviceAddress) return;
-            try {
-                const winston = await arweave.wallets.getBalance(serviceAddress);
-                const ar = arweave.ar.winstonToAr(winston);
-                
-                // Update both balance displays (Setup & App)
-                const setupBal = document.getElementById('setup-balance');
-                const appBal = document.getElementById('wallet-balance');
-                
-                const balText = `${parseFloat(ar).toFixed(4)} AR`;
-                if(setupBal) setupBal.innerText = balText;
-                if(appBal) appBal.innerText = balText;
-                
-                // AUTO-TOGGLE SIMULATION
-                if (parseFloat(ar) > 0) {
-                    isSimulation = false; // REAL MODE
-                    document.getElementById('sim-warning-idle').classList.add('hidden');
-                } else {
-                    isSimulation = true; // DEMO MODE
-                    document.getElementById('sim-warning-idle').classList.remove('hidden');
-                }
-
-            } catch (e) { console.error(e); }
-        }
-
-        function copyServiceAddress() {
-            if(serviceAddress) {
-                navigator.clipboard.writeText(serviceAddress);
-                alert("Service Wallet Address Copied!\nSend AR tokens here to activate the Free Tier.");
+        function logoutAdmin() {
+            if(confirm("Disconnect Service Wallet?")) {
+                serviceWallet = null;
+                localStorage.removeItem('arweave_service_wallet');
+                location.reload();
             }
         }
 
-        function copyText(text) {
-             navigator.clipboard.writeText(text);
-             alert("Address copied to clipboard!");
+        // --- UPLOAD LOGIC ---
+        function triggerFileSelect() {
+            if(!document.getElementById('permanent-agree').checked) {
+                alert("Please agree to the permanence warning checkbox first.");
+                // highlight checkbox
+                document.getElementById('permanent-agree').parentElement.parentElement.classList.add('ring-2', 'ring-red-500');
+                setTimeout(() => document.getElementById('permanent-agree').parentElement.parentElement.classList.remove('ring-2', 'ring-red-500'), 1000);
+                return;
+            }
+            document.getElementById('file-input').click();
         }
 
-        // --- USER WALLET LOGIC ---
+        function setupDragAndDrop() {
+            const drop = document.getElementById('drop-zone');
+            const input = document.getElementById('file-input');
+            
+            ['dragenter', 'dragover'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.add('drag-active'); }));
+            ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.remove('drag-active'); }));
+            
+            drop.addEventListener('drop', (e) => { 
+                if(!document.getElementById('permanent-agree').checked) {
+                    e.preventDefault();
+                    alert("Please agree to the permanence warning first.");
+                    return;
+                }
+                if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); 
+            });
+            input.addEventListener('change', (e) => { if(e.target.files.length) handleFile(e.target.files[0]); });
+        }
+
+        async function handleFile(file) {
+            const title = document.getElementById('file-title').value.trim() || file.name;
+            const isEncrypted = document.getElementById('encrypt-toggle').checked;
+            const isSensitive = document.getElementById('sensitive-toggle').checked;
+            
+            // Check logic
+            if (file.size > FREE_LIMIT_BYTES || (!serviceWallet && !isSimulation)) {
+                pendingFile = { file, title, isEncrypted, isSensitive };
+                document.getElementById('payment-title').innerText = !serviceWallet ? "Visitor Mode" : "File Too Large";
+                document.getElementById('payment-desc').innerText = !serviceWallet ? 
+                    `Pay Gas + ${APP_CONFIG.FEE_AMOUNT} AR Fee` : "Pay Gas via Personal Wallet";
+                showState('payment');
+            } else {
+                processUpload(file, title, isEncrypted, isSensitive, 'free');
+            }
+        }
+
         async function connectUserWallet() {
-            // Helper to wait for injection
+            // Helper to wait for injection (fixes race condition in some browsers)
             const waitForWallet = () => new Promise(resolve => {
                 if (window.arweaveWallet) return resolve(true);
-                
-                // Listen for the load event
                 window.addEventListener('arweaveWalletLoaded', () => resolve(true), { once: true });
-                
-                // Timeout after 1 second if not found
                 setTimeout(() => resolve(!!window.arweaveWallet), 1000);
             });
 
-            // Try to find wallet
             const found = await waitForWallet();
 
-            if (found) {
-                try {
-                    await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'DISPATCH']);
-                    userAddress = await window.arweaveWallet.getActiveAddress();
-                    
-                    const btn = document.getElementById('connect-wallet-btn');
-                    btn.innerHTML = `<div class="w-2 h-2 rounded-full bg-emerald-400"></div> ${userAddress.slice(0,4)}...${userAddress.slice(-4)}`;
-                    btn.classList.add('border-emerald-500/50', 'text-emerald-400', 'bg-emerald-500/10');
-                    return true;
-                } catch (e) {
-                    console.error("Connection failed", e);
-                    alert("Could not connect to Wallet. Please approve the connection popup.");
-                    return false;
-                }
-            } else {
-                // If not found, show specific advice based on protocol
-                let msg = "Wallet extension not detected.\n\n";
-                if (window.location.protocol === 'file:') {
-                    msg += "⚠ You are opening this as a local file. Browser extensions are often blocked on 'file://' pages.\n\nPlease use a local server (like VS Code Live Server) or upload to GitHub Pages.\n\n";
-                }
-                msg += "Do you want to use Simulation Mode instead?";
-                
-                const confirmSim = confirm(msg);
-                
-                if (confirmSim) {
-                    userAddress = "UserWallet_Simulated_X8s9";
-                    const btn = document.getElementById('connect-wallet-btn');
-                    btn.innerHTML = `<div class="w-2 h-2 rounded-full bg-indigo-400"></div> Simulated User`;
-                    btn.classList.add('border-indigo-500/50', 'text-indigo-400', 'bg-indigo-500/10');
-                    return true;
+            if(!found) {
+                if(confirm("ArConnect/Wander extension not detected. Use simulation mode for testing?")) { 
+                    userAddress = "Simulated_User"; 
+                    return true; 
                 }
                 return false;
             }
-        }
-
-        // --- UPLOAD ROUTING LOGIC ---
-        async function handleFileSelection(file) {
-            console.log(`File size: ${file.size} bytes. Limit: ${FREE_LIMIT_BYTES}`);
-            
-            // Check balance again before upload
-            if (serviceAddress) await checkBalance();
-
-            if (file.size > FREE_LIMIT_BYTES || (!serviceWallet && !isSimulation)) {
-                pendingFile = file;
-                const title = document.getElementById('payment-title');
-                const desc = document.getElementById('payment-desc');
-                
-                if (!serviceWallet) {
-                    title.textContent = "Personal Wallet Mode";
-                    desc.textContent = `Visitor Mode: Please connect your wallet. (Gas + ${APP_CONFIG.FEE_AMOUNT} AR Service Fee)`;
-                } else {
-                    title.textContent = "File Too Large for Free Tier";
-                    desc.textContent = "This file exceeds 5MB. To upload it, you must use your own wallet to pay the network fee.";
-                }
-
-                showState('payment');
-            } else {
-                handleFreeUpload(file);
-            }
+            try {
+                await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'DISPATCH', 'ENCRYPT', 'DECRYPT']);
+                userAddress = await window.arweaveWallet.getActiveAddress();
+                document.getElementById('connect-wallet-btn').innerHTML = `<i data-lucide="wallet" class="w-3 h-3"></i> ${userAddress.slice(0,4)}...`;
+                document.getElementById('connect-wallet-btn').className = "flex items-center gap-2 bg-indigo-500/10 text-indigo-400 border border-indigo-500/50 px-3 py-1.5 rounded-lg text-xs font-medium";
+                return true;
+            } catch(e) { console.error(e); return false; }
         }
 
         async function handleUserPayment() {
-            if (!userAddress) {
-                const connected = await connectUserWallet();
-                if (!connected) return;
-            }
-            if (pendingFile) {
-                handlePaidUpload(pendingFile);
-            }
+            if(!userAddress && !(await connectUserWallet())) return;
+            if(pendingFile) processUpload(pendingFile.file, pendingFile.title, pendingFile.isEncrypted, pendingFile.isSensitive, 'paid');
         }
 
-        // --- UPLOAD METHOD 1: FREE (Service Wallet) ---
-        async function handleFreeUpload(file) {
-            if (!serviceWallet) {
-                pendingFile = file;
-                showState('payment');
-                return;
-            }
-
+        async function processUpload(file, title, isEncrypted, isSensitive, tier) {
             showState('uploading');
-            updateBadge('SUBSIDIZED (FREE)', 'emerald');
-            
-            if (isSimulation) {
-                simulateUpload("Free Tier Upload (Simulated due to 0 balance)");
-                return;
-            }
+            updateBadge(tier === 'free' ? "SUBSIDIZED UPLOAD" : "PAID UPLOAD", tier === 'free' ? 'emerald' : 'indigo');
+
+            if(isSimulation && tier === 'free') { simulateUpload(); return; }
 
             try {
-                const data = await readFile(file);
-                let transaction = await arweave.createTransaction({ data: data }, serviceWallet);
-                transaction.addTag('App-Name', 'Unstoppable-Portal');
-                transaction.addTag('Tier', 'Free');
+                // 1. Read
+                let data = await readFile(file);
                 
-                await arweave.transactions.sign(transaction, serviceWallet);
-                await performUpload(transaction);
-                
-            } catch (err) {
-                console.error(err);
-                // If it fails (e.g. out of funds during execution), fallback
-                simulateUpload("Upload failed (Likely insufficient funds). Simulating...");
-            }
-        }
+                // 2. Encrypt if requested
+                let tags = [
+                    { name: 'App-Name', value: 'Unstoppable-Portal' },
+                    { name: 'Content-Type', value: file.type },
+                    { name: 'Title', value: title },
+                    { name: 'Timestamp', value: Date.now().toString() }
+                ];
 
-        // --- UPLOAD METHOD 2: PAID (User Wallet) ---
-        async function handlePaidUpload(file) {
-            showState('uploading');
-            updateBadge('USER PAID', 'indigo');
-
-            if (!window.arweaveWallet) {
-                simulateUpload("Simulated User Payment");
-                return;
-            }
-
-            try {
-                const data = await readFile(file);
-                
-                // --- FEE LOGIC (PAY THE CREATOR) ---
-                let txOptions = { data: data };
-                
-                // If Config is set, add fee
-                if (APP_CONFIG.FEE_DESTINATION && APP_CONFIG.FEE_DESTINATION !== "PUT_YOUR_WALLET_ADDRESS_HERE") {
-                    txOptions.target = APP_CONFIG.FEE_DESTINATION;
-                    txOptions.quantity = arweave.ar.arToWinston(APP_CONFIG.FEE_AMOUNT);
+                if (isSensitive) {
+                    tags.push({ name: 'Content-Warning', value: 'sensitive' });
                 }
 
-                let transaction = await arweave.createTransaction(txOptions);
-                transaction.addTag('App-Name', 'Unstoppable-Portal');
-                transaction.addTag('Tier', 'Paid');
+                if (isEncrypted) {
+                    if (tier === 'free' && !userAddress) {
+                        if(!(await connectUserWallet())) throw new Error("Wallet required for encryption");
+                    }
+                    data = await window.arweaveWallet.encrypt(new TextDecoder().decode(data), { algorithm: 'RSA-OAEP' });
+                    tags.push({ name: 'Encryption', value: 'RSA-OAEP' });
+                }
 
-                await arweave.transactions.sign(transaction); 
-                await performUpload(transaction);
+                // 3. Create Transaction
+                let tx;
+                if (tier === 'free') {
+                    tx = await arweave.createTransaction({ data }, serviceWallet);
+                    tags.forEach(t => tx.addTag(t.name, t.value));
+                    await arweave.transactions.sign(tx, serviceWallet);
+                } else {
+                    // Paid
+                    let options = { data };
+                    if(APP_CONFIG.FEE_DESTINATION) {
+                        options.target = APP_CONFIG.FEE_DESTINATION;
+                        options.quantity = arweave.ar.arToWinston(APP_CONFIG.FEE_AMOUNT);
+                    }
+                    tx = await arweave.createTransaction(options);
+                    tags.forEach(t => tx.addTag(t.name, t.value));
+                    await arweave.transactions.sign(tx);
+                }
+
+                // 4. Post
+                let uploader = await arweave.transactions.getUploader(tx);
+                while (!uploader.isComplete) {
+                    await uploader.uploadChunk();
+                    document.getElementById('progress-text').innerText = `${uploader.pctComplete}%`;
+                }
                 
-            } catch (err) {
-                console.error("Paid upload failed", err);
-                simulateUpload("Simulated (Extension Error)");
+                finishUpload(`https://arweave.net/${tx.id}`);
+
+            } catch(e) {
+                console.error(e);
+                alert("Upload Error: " + e.message);
+                showState('idle');
             }
         }
 
-        // --- CORE UPLOAD HELPERS ---
+        // --- GALLERY LOGIC ---
+        async function loadGallery() {
+            const grid = document.getElementById('gallery-grid');
+            const isSafeMode = document.getElementById('safe-mode-toggle').checked;
+            grid.innerHTML = '<div class="col-span-full text-center text-slate-500 py-12"><div class="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>Fetching chain...</div>';
+
+            const query = {
+                query: `
+                query {
+                    transactions(
+                        tags: [{ name: "App-Name", values: ["Unstoppable-Portal"] }]
+                        first: 12
+                    ) {
+                        edges {
+                            node {
+                                id
+                                tags { name value }
+                            }
+                        }
+                    }
+                }`
+            };
+
+            try {
+                const res = await fetch(`https://${currentGateway}/graphql`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(query)
+                });
+                const json = await res.json();
+                const txs = json.data.transactions.edges;
+
+                grid.innerHTML = '';
+                if(txs.length === 0) {
+                    grid.innerHTML = '<div class="col-span-full text-center text-slate-600">No uploads found. Be the first!</div>';
+                    return;
+                }
+
+                txs.forEach(tx => {
+                    const id = tx.node.id;
+                    const tags = tx.node.tags;
+                    const title = tags.find(t => t.name === 'Title')?.value || 'Untitled Evidence';
+                    const type = tags.find(t => t.name === 'Content-Type')?.value || 'Unknown';
+                    const isEncrypted = tags.find(t => t.name === 'Encryption');
+                    const isSensitive = tags.find(t => t.name === 'Content-Warning' && t.value === 'sensitive');
+
+                    // Apply blur logic
+                    const blurClass = (isSensitive && isSafeMode) ? 'blur-sm grayscale opacity-50 hover:opacity-100 hover:grayscale-0 hover:blur-0 transition-all duration-500' : '';
+                    const warningOverlay = (isSensitive && isSafeMode) ? 
+                        `<div class="absolute inset-0 flex items-center justify-center text-red-400 font-bold text-xs bg-slate-950/80 z-20 pointer-events-none">SENSITIVE CONTENT</div>` : '';
+
+                    const card = document.createElement('div');
+                    card.className = "bg-slate-900 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition-all relative overflow-hidden group";
+                    card.innerHTML = `
+                        ${warningOverlay}
+                        <div class="${blurClass}">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="p-2 bg-slate-800 rounded-lg text-slate-400">
+                                    <i data-lucide="${isEncrypted ? 'lock' : 'file-text'}" class="w-5 h-5"></i>
+                                </div>
+                                <div class="flex gap-2">
+                                    ${isSensitive ? '<span class="text-[10px] text-red-400 font-mono bg-red-900/20 px-2 py-1 rounded">NSFW</span>' : ''}
+                                    <span class="text-[10px] text-slate-600 font-mono bg-slate-950 px-2 py-1 rounded">${type.split('/')[1] || 'FILE'}</span>
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-white mb-1 truncate" title="${title}">${title}</h4>
+                            <p class="text-xs text-slate-500 font-mono mb-4 truncate">${id}</p>
+                            <div class="flex gap-2">
+                                <a href="https://${currentGateway}/${id}" target="_blank" class="flex-1 bg-slate-800 hover:bg-slate-700 text-center py-2 rounded-lg text-xs font-medium text-white transition-colors relative z-30">
+                                    ${isEncrypted ? 'Decrypt & View' : 'View File'}
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                lucide.createIcons();
+
+            } catch(e) {
+                console.error(e);
+                grid.innerHTML = '<div class="col-span-full text-center text-red-400">Failed to load gallery. Network error.</div>';
+            }
+        }
+
+        // --- HELPERS ---
         function readFile(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -974,100 +802,55 @@
             });
         }
 
-        async function performUpload(transaction) {
-            let uploader = await arweave.transactions.getUploader(transaction);
-            while (!uploader.isComplete) {
-                await uploader.uploadChunk();
-                document.getElementById('progress-text').textContent = `${uploader.pctComplete}% uploaded`;
-            }
-            const url = `https://arweave.net/${transaction.id}`;
-            finishUpload(url, false);
-        }
-
-        function simulateUpload(logMsg) {
-            console.log(logMsg);
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.floor(Math.random() * 20);
-                if (progress > 100) progress = 100;
-                document.getElementById('progress-text').textContent = `${progress}% uploaded`;
-                if (progress === 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        const fakeHash = "simulated_hash_" + Math.random().toString(36).substring(7);
-                        finishUpload(`https://arweave.net/${fakeHash}`, true);
-                    }, 500);
+        function simulateUpload() {
+            let p = 0;
+            const int = setInterval(() => {
+                p += 10;
+                document.getElementById('progress-text').innerText = p + "%";
+                if(p >= 100) {
+                    clearInterval(int);
+                    finishUpload("https://arweave.net/simulated_tx_hash");
                 }
-            }, 250);
+            }, 200);
         }
 
-        function finishUpload(url, isSim) {
+        function finishUpload(url) {
             const txId = url.split('/').pop();
-            
             document.getElementById('result-url').textContent = url;
             document.getElementById('view-link').href = url;
-            
-            // Set ViewBlock Link
-            const viewblockUrl = `https://viewblock.io/arweave/tx/${txId}`;
-            document.getElementById('verify-link').href = viewblockUrl;
-
-            if (isSim) document.getElementById('sim-success-msg').classList.remove('hidden');
+            document.getElementById('verify-link').href = `https://viewblock.io/arweave/tx/${txId}`;
+            if(isSimulation) document.getElementById('sim-success-msg').classList.remove('hidden');
             else document.getElementById('sim-success-msg').classList.add('hidden');
-            
             showState('success');
         }
 
-        // --- UI UTILS ---
-        function showState(state) {
-            ['idle', 'payment', 'uploading', 'success'].forEach(s => {
-                document.getElementById(`state-${s}`).classList.add('hidden');
-            });
-            document.getElementById(`state-${state}`).classList.remove('hidden');
+        function showState(s) {
+            ['idle','payment','uploading','success'].forEach(x => document.getElementById(`state-${x}`).classList.add('hidden'));
+            document.getElementById(`state-${s}`).classList.remove('hidden');
         }
 
-        function updateBadge(text, color) {
-            const badge = document.getElementById('upload-badge');
-            badge.textContent = text;
-            badge.className = `inline-block px-2 py-0.5 rounded text-xs font-mono mb-4 bg-${color}-500/10 text-${color}-400 border border-${color}-500/20`;
+        function updateBadge(txt, col) {
+            document.getElementById('upload-badge').innerText = txt;
+            document.getElementById('upload-badge').className = `inline-block px-2 py-0.5 rounded text-xs font-mono mb-4 bg-${col}-500/10 text-${col}-400 border border-${col}-500/20`;
         }
 
         function resetUI() {
             showState('idle');
-            pendingFile = null;
             document.getElementById('file-input').value = '';
+            document.getElementById('file-title').value = '';
+            pendingFile = null;
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(document.getElementById('result-url').textContent);
+            alert("Copied!");
         }
         
-        function copyLink() {
-            const url = document.getElementById('result-url').textContent.trim();
-            navigator.clipboard.writeText(url);
-        }
-
-        function setupDragAndDrop() {
-            const dropZone = document.getElementById('drop-zone');
-            const fileInput = document.getElementById('file-input');
-
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
-                document.body.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
-            });
-
-            ['dragenter', 'dragover'].forEach(() => {
-                dropZone.classList.add('drag-active');
-                document.getElementById('upload-icon').classList.add('text-emerald-400');
-            });
-
-            ['dragleave', 'drop'].forEach(() => {
-                dropZone.classList.remove('drag-active');
-                document.getElementById('upload-icon').classList.remove('text-emerald-400');
-            });
-
-            dropZone.addEventListener('drop', e => {
-                if (e.dataTransfer.files.length > 0) handleFileSelection(e.dataTransfer.files[0]);
-            });
-            
-            fileInput.addEventListener('change', e => {
-                if(e.target.files.length > 0) handleFileSelection(e.target.files[0]);
-            });
+        function copyServiceAddress() {
+            if(serviceAddress) {
+                navigator.clipboard.writeText(serviceAddress);
+                alert("Copied Service Address");
+            }
         }
     </script>
 </body>
