@@ -277,6 +277,12 @@
             <div class="relative bg-black rounded-sm border border-white/10 p-8 shadow-2xl">
                 <!-- IDLE -->
                 <div id="state-idle" class="block">
+                    <!-- Format Switcher -->
+                    <div class="flex gap-6 mb-8 border-b border-white/10 pb-1">
+                        <button id="mode-file" onclick="setUploadMode('file')" class="text-xs font-bold uppercase tracking-widest text-white border-b-2 border-emerald-500 pb-2 transition-colors">Upload File</button>
+                        <button id="mode-article" onclick="setUploadMode('article')" class="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-white pb-2 transition-colors">Write Article</button>
+                    </div>
+
                     <!-- Title Input -->
                     <div class="mb-6">
                         <label class="block text-[10px] font-bold text-slate-500 mb-2 ml-1 uppercase tracking-widest font-mono">Manifest / Title</label>
@@ -321,14 +327,22 @@
                         </label>
                     </div>
 
-                    <!-- Drop Zone -->
-                    <div id="drop-zone" class="border-2 border-dashed border-slate-800 rounded-sm p-12 text-center hover:border-slate-600 hover:bg-slate-900/30 transition-all cursor-pointer" onclick="triggerFileSelect()">
-                        <i data-lucide="upload" class="w-8 h-8 text-slate-500 mx-auto mb-4"></i>
-                        <h3 class="text-sm font-bold text-white mb-2 uppercase tracking-widest">Drop Data Packet Here</h3>
-                        <p class="text-[10px] text-slate-500 mb-0 font-mono uppercase">Or click to browse filesystem</p>
-                        <input type="file" id="file-input" class="hidden">
-                        
-                        <div id="sim-warning-idle" class="hidden mt-6 text-[10px] text-yellow-500 bg-yellow-900/10 px-2 py-1 rounded-sm inline-block border border-yellow-500/20 font-mono uppercase">⚠ Simulation Mode</div>
+                    <!-- Drop Zone (File Mode) -->
+                    <div id="upload-mode-file">
+                        <div id="drop-zone" class="border-2 border-dashed border-slate-800 rounded-sm p-12 text-center hover:border-slate-600 hover:bg-slate-900/30 transition-all cursor-pointer" onclick="triggerFileSelect()">
+                            <i data-lucide="upload" class="w-8 h-8 text-slate-500 mx-auto mb-4"></i>
+                            <h3 class="text-sm font-bold text-white mb-2 uppercase tracking-widest">Drop Data Packet Here</h3>
+                            <p class="text-[10px] text-slate-500 mb-0 font-mono uppercase">Or click to browse filesystem</p>
+                            <input type="file" id="file-input" class="hidden">
+                            
+                            <div id="sim-warning-idle" class="hidden mt-6 text-[10px] text-yellow-500 bg-yellow-900/10 px-2 py-1 rounded-sm inline-block border border-yellow-500/20 font-mono uppercase">⚠ Simulation Mode</div>
+                        </div>
+                    </div>
+
+                    <!-- Article Editor (Article Mode) -->
+                    <div id="upload-mode-article" class="hidden">
+                        <textarea id="article-body" class="w-full bg-slate-900 border border-white/10 rounded-sm px-4 py-3 text-white placeholder-slate-700 focus:outline-none focus:border-emerald-500 transition-colors font-mono text-sm h-64 resize-y" placeholder="# Report Title&#10;&#10;Enter intelligence report here. Markdown supported..."></textarea>
+                        <button onclick="submitArticle()" class="mt-4 w-full bg-white text-slate-900 px-6 py-3 rounded-sm font-bold hover:bg-slate-200 transition-colors text-xs uppercase tracking-widest border border-white">Publish Article to Chain</button>
                     </div>
                 </div>
 
@@ -392,6 +406,10 @@
                     <p class="text-slate-500 text-xs font-mono uppercase tracking-widest mt-2">Live stream from the network</p>
                 </div>
                 <div class="flex items-center gap-6">
+                    <button onclick="loadGallery(userAddress)" id="btn-my-uploads" class="text-xs flex items-center gap-2 text-slate-500 hover:text-white font-mono uppercase disabled:opacity-50" title="Connect wallet to view your uploads">
+                        <i data-lucide="user" class="w-3 h-3"></i> My Uploads
+                    </button>
+                    <div class="h-4 w-px bg-white/10"></div>
                     <label class="flex items-center gap-3 text-xs text-slate-400 cursor-pointer select-none group">
                         <input type="checkbox" id="safe-mode-toggle" checked onchange="loadGallery()" class="rounded-sm border-slate-700 text-emerald-600 focus:ring-emerald-900 bg-black">
                         <span class="font-mono uppercase group-hover:text-white transition-colors">Filter Graphic Content</span>
@@ -460,6 +478,7 @@
         let arweave, serviceWallet, serviceAddress, userAddress;
         let isSimulation = false, isKioskUnlocked = false, pendingFile = null;
         let currentGateway = localStorage.getItem('ar_gateway') || 'arweave.net';
+        let uploadType = 'file'; // 'file' or 'article'
         const FREE_LIMIT_BYTES = 5 * 1024 * 1024;
 
         // INIT
@@ -532,6 +551,25 @@
             document.getElementById(`tab-${tab}`).className = "px-4 py-1.5 rounded-[2px] text-[10px] font-bold uppercase tracking-widest bg-slate-800 text-white transition-all";
             
             if(tab === 'gallery') loadGallery();
+        }
+
+        function setUploadMode(mode) {
+            uploadType = mode;
+            document.getElementById('mode-file').className = mode === 'file' ? 
+                "text-xs font-bold uppercase tracking-widest text-white border-b-2 border-emerald-500 pb-2 transition-colors" : 
+                "text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-white pb-2 transition-colors";
+            
+            document.getElementById('mode-article').className = mode === 'article' ? 
+                "text-xs font-bold uppercase tracking-widest text-white border-b-2 border-emerald-500 pb-2 transition-colors" : 
+                "text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-white pb-2 transition-colors";
+
+            if (mode === 'file') {
+                document.getElementById('upload-mode-file').classList.remove('hidden');
+                document.getElementById('upload-mode-article').classList.add('hidden');
+            } else {
+                document.getElementById('upload-mode-file').classList.add('hidden');
+                document.getElementById('upload-mode-article').classList.remove('hidden');
+            }
         }
 
         function toggleInstructions() { document.getElementById('instructions-modal').classList.toggle('hidden'); }
@@ -647,6 +685,29 @@
             document.getElementById('file-input').click();
         }
 
+        function submitArticle() {
+            if(!document.getElementById('permanent-agree').checked) {
+                alert("ACKNOWLEDGEMENT REQUIRED: You must confirm that this action is irreversible.");
+                document.getElementById('permanent-agree').parentElement.parentElement.classList.add('ring-1', 'ring-red-500');
+                setTimeout(() => document.getElementById('permanent-agree').parentElement.parentElement.classList.remove('ring-1', 'ring-red-500'), 1000);
+                return;
+            }
+
+            const body = document.getElementById('article-body').value;
+            if(!body.trim()) {
+                alert("Article content cannot be empty.");
+                return;
+            }
+
+            // Create file from content
+            const blob = new Blob([body], { type: 'text/markdown' });
+            const title = document.getElementById('file-title').value.trim() || 'Untitled Article';
+            const filename = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.md';
+            const file = new File([blob], filename, { type: 'text/markdown' });
+            
+            handleFile(file);
+        }
+
         function setupDragAndDrop() {
             const drop = document.getElementById('drop-zone');
             const input = document.getElementById('file-input');
@@ -704,6 +765,16 @@
                 userAddress = await window.arweaveWallet.getActiveAddress();
                 document.getElementById('connect-wallet-btn').innerHTML = `<i data-lucide="wallet" class="w-3 h-3"></i> ${userAddress.slice(0,4)}...`;
                 document.getElementById('connect-wallet-btn').className = "flex items-center gap-2 bg-indigo-500/10 text-indigo-400 border border-indigo-500/50 px-3 py-1.5 rounded-lg text-xs font-medium";
+                
+                // If on gallery view, refresh it
+                if(!document.getElementById('view-gallery').classList.contains('hidden')) {
+                    // Update My Uploads button style
+                    const btn = document.getElementById('btn-my-uploads');
+                    btn.classList.remove('text-slate-500');
+                    btn.classList.add('text-indigo-400');
+                    btn.title = "View your uploads";
+                }
+                
                 return true;
             } catch(e) { console.error(e); return false; }
         }
@@ -778,15 +849,27 @@
         }
 
         // --- GALLERY LOGIC ---
-        async function loadGallery() {
+        async function loadGallery(filterOwner = null) {
+            // Check if filtering by owner but no wallet connected
+            if (filterOwner && !userAddress) {
+                if(!(await connectUserWallet())) return;
+                filterOwner = userAddress; // Update just in case
+            }
+
             const grid = document.getElementById('gallery-grid');
             const isSafeMode = document.getElementById('safe-mode-toggle').checked;
-            grid.innerHTML = '<div class="col-span-full text-center text-slate-500 py-12"><div class="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>Fetching chain...</div>';
+            
+            let loadingMsg = filterOwner ? "Fetching your intel..." : "Syncing decentralized feed...";
+            grid.innerHTML = `<div class="col-span-full text-center text-slate-500 py-24 font-mono text-xs uppercase tracking-widest"><div class="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>${loadingMsg}</div>`;
 
+            // Build Query
+            let ownerFilter = filterOwner ? `owners: ["${filterOwner}"],` : '';
+            
             const query = {
                 query: `
                 query {
                     transactions(
+                        ${ownerFilter}
                         tags: [{ name: "App-Name", values: ["Unstoppable-Portal"] }]
                         first: 12
                     ) {
@@ -811,14 +894,15 @@
 
                 grid.innerHTML = '';
                 if(txs.length === 0) {
-                    grid.innerHTML = '<div class="col-span-full text-center text-slate-600">No uploads found. Be the first!</div>';
+                    let emptyMsg = filterOwner ? "No uploads found for this wallet." : "No intel found. Be the first to leak.";
+                    grid.innerHTML = `<div class="col-span-full text-center text-slate-600 font-mono text-xs uppercase tracking-widest py-12">${emptyMsg}</div>`;
                     return;
                 }
 
                 txs.forEach(tx => {
                     const id = tx.node.id;
                     const tags = tx.node.tags;
-                    const title = tags.find(t => t.name === 'Title')?.value || 'Untitled Evidence';
+                    const title = tags.find(t => t.name === 'Title')?.value || 'Untitled Intel';
                     const type = tags.find(t => t.name === 'Content-Type')?.value || 'Unknown';
                     const isEncrypted = tags.find(t => t.name === 'Encryption');
                     const isSensitive = tags.find(t => t.name === 'Content-Warning' && t.value === 'sensitive');
@@ -826,26 +910,26 @@
                     // Apply blur logic
                     const blurClass = (isSensitive && isSafeMode) ? 'blur-sm grayscale opacity-50 hover:opacity-100 hover:grayscale-0 hover:blur-0 transition-all duration-500' : '';
                     const warningOverlay = (isSensitive && isSafeMode) ? 
-                        `<div class="absolute inset-0 flex items-center justify-center text-red-400 font-bold text-xs bg-slate-950/80 z-20 pointer-events-none">SENSITIVE CONTENT</div>` : '';
+                        `<div class="absolute inset-0 flex items-center justify-center text-red-400 font-bold text-xs bg-slate-950/80 z-20 pointer-events-none border border-red-500/20 m-1 uppercase tracking-widest">SENSITIVE CONTENT</div>` : '';
 
                     const card = document.createElement('div');
                     card.className = "bg-slate-900 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition-all relative overflow-hidden group";
                     card.innerHTML = `
                         ${warningOverlay}
                         <div class="${blurClass}">
-                            <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-start justify-between mb-3">
                                 <div class="p-2 bg-slate-800 rounded-lg text-slate-400">
                                     <i data-lucide="${isEncrypted ? 'lock' : 'file-text'}" class="w-5 h-5"></i>
                                 </div>
                                 <div class="flex gap-2">
-                                    ${isSensitive ? '<span class="text-[10px] text-red-400 font-mono bg-red-900/20 px-2 py-1 rounded">NSFW</span>' : ''}
-                                    <span class="text-[10px] text-slate-600 font-mono bg-slate-950 px-2 py-1 rounded">${type.split('/')[1] || 'FILE'}</span>
+                                    ${isSensitive ? '<span class="text-[10px] text-red-400 font-mono bg-red-900/20 px-2 py-1 rounded border border-red-500/20 uppercase">NSFW</span>' : ''}
+                                    <span class="text-[10px] text-slate-600 font-mono bg-slate-950 px-2 py-1 rounded uppercase border border-white/5">${type.split('/')[1] || 'FILE'}</span>
                                 </div>
                             </div>
-                            <h4 class="font-bold text-white mb-1 truncate" title="${title}">${title}</h4>
-                            <p class="text-xs text-slate-500 font-mono mb-4 truncate">${id}</p>
+                            <h4 class="font-bold text-white mb-1 truncate font-mono text-sm uppercase" title="${title}">${title}</h4>
+                            <p class="text-[10px] text-slate-600 font-mono mb-4 truncate uppercase tracking-wider">ID: ${id}</p>
                             <div class="flex gap-2">
-                                <a href="https://${currentGateway}/${id}" target="_blank" class="flex-1 bg-slate-800 hover:bg-slate-700 text-center py-2 rounded-lg text-xs font-medium text-white transition-colors relative z-30">
+                                <a href="https://${currentGateway}/${id}" target="_blank" class="flex-1 bg-slate-800 hover:bg-slate-700 text-center py-2 rounded-lg text-xs font-medium text-white transition-colors relative z-30 uppercase tracking-wide border border-white/5">
                                     ${isEncrypted ? 'Decrypt & View' : 'View File'}
                                 </a>
                             </div>
@@ -907,6 +991,7 @@
             showState('idle');
             document.getElementById('file-input').value = '';
             document.getElementById('file-title').value = '';
+            document.getElementById('article-body').value = '';
             pendingFile = null;
         }
 
