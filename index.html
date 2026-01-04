@@ -545,7 +545,21 @@
 
         // --- USER WALLET LOGIC ---
         async function connectUserWallet() {
-            if (window.arweaveWallet) {
+            // Helper to wait for injection
+            const waitForWallet = () => new Promise(resolve => {
+                if (window.arweaveWallet) return resolve(true);
+                
+                // Listen for the load event
+                window.addEventListener('arweaveWalletLoaded', () => resolve(true), { once: true });
+                
+                // Timeout after 1 second if not found
+                setTimeout(() => resolve(!!window.arweaveWallet), 1000);
+            });
+
+            // Try to find wallet
+            const found = await waitForWallet();
+
+            if (found) {
                 try {
                     await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'DISPATCH']);
                     userAddress = await window.arweaveWallet.getActiveAddress();
@@ -556,11 +570,19 @@
                     return true;
                 } catch (e) {
                     console.error("Connection failed", e);
-                    alert("Could not connect to ArConnect.");
+                    alert("Could not connect to Wallet. Please approve the connection popup.");
                     return false;
                 }
             } else {
-                const confirmSim = confirm("ArConnect extension not found. Simulate a user wallet connection for this demo?");
+                // If not found, show specific advice based on protocol
+                let msg = "Wallet extension not detected.\n\n";
+                if (window.location.protocol === 'file:') {
+                    msg += "⚠ You are opening this as a local file. Browser extensions are often blocked on 'file://' pages.\n\nPlease use a local server (like VS Code Live Server) or upload to GitHub Pages.\n\n";
+                }
+                msg += "Do you want to use Simulation Mode instead?";
+                
+                const confirmSim = confirm(msg);
+                
                 if (confirmSim) {
                     userAddress = "UserWallet_Simulated_X8s9";
                     const btn = document.getElementById('connect-wallet-btn');
