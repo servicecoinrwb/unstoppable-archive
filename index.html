@@ -173,20 +173,6 @@
                                 By calling this app "The Alexandria Node," the branding implies:
                             </p>
                         </div>
-
-                        <!-- Ayn Rand Tribute (Moved Inside) -->
-                        <div class="pt-6 border-t border-stone-100 mt-6">
-                            <blockquote class="font-serif text-stone-800 italic text-sm leading-relaxed mb-3">
-                                "Civilization is the progress toward a society of privacy. The savage's whole existence
-                                is public, ruled by the laws of his tribe. Civilization is the process of setting man
-                                free from men."
-                            </blockquote>
-                            <cite
-                                class="text-xs font-bold text-stone-500 uppercase tracking-widest not-italic flex items-center gap-2">
-                                <i data-lucide="feather" class="w-3 h-3"></i>
-                                Ayn Rand, <span class="text-red-900">The Fountainhead</span>
-                            </cite>
-                        </div>
                     </div>
 
                     <div class="flex-1 w-full md:border-l border-stone-100 md:pl-12 space-y-8">
@@ -210,6 +196,18 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Ayn Rand Tribute -->
+            <div class="max-w-3xl mx-auto mt-24 text-center px-6">
+                <i data-lucide="feather" class="w-6 h-6 text-stone-400 mx-auto mb-4"></i>
+                <blockquote class="font-serif text-lg md:text-xl text-stone-800 leading-relaxed mb-6">
+                    "Civilization is the progress toward a society of privacy. The savage's whole existence is public,
+                    ruled by the laws of his tribe. Civilization is the process of setting man free from men."
+                </blockquote>
+                <cite class="text-xs font-bold text-stone-500 uppercase tracking-widest not-italic">
+                    — Ayn Rand, <span class="text-red-900">The Fountainhead</span>
+                </cite>
             </div>
 
             <!-- Onboarding Steps -->
@@ -265,7 +263,7 @@
             <div class="flex justify-center items-center gap-6 mb-4">
                 <span>Est. 2024 • Decentralized • Encrypted • Unstoppable</span>
             </div>
-            <button onclick="cloneNode()" class="text-stone-400 hover:text-red-900 transition-colors flex items-center gap-2 mx-auto uppercase tracking-widest font-bold">
+            <button onclick="replicateNode()" class="text-stone-400 hover:text-red-900 transition-colors flex items-center gap-2 mx-auto uppercase tracking-widest font-bold">
                 <i data-lucide="git-fork" class="w-3 h-3"></i> Clone Node
             </button>
         </footer>
@@ -855,13 +853,16 @@
             document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function cloneNode() {
-            const htmlContent = document.documentElement.outerHTML;
+        function replicateNode() {
+            let htmlContent = document.documentElement.outerHTML;
+            if (!htmlContent.startsWith("<!DOCTYPE")) {
+                htmlContent = '<!DOCTYPE html>\n' + htmlContent;
+            }
             const blob = new Blob([htmlContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'index.html';
+            a.download = 'alexandria-node.html';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
