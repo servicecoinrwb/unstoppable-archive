@@ -266,9 +266,9 @@
                         </button>
                         <!-- Manual Verification -->
                         <div class="mt-4 pt-3 border-t border-stone-300">
-                            <label class="block text-[10px] font-bold text-stone-500 mb-1 uppercase tracking-widest text-left">Manual Check (TXID)</label>
+                            <label class="block text-[10px] font-bold text-stone-500 mb-1 uppercase tracking-widest text-left">Manual Check (TXID / Link)</label>
                             <div class="flex gap-2">
-                                <input type="text" id="manual-verify-tx" placeholder="Enter TX ID..." class="flex-1 text-xs bg-white border border-stone-400 rounded-none px-2 py-1 focus:outline-none focus:border-stone-900 font-mono">
+                                <input type="text" id="manual-verify-tx" placeholder="Paste Transaction ID or ViewBlock Link..." class="flex-1 text-xs bg-white border border-stone-400 rounded-none px-2 py-1 focus:outline-none focus:border-stone-900 font-mono">
                                 <button onclick="manualVerify()" class="text-[10px] bg-stone-200 hover:bg-stone-300 border border-stone-400 px-2 font-bold uppercase">Check</button>
                             </div>
                         </div>
@@ -602,7 +602,7 @@
 
                 <!-- Chat UI -->
                 <div class="bg-white border-2 border-stone-800 h-[500px] flex flex-col shadow-[8px_8px_0px_rgba(0,0,0,0.1)]">
-                    <div class="flex-1 p-6 overflow-y-auto space-y-4 bg-[#fdfbf7]">
+                    <div id="chat-history" class="flex-1 p-6 overflow-y-auto space-y-4 bg-[#fdfbf7]">
                         <!-- Message 1 -->
                         <div class="flex gap-3">
                             <div class="w-8 h-8 bg-stone-900 text-white flex items-center justify-center text-[10px] font-bold font-mono">HQ</div>
@@ -619,8 +619,8 @@
                     </div>
                     <div class="p-4 border-t-2 border-stone-800 bg-[#f0f0e6]">
                         <div class="flex gap-2">
-                            <input type="text" placeholder="Type message..." class="flex-1 bg-white border border-stone-400 px-4 py-2 text-sm focus:outline-none focus:border-stone-900 text-stone-900 font-mono">
-                            <button class="bg-red-800 text-white px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-red-700 font-mono border border-red-900">Transmit</button>
+                            <input id="chat-input" type="text" placeholder="Type message..." class="flex-1 bg-white border border-stone-400 px-4 py-2 text-sm focus:outline-none focus:border-stone-900 text-stone-900 font-mono">
+                            <button onclick="sendChatMessage()" class="bg-red-800 text-white px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-red-700 font-mono border border-red-900">Transmit</button>
                         </div>
                     </div>
                 </div>
@@ -628,8 +628,57 @@
         </main>
     </div>
 
-    <!-- GATEWAY SELECTOR MODAL & INSTRUCTIONS MODAL (Keeping Structure, updated classes) -->
-    <!-- ... (Scripts largely same, just updated Tag values for "Mint-BADGE" instead of "Mint-ALEX") ... -->
+    <!-- GATEWAY SELECTOR MODAL -->
+    <div id="gateway-modal"
+        class="hidden absolute top-0 left-0 w-full h-full bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white border border-stone-300 rounded-sm p-8 max-w-sm w-full shadow-2xl relative">
+            <button onclick="toggleGatewaySelector()"
+                class="absolute top-4 right-4 text-stone-400 hover:text-stone-900"><i data-lucide="x"
+                    class="w-5 h-5"></i></button>
+            <h2 class="text-lg font-bold text-stone-900 mb-6 flex items-center gap-2 font-serif uppercase"><i
+                    data-lucide="globe" class="w-5 h-5 text-red-900"></i> Select Node</h2>
+            <p class="text-xs text-stone-500 mb-6 leading-relaxed">If the current access point is restricted, switch
+                uplink. The archives persist across all nodes.</p>
+
+            <div class="space-y-3 font-mono text-xs">
+                <button onclick="setGateway('arweave.net')"
+                    class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
+                    <span>arweave.net <span class="text-stone-400 ml-2">// DEFAULT</span></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-900 opacity-0 group-hover:opacity-100"></span>
+                </button>
+                <button onclick="setGateway('ar-io.net')"
+                    class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
+                    <span>ar-io.net <span class="text-stone-400 ml-2">// AR.IO</span></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-900 opacity-0 group-hover:opacity-100"></span>
+                </button>
+                <button onclick="setGateway('g8way.io')"
+                    class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
+                    <span>g8way.io <span class="text-stone-400 ml-2">// ALT</span></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-900 opacity-0 group-hover:opacity-100"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- INSTRUCTIONS MODAL -->
+    <div id="instructions-modal"
+        class="hidden absolute top-0 left-0 w-full h-full bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white border border-stone-300 rounded-sm p-8 max-w-lg w-full shadow-2xl relative">
+            <button onclick="toggleInstructions()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-900"><i
+                    data-lucide="x" class="w-5 h-5"></i></button>
+            <h2 class="text-xl font-bold text-stone-900 mb-6 font-serif uppercase">Field Guide</h2>
+            <div class="space-y-4 text-xs text-stone-600 font-mono leading-relaxed">
+                <p><strong class="text-stone-900">ARCHIVIST MODE:</strong> Uses local device wallet. Ideal for field ops
+                    where contributors lack crypto.</p>
+                <p><strong class="text-stone-900">VISITOR MODE:</strong> Contributors connect own wallet. Ideal for
+                    public web access.</p>
+                <p><strong class="text-stone-900">ENCRYPTION:</strong> "Private Mode" uses AES/RSA hybrid encryption.
+                    Only your key can decrypt.</p>
+                <p><strong class="text-stone-900">SENSITIVE CONTENT:</strong> Mark graphic records. They will be
+                    obscured by default in the catalogue.</p>
+            </div>
+        </div>
+    </div>
 
     <script>
         // CONFIG
@@ -763,6 +812,50 @@
             alert("Case File Cloned.");
         }
 
+        // --- CHAT LOGIC ---
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if(!message) return;
+            
+            if(!userAddress && !(await connectUserWallet())) return;
+
+            // Optimistic UI update
+            const chatHistory = document.getElementById('chat-history');
+            const newMsg = document.createElement('div');
+            newMsg.className = "flex gap-3";
+            newMsg.innerHTML = `
+                <div class="w-8 h-8 bg-stone-200 rounded-sm flex items-center justify-center text-[10px] font-bold text-stone-600 font-mono">YOU</div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs font-bold text-stone-900 font-mono">Officer</span>
+                        <span class="text-[10px] text-stone-500 font-mono">${userAddress.slice(0,6)}...</span>
+                    </div>
+                    <div class="bg-white p-3 border border-stone-300 text-sm text-stone-800 shadow-sm font-mono typewriter">${message}</div>
+                </div>
+            `;
+            chatHistory.appendChild(newMsg);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            input.value = '';
+
+            // Send to Arweave
+            try {
+                let transaction = await arweave.createTransaction({
+                    data: message
+                });
+                transaction.addTag('App-Name', 'Unstoppable-Portal');
+                transaction.addTag('Type', 'Chat-Message');
+                transaction.addTag('Unix-Time', Date.now());
+                
+                await arweave.transactions.sign(transaction);
+                await arweave.transactions.post(transaction);
+                console.log("Message broadcasted to chain.");
+            } catch(e) {
+                console.error("Transmission failed", e);
+                alert("Radio Silence: Message failed to send to chain.");
+            }
+        }
+
         // --- COUNCIL / MEMBERSHIP LOGIC ---
         async function checkMembership() {
             if(!userAddress) {
@@ -889,7 +982,11 @@
         }
 
         async function manualVerify() {
-            const txid = document.getElementById('manual-verify-tx').value.trim();
+            let txid = document.getElementById('manual-verify-tx').value.trim();
+            // Clean up if user pasted a URL
+            if(txid.includes('/tx/')) {
+                txid = txid.split('/tx/')[1];
+            }
             if (!txid) { alert("Enter ID."); return; }
             try {
                 const status = await arweave.transactions.getStatus(txid);
@@ -898,7 +995,7 @@
                      isKioskUnlocked = true;
                      localStorage.setItem('kiosk_unlocked', 'true');
                      showUnlockedKiosk();
-                } else { alert("ID Invalid."); }
+                } else { alert("ID Invalid or Not Mined Yet."); }
             } catch(e) { alert("Error."); }
         }
 
@@ -1008,6 +1105,8 @@
             let ownerFilter = filterOwner ? `owners: ["${filterOwner}"],` : '';
             if (feedMode === 'curated' && !filterOwner) { const librariansStr = APP_CONFIG.LIBRARIANS.map(l => `"${l}"`).join(','); ownerFilter = `owners: [${librariansStr}],`; }
             
+            // NOTE: Using "Unstoppable-Portal" tag for backward compatibility with previous uploads. 
+            // If you want to segment new "Bureau" uploads only, change this value in both processUpload() and here.
             const query = { query: `query { transactions(${ownerFilter} tags: [{ name: "App-Name", values: ["Unstoppable-Portal"] }] first: 12) { edges { node { id tags { name value } } } } }` };
             try {
                 const res = await fetch(`https://${currentGateway}/graphql`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(query) });
