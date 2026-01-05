@@ -1317,8 +1317,8 @@
         // --- GALLERY LOGIC (Updated for Dragnet Mode) ---
         function setFeedMode(mode) {
             feedMode = mode;
-            if (mode === 'raw') { document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-red-700 border-b-2 border-red-700 font-mono"; document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors font-mono"; } 
-            else { document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors font-mono"; document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-red-700 border-b-2 border-red-700 font-mono"; }
+            if (mode === 'raw') { document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-red-800 border-b-2 border-red-800 font-mono"; document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors font-mono"; } 
+            else { document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors font-mono"; document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-red-800 border-b-2 border-red-800 font-mono"; }
             loadGallery();
         }
 
@@ -1332,8 +1332,9 @@
             let ownerFilter = filterOwner ? `owners: ["${filterOwner}"],` : '';
             if (feedMode === 'curated' && !filterOwner) { const librariansStr = APP_CONFIG.LIBRARIANS.map(l => `"${l}"`).join(','); ownerFilter = `owners: [${librariansStr}],`; }
             
-            // NOTE: Using "Unstoppable-Portal" tag for backward compatibility with previous uploads. 
-            // If you want to segment new "Bureau" uploads only, change this value in both processUpload() and here.
+            // Check if current user is an Officer (Librarian)
+            const isOfficer = APP_CONFIG.LIBRARIANS.includes(userAddress);
+
             const query = { query: `query { transactions(${ownerFilter} tags: [{ name: "App-Name", values: ["Unstoppable-Portal"] }] first: 12) { edges { node { id tags { name value } } } } }` };
             try {
                 const res = await fetch(`https://${currentGateway}/graphql`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(query) });
@@ -1350,13 +1351,63 @@
                     const blurClass = (isSensitive && isSafeMode) ? 'blur-sm grayscale opacity-30 hover:opacity-100 hover:grayscale-0 hover:blur-0 transition-all duration-500' : '';
                     const warningOverlay = (isSensitive && isSafeMode) ? `<div class="absolute inset-0 flex items-center justify-center text-red-700 font-bold text-xs bg-stone-100/90 z-20 pointer-events-none border border-red-700 m-1 uppercase tracking-widest font-mono transform rotate-12" style="border-width: 4px; border-style: double;">CONFIDENTIAL</div>` : '';
                     
+                    // Stamp Button Logic: Only show if Officer AND in Raw feed
+                    const stampBtn = (isOfficer && feedMode === 'raw') ? 
+                        `<button onclick="stampEvidence('${id}')" class="w-full bg-red-800 hover:bg-red-700 text-white text-[10px] font-bold uppercase py-2 border-t-2 border-stone-800 tracking-widest font-mono flex items-center justify-center gap-2"><i data-lucide="stamp" class="w-3 h-3"></i> STAMP [VERIFY]</button>` : '';
+
                     const card = document.createElement('div');
-                    card.className = "bg-white border-2 border-stone-800 p-4 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.2)] transition-all relative overflow-hidden group";
-                    card.innerHTML = `${warningOverlay}<div class="${blurClass}"><div class="flex items-start justify-between mb-4"><div class="p-1 bg-stone-200 border border-stone-400 text-stone-600"><i data-lucide="${isEncrypted ? 'lock' : 'file-text'}" class="w-5 h-5"></i></div><div class="flex gap-2">${isSensitive ? '<span class="text-[10px] text-red-700 font-bold bg-white px-2 py-1 border border-red-700 uppercase font-mono transform -rotate-2">REDACTED</span>' : ''}<span class="text-[10px] text-stone-600 font-bold bg-stone-100 px-2 py-1 border border-stone-300 font-mono">${type.split('/')[1] || 'FILE'}</span></div></div><h4 class="font-bold text-stone-900 mb-1 truncate font-mono text-sm leading-tight tracking-wide border-b border-stone-300 pb-1" title="${title}">${title}</h4><p class="text-[10px] text-stone-500 font-mono mb-4 mt-2 truncate uppercase">CASE ID: ${id}</p><div class="flex gap-2"><a href="https://${currentGateway}/${id}" target="_blank" class="flex-1 bg-stone-800 hover:bg-stone-700 text-center py-2 text-xs font-bold text-white transition-colors relative z-30 uppercase tracking-wide font-mono">${isEncrypted ? 'Decrypt' : 'Review'}</a></div></div>`;
+                    card.className = "bg-white border-2 border-stone-800 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.2)] transition-all relative overflow-hidden group flex flex-col";
+                    card.innerHTML = `
+                        ${warningOverlay}
+                        <div class="p-4 flex-1 ${blurClass}">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="p-1 bg-stone-200 border border-stone-400 text-stone-600"><i data-lucide="${isEncrypted ? 'lock' : 'file-text'}" class="w-5 h-5"></i></div>
+                                <div class="flex gap-2">
+                                    ${isSensitive ? '<span class="text-[10px] text-red-700 font-bold bg-white px-2 py-1 border border-red-700 uppercase font-mono transform -rotate-2">REDACTED</span>' : ''}
+                                    <span class="text-[10px] text-stone-600 font-bold bg-stone-100 px-2 py-1 border border-stone-300 font-mono">${type.split('/')[1] || 'FILE'}</span>
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-stone-900 mb-1 truncate font-mono text-sm leading-tight tracking-wide border-b border-stone-300 pb-1" title="${title}">${title}</h4>
+                            <p class="text-[10px] text-stone-500 font-mono mb-4 mt-2 truncate uppercase">CASE ID: ${id}</p>
+                            <div class="flex gap-2">
+                                <a href="https://${currentGateway}/${id}" target="_blank" class="flex-1 bg-stone-800 hover:bg-stone-700 text-center py-2 text-xs font-bold text-white transition-colors relative z-30 uppercase tracking-wide font-mono">${isEncrypted ? 'Decrypt' : 'Review'}</a>
+                            </div>
+                        </div>
+                        ${stampBtn}
+                    `;
                     grid.appendChild(card);
                 });
                 lucide.createIcons();
             } catch (e) { console.error(e); grid.innerHTML = '<div class="col-span-full text-center text-red-600 font-mono">Teletype Error. Network Down.</div>'; }
+        }
+
+        async function stampEvidence(originalId) {
+            if(!confirm("Officer: Confirm verification stamp? This will re-file the evidence under your official Bureau ID.")) return;
+            
+            try {
+                // 1. Fetch Original Data
+                const dataRes = await fetch(`https://${currentGateway}/${originalId}`);
+                const blob = await dataRes.blob();
+                const arrayBuffer = await blob.arrayBuffer();
+                
+                // 2. Prepare Transaction
+                let transaction = await arweave.createTransaction({ data: arrayBuffer });
+                transaction.addTag('App-Name', 'Unstoppable-Portal');
+                transaction.addTag('Type', 'Verified-Evidence');
+                transaction.addTag('Original-Case-ID', originalId);
+                transaction.addTag('Action', 'Bureau-Stamp');
+                transaction.addTag('Content-Type', blob.type);
+                transaction.addTag('Title', `VERIFIED: Case ${originalId.slice(0,6)}`);
+
+                // 3. Sign & Post
+                await arweave.transactions.sign(transaction);
+                await arweave.transactions.post(transaction);
+                
+                alert("STAMP APPLIED. Evidence is now moving to the Verified Locker.");
+            } catch(e) {
+                console.error(e);
+                alert("Stamping Failed: " + e.message);
+            }
         }
 
         // --- HELPERS ---
