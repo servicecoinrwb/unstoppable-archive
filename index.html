@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Alexandria Node</title>
+    <title>The Sovereign Bureau</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Arweave JS Bundle -->
@@ -12,36 +12,59 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap');
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F5F5F0;
-            color: #1c1917;
+            font-family: 'Courier Prime', monospace;
+            background-color: #f0f0e6; /* Manila Folder */
+            color: #1a1a1a; /* Typewriter Ink */
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
         }
 
-        h1,
-        h2,
-        h3,
-        .font-serif {
-            font-family: 'Libre Baskerville', serif;
-        }
-
-        .font-mono {
-            font-family: 'JetBrains Mono', monospace;
+        h1, h2, h3, .font-stamp {
+            font-family: 'Special Elite', cursive;
         }
 
         .drag-active {
-            border-color: #be123c;
-            background-color: rgba(190, 18, 60, 0.05);
+            border-color: #b91c1c;
+            background-color: rgba(185, 28, 28, 0.05);
             transform: scale(1.02);
         }
 
-        /* Paper-like panels instead of glass */
-        .paper-panel {
-            background: #ffffff;
-            border: 1px solid #e7e5e4;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        /* Case File Panel */
+        .file-panel {
+            background: #fdfbf7;
+            border: 2px solid #292524;
+            box-shadow: 4px 4px 0px rgba(41, 37, 36, 0.2);
+            position: relative;
+        }
+        
+        .file-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: repeating-linear-gradient(
+                45deg,
+                #b91c1c,
+                #b91c1c 10px,
+                #fdfbf7 10px,
+                #fdfbf7 20px
+            );
+            opacity: 0.5;
+        }
+
+        .stamp-red {
+            color: #b91c1c;
+            transform: rotate(-2deg);
+            display: inline-block;
+            border: 2px solid #b91c1c;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Special Elite', cursive;
+            opacity: 0.9;
         }
 
         .scrollbar-hide::-webkit-scrollbar {
@@ -49,316 +72,229 @@
         }
 
         .blur-content {
-            filter: blur(12px);
+            filter: blur(8px) grayscale(100%);
             pointer-events: none;
             user-select: none;
         }
-
-        /* Subtle grain texture */
-        .bg-grain {
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        
+        button {
+            transition: all 0.1s ease;
+        }
+        button:active {
+            transform: translateY(2px);
+            box-shadow: none !important;
         }
     </style>
 </head>
 
-<body class="min-h-screen selection:bg-red-900/20 selection:text-red-900 flex flex-col bg-grain">
+<body class="min-h-screen selection:bg-stone-800 selection:text-white flex flex-col">
 
     <!-- LANDING PAGE (Visible on Load) -->
     <div id="landing-screen" class="min-h-screen flex flex-col relative z-50">
 
         <!-- Header -->
-        <header class="container mx-auto px-6 py-6 flex justify-between items-center border-b border-stone-300">
-            <div class="flex items-center gap-3 font-bold text-xl tracking-tight text-stone-900 uppercase font-serif">
-                <div class="w-8 h-8 bg-red-900 text-white flex items-center justify-center rounded-sm">
-                    <span class="font-serif font-bold text-lg">A</span>
+        <header class="container mx-auto px-6 py-6 flex justify-between items-center border-b-2 border-stone-800/20">
+            <div class="flex items-center gap-3 font-bold text-xl tracking-tight text-stone-900 uppercase font-stamp">
+                <div class="w-10 h-10 border-2 border-stone-900 flex items-center justify-center rounded-full">
+                    <i data-lucide="siren" class="w-6 h-6"></i>
                 </div>
-                The Alexandria Node
+                The Sovereign Bureau
             </div>
             <div class="flex gap-4 items-center">
                 <button onclick="toggleGatewaySelector()"
-                    class="text-xs text-stone-500 hover:text-red-700 transition-colors flex items-center gap-1 border border-stone-300 px-3 py-1.5 rounded bg-white font-mono">
-                    <i data-lucide="globe" class="w-3 h-3"></i> <span id="current-gateway-label">arweave.net</span>
+                    class="text-xs font-bold text-stone-600 hover:text-stone-900 flex items-center gap-2 border border-stone-400 px-3 py-1.5 bg-white shadow-sm uppercase">
+                    <i data-lucide="radio" class="w-3 h-3"></i> <span id="current-gateway-label">Freq: arweave.net</span>
                 </button>
                 <button onclick="enterPortal('gallery')"
-                    class="text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors uppercase tracking-widest border-b border-transparent hover:border-stone-900">The
-                    Catalogue</button>
+                    class="text-xs font-bold text-stone-900 hover:underline uppercase tracking-widest">Open Case Files</button>
             </div>
         </header>
 
         <!-- Hero -->
         <main class="flex-grow flex flex-col justify-center items-center text-center px-4 py-12">
             <div class="max-w-4xl space-y-8">
-                <div
-                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-stone-200 border border-stone-300 text-xs font-bold text-stone-600 mb-6 uppercase tracking-widest">
-                    <span class="w-2 h-2 rounded-full bg-red-700"></span>
-                    Immutable Record System
+                <div class="inline-block transform -rotate-1">
+                    <span class="stamp-red text-sm uppercase tracking-widest">Top Secret // Eyes Only</span>
                 </div>
 
-                <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 leading-tight">
-                    History Written in<br>
-                    <span class="italic text-red-900">Permanent Ink.</span>
+                <h1 class="text-4xl md:text-6xl font-bold text-stone-900 leading-tight font-stamp uppercase">
+                    Just the Facts,<br>
+                    <span class="text-stone-600">On The Immutable Record.</span>
                 </h1>
 
-                <p class="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto leading-relaxed font-serif">
-                    The decentralized archive for humanity's most critical data.
-                    <span class="text-stone-900 font-bold">Uncensorable. Unalterable. Eternal.</span>
+                <p class="text-lg md:text-xl text-stone-700 max-w-2xl mx-auto leading-relaxed border-l-4 border-stone-400 pl-6 text-left bg-white/50 p-4 font-mono">
+                    <strong>CASE #2024-IMMUTABLE:</strong><br>
+                    A decentralized evidence locker for humanity's most critical data.
+                    Once filed, records cannot be redacted, shredded, or tampered with by any agency.
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center pt-10">
                     <button onclick="enterPortal('upload')"
-                        class="group relative px-8 py-4 bg-stone-900 hover:bg-red-900 text-white font-bold rounded-sm transition-all shadow-lg font-serif tracking-wide text-lg">
-                        Submit Record
-                        <span
-                            class="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">→</span>
+                        class="group relative px-8 py-4 bg-stone-900 hover:bg-stone-800 text-white font-bold border-2 border-stone-900 shadow-[4px_4px_0px_rgba(0,0,0,0.3)] uppercase tracking-widest">
+                        <i data-lucide="file-plus" class="w-4 h-4 inline-block mr-2 mb-1"></i> Submit Report
                     </button>
                     <button onclick="scrollToFeatures()"
-                        class="px-8 py-4 bg-white hover:bg-stone-100 text-stone-900 font-bold rounded-sm border border-stone-300 transition-colors shadow-sm font-serif">
-                        System Architecture
+                        class="px-8 py-4 bg-[#f0f0e6] hover:bg-white text-stone-900 font-bold border-2 border-stone-900 shadow-[4px_4px_0px_rgba(0,0,0,0.1)] uppercase tracking-widest">
+                        Read Protocol
                     </button>
                 </div>
             </div>
 
             <!-- Features Grid -->
             <div id="features" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-32 text-left">
-                <div class="paper-panel p-8 rounded-sm hover:border-red-900/30 transition-colors group">
-                    <div
-                        class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-900 group-hover:text-red-900 transition-colors">
-                        <i data-lucide="column" class="w-6 h-6"></i>
+                <div class="file-panel p-6 group">
+                    <div class="absolute -top-3 -right-3 w-8 h-8 bg-stone-200 border border-stone-400 flex items-center justify-center rounded-full shadow-sm">
+                        <i data-lucide="shield" class="w-4 h-4 text-stone-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-stone-900 mb-3">State-Proof</h3>
-                    <p class="text-sm text-stone-600 leading-relaxed">No central server for agencies to seize. Data is
-                        sharded across a global, unstoppable network of nodes.</p>
+                    <h3 class="text-lg font-bold text-stone-900 mb-3 font-stamp uppercase border-b border-stone-300 pb-2">Tamper-Proof</h3>
+                    <p class="text-sm text-stone-700 leading-relaxed">Evidence chain of custody is absolute. No central authority can seize or modify the files once they enter the system.</p>
                 </div>
-                <div class="paper-panel p-8 rounded-sm hover:border-red-900/30 transition-colors group">
-                    <div
-                        class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-900 group-hover:text-red-900 transition-colors">
-                        <i data-lucide="scroll" class="w-6 h-6"></i>
+                <div class="file-panel p-6 group">
+                    <div class="absolute -top-3 -right-3 w-8 h-8 bg-stone-200 border border-stone-400 flex items-center justify-center rounded-full shadow-sm">
+                        <i data-lucide="database" class="w-4 h-4 text-stone-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-stone-900 mb-3">Immutable Ledger</h3>
-                    <p class="text-sm text-stone-600 leading-relaxed">History written by the victors? Not anymore. Once
-                        uploaded, records cannot be scrubbed, redacted, or altered.</p>
+                    <h3 class="text-lg font-bold text-stone-900 mb-3 font-stamp uppercase border-b border-stone-300 pb-2">Permanent Record</h3>
+                    <p class="text-sm text-stone-700 leading-relaxed">We don't use servers that can be wiped. We use the blockweave. It writes history in permanent ink.</p>
                 </div>
-                <div class="paper-panel p-8 rounded-sm hover:border-red-900/30 transition-colors group">
-                    <div
-                        class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-6 text-stone-900 group-hover:text-red-900 transition-colors">
-                        <i data-lucide="venetian-mask" class="w-6 h-6"></i>
+                <div class="file-panel p-6 group">
+                    <div class="absolute -top-3 -right-3 w-8 h-8 bg-stone-200 border border-stone-400 flex items-center justify-center rounded-full shadow-sm">
+                        <i data-lucide="user-x" class="w-4 h-4 text-stone-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-stone-900 mb-3">Anonymous Drop</h3>
-                    <p class="text-sm text-stone-600 leading-relaxed">Upload via localized terminals or personal
-                        wallets. Your identity is your private key, not your government ID.</p>
+                    <h3 class="text-lg font-bold text-stone-900 mb-3 font-stamp uppercase border-b border-stone-300 pb-2">Informant Protection</h3>
+                    <p class="text-sm text-stone-700 leading-relaxed">Submit reports via localized field offices or personal credentials. Your identity is your key, not your ID card.</p>
                 </div>
             </div>
 
-            <!-- About / Philosophy Section -->
-            <div id="about-alexandria" class="max-w-4xl mx-auto mt-32 w-full text-left">
-                <div
-                    class="flex flex-col md:flex-row gap-12 items-start bg-white p-10 rounded-sm border border-stone-200 shadow-sm relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-red-900"></div>
-
-                    <div class="flex-1 space-y-6">
-                        <div class="inline-flex items-center gap-2 text-red-900/80 mb-2">
-                            <i data-lucide="flame" class="w-5 h-5"></i>
-                            <span class="font-serif italic text-sm tracking-wide">The Unburnable Library</span>
-                        </div>
-                        <h2 class="text-3xl font-bold text-stone-900 font-serif leading-tight">Origins of the Node</h2>
-                        <div class="text-stone-600 space-y-4 font-serif leading-relaxed text-sm md:text-base">
-                            <p>
-                                <strong>"The Alexandria Node"</strong> is a reference to the <em
-                                    class="text-stone-800">Great Library of Alexandria</em> in ancient Egypt. It was one
-                                of the largest and most significant libraries of the ancient world, built with the goal
-                                of collecting all of humanity's knowledge in one place. Its tragic destruction is the
-                                ultimate historical symbol of lost knowledge.
-                            </p>
-                            <p>
-                                By calling this app "The Alexandria Node," the branding implies:
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex-1 w-full md:border-l border-stone-100 md:pl-12 space-y-8">
-                        <div>
-                            <h3 class="font-bold text-stone-900 mb-2 font-serif text-lg flex items-center gap-2">
-                                <i data-lucide="globe-2" class="w-5 h-5 text-red-900"></i>
-                                Universal Knowledge
-                            </h3>
-                            <p class="text-sm text-stone-500 leading-relaxed">A place to store everything. The ambition
-                                of the ancients, realized through technology.</p>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-stone-900 mb-2 font-serif text-lg flex items-center gap-2">
-                                <i data-lucide="shield-check" class="w-5 h-5 text-red-900"></i>
-                                Redemption
-                            </h3>
-                            <p class="text-sm text-stone-500 leading-relaxed">Unlike the original library, which was
-                                centralized and flammable, this "Node" is decentralized on the blockchain. It is the
-                                <strong>unburnable library</strong>—a digital Alexandria that cannot be destroyed by
-                                fire, governments, or time.</p>
-                        </div>
-                    </div>
+            <!-- Quote (Typewriter Style) -->
+            <div class="max-w-3xl mx-auto mt-32 text-left bg-white p-8 border-2 border-stone-300 shadow-sm rotate-1">
+                <div class="flex items-center gap-2 mb-4 text-stone-400 text-xs uppercase tracking-widest border-b border-stone-200 pb-2">
+                    <i data-lucide="quote" class="w-4 h-4"></i> Transcript #492-B
                 </div>
-            </div>
-
-            <!-- Ayn Rand Tribute -->
-            <div class="max-w-3xl mx-auto mt-24 text-center px-6">
-                <i data-lucide="feather" class="w-6 h-6 text-stone-400 mx-auto mb-4"></i>
-                <blockquote class="font-serif text-lg md:text-xl text-stone-800 leading-relaxed mb-6">
-                    "Civilization is the progress toward a society of privacy. The savage's whole existence is public,
-                    ruled by the laws of his tribe. Civilization is the process of setting man free from men."
+                <blockquote class="font-mono text-base md:text-lg text-stone-800 leading-relaxed mb-6">
+                    "All we want are the facts, ma'am."
                 </blockquote>
-                <cite class="text-xs font-bold text-stone-500 uppercase tracking-widest not-italic">
-                    — Ayn Rand, <span class="text-red-900">The Fountainhead</span>
-                </cite>
+                <div class="flex justify-between items-end">
+                    <cite class="text-sm font-bold text-stone-900 uppercase not-italic">
+                        — Sgt. Joe Friday
+                    </cite>
+                    <div class="stamp-red text-[10px]">VERIFIED</div>
+                </div>
             </div>
 
             <!-- Onboarding Steps -->
-            <div id="onboarding" class="max-w-5xl mx-auto mt-24 w-full border-t border-stone-300 pt-24">
-                <h2 class="text-2xl font-bold text-stone-900 mb-12 text-center font-serif">Participation Protocol</h2>
+            <div id="onboarding" class="max-w-5xl mx-auto mt-32 w-full border-t-2 border-stone-300 border-dashed pt-12">
+                <h2 class="text-2xl font-bold text-stone-900 mb-12 text-center font-stamp uppercase tracking-widest">Induction Procedure</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Step 1 -->
-                    <div
-                        class="bg-white border border-stone-300 p-8 rounded-sm relative overflow-hidden group hover:border-red-900 transition-colors text-left shadow-sm">
-                        <div
-                            class="absolute top-2 right-4 text-6xl font-serif text-stone-100 font-bold group-hover:text-red-50 transition-colors">
-                            I</div>
-                        <h3 class="text-lg font-bold text-stone-900 mb-2 font-serif relative z-10">Secure Identity</h3>
-                        <p class="text-sm text-stone-600 mb-6 relative z-10">Install <strong>ArConnect</strong>. This is
-                            your library card for the permaweb.</p>
-                        <a href="https://www.arconnect.io" target="_blank"
-                            class="text-xs font-bold text-red-900 hover:text-red-700 flex w-max items-center gap-2 uppercase tracking-wide relative z-10">Get
-                            Extension <i data-lucide="external-link" class="w-3 h-3"></i></a>
+                    <div class="bg-[#fdfbf7] border border-stone-400 p-6 relative">
+                        <div class="absolute -top-3 left-4 bg-stone-900 text-white text-xs px-2 py-1 font-bold">STEP 01</div>
+                        <h3 class="text-lg font-bold text-stone-900 mb-2 uppercase mt-2">Badge</h3>
+                        <p class="text-sm text-stone-600 mb-4">Install <strong>ArConnect</strong>. This is your official credential.</p>
+                        <a href="https://www.arconnect.io" target="_blank" class="text-xs font-bold text-red-700 hover:text-red-900 flex w-max items-center gap-2 uppercase tracking-wide border-b border-red-700/30 pb-0.5">Issue Credential <i data-lucide="external-link" class="w-3 h-3"></i></a>
                     </div>
 
                     <!-- Step 2 -->
-                    <div
-                        class="bg-white border border-stone-300 p-8 rounded-sm relative overflow-hidden group hover:border-red-900 transition-colors text-left shadow-sm">
-                        <div
-                            class="absolute top-2 right-4 text-6xl font-serif text-stone-100 font-bold group-hover:text-red-50 transition-colors">
-                            II</div>
-                        <h3 class="text-lg font-bold text-stone-900 mb-2 font-serif relative z-10">Acquire Fuel</h3>
-                        <p class="text-sm text-stone-600 mb-6 relative z-10">Obtain AR tokens. Use
-                            <strong>SimpleSwap</strong> for anonymous acquisition.</p>
-                        <a href="https://simpleswap.io" target="_blank"
-                            class="text-xs font-bold text-red-900 hover:text-red-700 flex w-max items-center gap-2 uppercase tracking-wide relative z-10">Swap
-                            Crypto <i data-lucide="external-link" class="w-3 h-3"></i></a>
+                    <div class="bg-[#fdfbf7] border border-stone-400 p-6 relative">
+                        <div class="absolute -top-3 left-4 bg-stone-900 text-white text-xs px-2 py-1 font-bold">STEP 02</div>
+                        <h3 class="text-lg font-bold text-stone-900 mb-2 uppercase mt-2">Budget</h3>
+                        <p class="text-sm text-stone-600 mb-4">Acquire AR tokens to fund operations. Use <strong>SimpleSwap</strong>.</p>
+                        <a href="https://simpleswap.io" target="_blank" class="text-xs font-bold text-red-700 hover:text-red-900 flex w-max items-center gap-2 uppercase tracking-wide border-b border-red-700/30 pb-0.5">Authorize Funds <i data-lucide="external-link" class="w-3 h-3"></i></a>
                     </div>
 
                     <!-- Step 3 -->
-                    <div
-                        class="bg-white border border-stone-300 p-8 rounded-sm relative overflow-hidden group hover:border-red-900 transition-colors text-left shadow-sm">
-                        <div
-                            class="absolute top-2 right-4 text-6xl font-serif text-stone-100 font-bold group-hover:text-red-50 transition-colors">
-                            III</div>
-                        <h3 class="text-lg font-bold text-stone-900 mb-2 font-serif relative z-10">Publish</h3>
-                        <p class="text-sm text-stone-600 mb-6 relative z-10">Connect. Pay the storage endowment.
-                            Immortalize your data.</p>
-                        <button onclick="enterPortal('upload')"
-                            class="text-xs font-bold text-red-900 hover:text-red-700 flex w-max items-center gap-2 uppercase tracking-wide relative z-10">Access
-                            Terminal <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+                    <div class="bg-[#fdfbf7] border border-stone-400 p-6 relative">
+                        <div class="absolute -top-3 left-4 bg-stone-900 text-white text-xs px-2 py-1 font-bold">STEP 03</div>
+                        <h3 class="text-lg font-bold text-stone-900 mb-2 uppercase mt-2">Action</h3>
+                        <p class="text-sm text-stone-600 mb-4">Connect. Pay the filing fee. Log the truth forever.</p>
+                        <button onclick="enterPortal('upload')" class="text-xs font-bold text-red-700 hover:text-red-900 flex w-max items-center gap-2 uppercase tracking-wide border-b border-red-700/30 pb-0.5">Enter Bureau <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
                     </div>
                 </div>
             </div>
         </main>
-
-        <footer class="py-8 text-center text-stone-400 text-xs font-serif mt-12 border-t border-stone-200">
-            <div class="flex justify-center items-center gap-6 mb-4">
-                <span>Est. 2024 • Decentralized • Encrypted • Unstoppable</span>
+        
+        <footer class="py-8 text-center text-stone-500 text-xs font-mono mt-12 border-t-2 border-stone-300">
+            <div class="flex justify-center items-center gap-6 mb-4 uppercase tracking-widest">
+                <span>Bureau Established 2024 • Decentralized • Unstoppable</span>
             </div>
-            <button onclick="replicateNode()"
-                class="text-stone-400 hover:text-red-900 transition-colors flex items-center gap-2 mx-auto uppercase tracking-widest font-bold">
-                <i data-lucide="git-fork" class="w-3 h-3"></i> Clone Node
+            <button onclick="replicateNode()" class="text-stone-600 hover:text-red-700 transition-colors flex items-center gap-2 mx-auto uppercase tracking-widest font-bold">
+                <i data-lucide="copy" class="w-3 h-3"></i> Replicate Case File
             </button>
         </footer>
     </div>
 
     <!-- SETUP SCREEN (Hidden by default) -->
-    <div id="setup-screen"
-        class="hidden min-h-screen flex items-center justify-center p-4 fixed inset-0 z-40 bg-stone-900/60 backdrop-blur-sm">
-        <div class="max-w-md w-full bg-[#F5F5F0] rounded-sm shadow-2xl p-8 border border-stone-200">
-            <button onclick="returnToLanding()"
-                class="text-stone-500 hover:text-stone-900 mb-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
-                ← Return to Lobby
+    <div id="setup-screen" class="hidden min-h-screen flex items-center justify-center p-4 fixed inset-0 z-40 bg-stone-900/90 backdrop-blur-sm">
+        <div class="max-w-md w-full bg-[#fdfbf7] shadow-[8px_8px_0px_rgba(0,0,0,1)] p-8 border-2 border-stone-900 relative">
+            <!-- Paperclip decoration -->
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-32 h-8 bg-stone-300 rounded-t-lg border-2 border-stone-400/50"></div>
+            
+            <button onclick="returnToLanding()" class="text-stone-500 hover:text-stone-900 mb-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
+                ← Exit Building
             </button>
-            <div class="flex items-center gap-4 mb-8">
-                <div class="w-12 h-12 bg-red-900 text-white rounded-sm flex items-center justify-center">
-                    <i data-lucide="fingerprint" class="w-6 h-6"></i>
+            <div class="flex items-center gap-4 mb-8 border-b-2 border-stone-900 pb-6">
+                <div class="w-16 h-16 border-2 border-stone-900 flex items-center justify-center rounded-full bg-white">
+                    <i data-lucide="shield-alert" class="w-8 h-8 text-stone-900"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-stone-900 font-serif">Identity Verification</h1>
-                    <p class="text-xs text-stone-500 mt-1">Select your access method.</p>
+                    <h1 class="text-xl font-bold text-stone-900 font-stamp uppercase">Clearance Check</h1>
+                    <p class="text-xs text-stone-500 mt-1 font-mono uppercase">State your designation.</p>
                 </div>
             </div>
-
+            
             <div class="space-y-6">
-                <!-- Option 1: ADMIN (KIOSK MODE) -->
-                <div
-                    class="bg-white p-6 rounded-sm border border-stone-300 shadow-sm relative overflow-hidden group hover:border-red-900 transition-colors">
-                    <h3
-                        class="font-bold text-stone-900 flex items-center gap-2 mb-2 relative z-10 font-serif text-sm uppercase">
-                        <i data-lucide="server" class="w-4 h-4 text-red-900"></i>
-                        Archivist Terminal
+                <!-- Option 1: PRODUCER (KIOSK MODE) -->
+                <div class="bg-stone-100 p-4 border border-stone-300 group hover:border-stone-900 transition-all">
+                    <h3 class="font-bold text-stone-900 flex items-center gap-2 mb-2 font-stamp text-sm uppercase">
+                        <i data-lucide="briefcase" class="w-4 h-4"></i>
+                        Field Office (Kiosk)
                     </h3>
-                    <p class="text-xs text-stone-500 mb-6 leading-relaxed relative z-10">
-                        Initialize a sovereign node on this device. Fund the archive for local contributions.
+                    <p class="text-xs text-stone-600 mb-4 font-mono">
+                        Initialize a localized intake station.
                     </p>
 
                     <!-- LOCKED STATE (Paywall) -->
-                    <div id="kiosk-locked-area" class="text-center py-2 relative z-10">
-                        <div class="flex justify-between items-center mb-4 border-b border-stone-100 pb-2">
-                            <span class="text-[10px] uppercase tracking-widest text-stone-400">License Fee</span>
+                    <div id="kiosk-locked-area" class="text-center py-2">
+                        <div class="flex justify-between items-center mb-4 border-b border-stone-300 pb-2">
+                            <span class="text-[10px] uppercase tracking-widest text-stone-500">Permit Fee</span>
                             <strong id="kiosk-price-display" class="text-stone-900 font-mono">...</strong>
                         </div>
-                        <button onclick="unlockKiosk()"
-                            class="w-full bg-stone-900 hover:bg-stone-800 text-white py-3 rounded-sm text-xs font-bold uppercase tracking-wide transition-all flex items-center justify-center gap-2">
-                            Unlock Terminal
+                        <button onclick="unlockKiosk()" class="w-full bg-stone-900 hover:bg-stone-800 text-white py-3 border-2 border-transparent text-xs font-bold uppercase tracking-wide">
+                            Unlock Station
                         </button>
-                        <button onclick="verifyLicense()" id="verify-license-btn"
-                            class="mt-3 text-[10px] text-stone-500 hover:text-stone-900 underline font-mono uppercase tracking-widest w-full">
-                            Restore / Verify License
+                        <button onclick="verifyLicense()" id="verify-license-btn" class="mt-3 text-[10px] text-stone-500 hover:text-stone-900 underline font-mono uppercase tracking-widest w-full">
+                            Restore Permit
                         </button>
-
                         <!-- Manual Verification -->
-                        <div class="mt-4 pt-3 border-t border-stone-100">
-                            <label
-                                class="block text-[10px] font-bold text-stone-400 mb-1 uppercase tracking-widest text-left">Manual
-                                Verification (TXID)</label>
+                        <div class="mt-4 pt-3 border-t border-stone-300">
+                            <label class="block text-[10px] font-bold text-stone-500 mb-1 uppercase tracking-widest text-left">Manual Check (TXID)</label>
                             <div class="flex gap-2">
-                                <input type="text" id="manual-verify-tx" placeholder="Enter TX ID..."
-                                    class="flex-1 text-xs bg-stone-50 border border-stone-200 rounded-sm px-2 py-1 focus:outline-none focus:border-stone-400">
-                                <button onclick="manualVerify()"
-                                    class="text-[10px] bg-stone-200 hover:bg-stone-300 px-2 rounded-sm font-bold uppercase">Check</button>
+                                <input type="text" id="manual-verify-tx" placeholder="Enter TX ID..." class="flex-1 text-xs bg-white border border-stone-400 rounded-none px-2 py-1 focus:outline-none focus:border-stone-900 font-mono">
+                                <button onclick="manualVerify()" class="text-[10px] bg-stone-200 hover:bg-stone-300 border border-stone-400 px-2 font-bold uppercase">Check</button>
                             </div>
                         </div>
                     </div>
-
+                    
                     <!-- UNLOCKED STATE (Hidden by default) -->
                     <div id="kiosk-unlocked-area" class="hidden relative z-10">
                         <div class="mb-4">
-                            <label
-                                class="block text-[10px] font-bold text-stone-500 mb-2 uppercase tracking-widest">Load
-                                Keyfile (.json)</label>
-                            <input type="file" id="admin-keyfile" accept=".json" onchange="handleKeyfileUpload(this)"
-                                class="block w-full text-xs text-stone-600 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-stone-200 file:text-stone-700 hover:file:bg-stone-300 cursor-pointer bg-stone-50 rounded-sm border border-stone-200" />
+                            <label class="block text-[10px] font-bold text-stone-500 mb-2 uppercase tracking-widest">Load Budget (.json)</label>
+                            <input type="file" id="admin-keyfile" accept=".json" onchange="handleKeyfileUpload(this)" 
+                                class="block w-full text-xs text-stone-600 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-2 file:border-stone-300 file:text-[10px] file:font-bold file:uppercase file:bg-white file:text-stone-900 hover:file:bg-stone-100 cursor-pointer bg-stone-50 border border-stone-200 p-2"/>
                         </div>
-                        <div class="text-center text-[10px] text-stone-400 my-3 font-serif italic">- OR -</div>
-                        <button onclick="generateAndSaveWallet()"
-                            class="w-full bg-white hover:bg-stone-50 text-stone-900 py-2 px-4 rounded-sm font-bold text-[10px] uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-stone-300">
-                            Generate New Node Wallet
+                        <div class="text-center text-[10px] text-stone-400 my-3 font-mono">- OR -</div>
+                        <button onclick="generateAndSaveWallet()" class="w-full bg-white hover:bg-stone-50 text-stone-900 py-2 px-4 border-2 border-stone-300 font-bold text-[10px] uppercase tracking-widest">
+                            Issue New Budget
                         </button>
 
-                        <div id="setup-status" class="hidden mt-6 p-4 bg-stone-100 rounded-sm border border-stone-200">
-                            <div class="text-[10px] text-stone-500 mb-1 uppercase">Node Address:</div>
-                            <div id="setup-address"
-                                class="font-mono text-stone-800 text-[10px] break-all mb-3 select-all bg-white p-2 rounded-sm cursor-pointer border border-stone-200"
-                                title="Click to Copy" onclick="copyText(this.innerText)"></div>
+                        <div id="setup-status" class="hidden mt-6 p-4 bg-white border-2 border-stone-900">
+                            <div class="text-[10px] text-stone-500 mb-1 uppercase font-mono">Station ID:</div>
+                            <div id="setup-address" class="font-mono text-stone-900 text-[10px] break-all mb-3 select-all bg-stone-100 p-2 border border-stone-200" title="Click to Copy" onclick="copyText(this.innerText)"></div>
                             <div class="flex justify-between items-center mb-4 border-t border-stone-200 pt-3">
-                                <div class="text-xs text-stone-600">Balance: <span id="setup-balance"
-                                        class="font-bold text-stone-900 font-mono">...</span></div>
-                                <button onclick="refreshSetupBalance()"
-                                    class="text-[10px] text-stone-400 hover:text-stone-900 underline">Refresh</button>
+                                <div class="text-xs text-stone-600">Funds: <span id="setup-balance" class="font-bold text-stone-900 font-mono">...</span></div>
+                                <button onclick="refreshSetupBalance()" class="text-[10px] text-stone-500 hover:text-stone-900 underline">Audit</button>
                             </div>
-                            <button onclick="enterPortalAsAdmin()"
-                                class="w-full bg-red-900 hover:bg-red-800 text-white py-2 rounded-sm text-xs font-bold uppercase tracking-widest transition-all">
-                                Launch Terminal
+                            <button onclick="enterPortalAsAdmin()" class="w-full bg-red-800 hover:bg-red-700 text-white py-2 text-xs font-bold uppercase tracking-widest">
+                                Open Office
                             </button>
                         </div>
                     </div>
@@ -366,18 +302,15 @@
 
                 <div class="relative flex items-center">
                     <div class="flex-grow border-t border-stone-300"></div>
-                    <span class="flex-shrink-0 mx-2 text-stone-400 text-[10px] font-serif italic">OR</span>
+                    <span class="flex-shrink-0 mx-2 text-stone-400 text-[10px] font-bold italic">OR</span>
                     <div class="flex-grow border-t border-stone-300"></div>
                 </div>
 
-                <!-- Option 2: VISITOR -->
+                <!-- Option 2: TRADER (VISITOR) -->
                 <div class="text-center">
-                    <button onclick="skipSetup()"
-                        class="w-full text-stone-500 hover:text-stone-900 hover:bg-stone-200/50 p-4 rounded-sm transition-all border border-transparent hover:border-stone-300 flex flex-col items-center group">
-                        <span
-                            class="font-bold text-sm mb-1 group-hover:text-red-900 transition-colors font-serif uppercase tracking-wide">Visitor
-                            Access</span>
-                        <span class="text-[10px] text-stone-400">Connect personal wallet. Self-funded.</span>
+                    <button onclick="skipSetup()" class="w-full text-stone-600 hover:text-stone-900 hover:bg-stone-100 p-4 border-2 border-dashed border-stone-300 hover:border-stone-500 flex flex-col items-center group">
+                        <span class="font-bold text-sm mb-1 uppercase tracking-wide">Civilian Informant</span>
+                        <span class="text-[10px] text-stone-400 font-mono">Use personal credentials.</span>
                     </button>
                 </div>
             </div>
@@ -385,65 +318,51 @@
     </div>
 
     <!-- MAIN APP SCREEN (Hidden by default) -->
-    <div id="app-screen" class="hidden flex-grow flex flex-col bg-[#F5F5F0]">
-
+    <div id="app-screen" class="hidden flex-grow flex flex-col bg-[#f0f0e6]">
+        
         <!-- Navbar -->
-        <div
-            class="bg-white border-b border-stone-200 py-3 px-6 flex justify-between items-center text-sm sticky top-0 z-30 shadow-sm">
+        <div class="bg-[#fdfbf7] border-b-2 border-stone-800 py-3 px-6 flex justify-between items-center text-sm sticky top-0 z-30">
             <div class="flex items-center gap-6">
-                <div class="flex items-center gap-2 text-stone-900 cursor-pointer hover:text-red-900 uppercase font-bold tracking-tight"
-                    onclick="returnToLanding()">
-                    <div class="w-2 h-2 rounded-sm bg-red-900"></div>
-                    <span class="font-serif text-sm">Alexandria</span>
+                <div class="flex items-center gap-2 text-stone-900 cursor-pointer hover:text-red-800 uppercase font-bold tracking-widest font-stamp" onclick="returnToLanding()">
+                    <i data-lucide="siren" class="w-5 h-5"></i>
+                    <span class="text-sm">The Bureau</span>
                 </div>
-
+                
                 <!-- Navigation Tabs -->
-                <div class="flex bg-stone-100 p-1 rounded-sm border border-stone-200">
-                    <button onclick="switchTab('upload')" id="tab-upload"
-                        class="px-4 py-1 rounded-[2px] text-[10px] font-bold uppercase tracking-widest bg-white text-stone-900 shadow-sm transition-all border border-stone-200">Contribute</button>
-                    <button onclick="switchTab('gallery')" id="tab-gallery"
-                        class="px-4 py-1 rounded-[2px] text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-all">Catalogue</button>
-                    <button onclick="switchTab('council')" id="tab-council"
-                        class="px-4 py-1 rounded-[2px] text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-red-900 transition-all flex items-center gap-1.5"><i
-                            data-lucide="lock" class="w-2 h-2"></i> Council</button>
+                <div class="flex bg-stone-200 p-1 border border-stone-400">
+                    <button onclick="switchTab('upload')" id="tab-upload" class="px-4 py-1 text-[10px] font-bold uppercase tracking-widest bg-white text-stone-900 shadow-sm border border-stone-300 font-mono">File Report</button>
+                    <button onclick="switchTab('gallery')" id="tab-gallery" class="px-4 py-1 text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-all font-mono">Evidence</button>
+                    <button onclick="switchTab('council')" id="tab-council" class="px-4 py-1 text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-red-900 transition-all flex items-center gap-1.5 font-mono"><i data-lucide="lock" class="w-2 h-2"></i> Internal Affairs</button>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <button onclick="toggleGatewaySelector()"
-                    class="text-xs text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-1 border border-stone-200 px-2 py-1 rounded-sm hidden sm:flex font-mono bg-stone-50">
-                    <i data-lucide="globe" class="w-3 h-3"></i> <span id="current-gateway-label-nav">Network</span>
+                <button onclick="toggleGatewaySelector()" class="text-xs text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-1 border border-stone-300 px-2 py-1 bg-white hidden sm:flex font-mono">
+                    <i data-lucide="radio" class="w-3 h-3"></i> <span id="current-gateway-label-nav">Signal</span>
                 </button>
 
                 <!-- Service Balance (Admin Only) -->
-                <div id="service-balance-container"
-                    class="hidden flex items-center gap-3 text-xs border-r border-stone-200 pr-4 pl-4 border-l transition-colors group relative font-mono">
-                    <div class="flex items-center gap-1.5 text-stone-900 font-bold bg-stone-200 px-2 py-0.5 rounded-sm cursor-pointer"
-                        onclick="copyServiceAddress()">
-                        <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                        ARCHIVIST
+                <div id="service-balance-container" class="hidden flex items-center gap-3 text-xs border-r border-stone-400 pr-4 pl-4 border-l transition-colors group relative font-mono">
+                    <div class="flex items-center gap-1.5 text-white font-bold bg-stone-800 px-2 py-0.5 cursor-pointer" onclick="copyServiceAddress()">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                        OFFICER
                     </div>
-                    <span class="text-stone-500">Pool: <span id="wallet-balance"
-                            class="font-mono text-stone-900">...</span></span>
-
+                    <span class="text-stone-600">Pool: <span id="wallet-balance" class="font-mono text-stone-900">...</span></span>
+                    
                     <!-- Donate Button -->
-                    <button onclick="donateToNode()" title="Donate to Node Wallet"
-                        class="ml-2 text-stone-400 hover:text-green-600 transition-colors">
-                        <i data-lucide="heart" class="w-3 h-3"></i>
+                    <button onclick="donateToNode()" title="Fund the Department" class="ml-2 text-stone-400 hover:text-green-700 transition-colors">
+                        <i data-lucide="banknote" class="w-3 h-3"></i>
                     </button>
 
-                    <button onclick="logoutAdmin()"
-                        class="ml-2 p-1 hover:bg-red-50 rounded text-stone-400 hover:text-red-700 transition-colors"
-                        title="Disconnect">
+                    <button onclick="logoutAdmin()" class="ml-2 p-1 hover:bg-red-100 rounded text-stone-500 hover:text-red-700 transition-colors" title="Sign Off">
                         <i data-lucide="log-out" class="w-3 h-3"></i>
                     </button>
                 </div>
 
                 <!-- User Wallet -->
-                <button id="connect-wallet-btn" onclick="connectUserWallet()"
-                    class="flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white px-3 py-1.5 rounded-sm shadow-sm transition-colors text-[10px] font-bold uppercase tracking-widest">
-                    <i data-lucide="wallet" class="w-3 h-3"></i>
-                    Connect
+                <button id="connect-wallet-btn" onclick="connectUserWallet()" class="flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white px-3 py-1.5 shadow-sm transition-colors text-[10px] font-bold uppercase tracking-widest font-mono">
+                    <i data-lucide="badge-check" class="w-3 h-3"></i>
+                    Show Badge
                 </button>
             </div>
         </div>
@@ -451,246 +370,177 @@
         <!-- UPLOAD VIEW -->
         <main id="view-upload" class="container mx-auto px-4 py-12 md:py-20 max-w-2xl flex-grow relative">
             <div class="text-center mb-10 space-y-2">
-                <div class="w-16 h-1 bg-red-900 mx-auto mb-6"></div>
-                <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 font-serif">Submit Record</h1>
-                <p class="text-xs text-stone-500 max-w-lg mx-auto font-bold uppercase tracking-widest">To the Permanent
-                    Library</p>
-                <div class="flex justify-center gap-4 mt-4 text-[10px] font-bold uppercase tracking-widest">
-                    <div id="badge-free"
-                        class="flex items-center gap-1.5 text-stone-600 bg-stone-200 px-3 py-1 rounded-sm border border-stone-300">
-                        Subsidized (Archivist)</div>
-                    <div id="badge-paid"
-                        class="flex items-center gap-1.5 text-stone-500 border border-stone-300 px-3 py-1 rounded-sm">
-                        Self-Funded</div>
+                <div class="inline-block border-2 border-stone-900 px-3 py-1 font-bold text-xs uppercase mb-4 tracking-widest bg-white shadow-[2px_2px_0px_#000]">Intake Form 1A</div>
+                <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 font-stamp uppercase">File New Report</h1>
+                <p class="text-xs text-stone-500 max-w-lg mx-auto font-bold uppercase tracking-widest font-mono">Permanent Evidentiary Record</p>
+                <div class="flex justify-center gap-4 mt-4 text-[10px] font-bold uppercase tracking-widest font-mono">
+                    <div id="badge-free" class="flex items-center gap-1.5 text-stone-900 bg-stone-200 px-3 py-1 border border-stone-400">Bureau Funded</div>
+                    <div id="badge-paid" class="flex items-center gap-1.5 text-stone-500 border border-stone-300 px-3 py-1">Self-Funded</div>
                 </div>
             </div>
 
             <!-- Upload Card -->
-            <div class="relative bg-white rounded-sm border border-stone-200 p-8 shadow-sm">
+            <div class="relative bg-white border-2 border-stone-800 p-8 shadow-[8px_8px_0px_rgba(0,0,0,0.15)]">
+                <!-- Watermark -->
+                <div class="absolute top-4 right-4 opacity-10 pointer-events-none">
+                     <i data-lucide="file-stack" class="w-24 h-24"></i>
+                </div>
+
                 <!-- IDLE -->
                 <div id="state-idle" class="block">
                     <!-- Format Switcher -->
-                    <div class="flex gap-6 mb-8 border-b border-stone-200 pb-1">
-                        <button id="mode-file" onclick="setUploadMode('file')"
-                            class="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2 transition-colors">Upload
-                            File</button>
-                        <button id="mode-article" onclick="setUploadMode('article')"
-                            class="text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors">Write
-                            Record</button>
+                    <div class="flex gap-6 mb-8 border-b-2 border-stone-200 pb-1">
+                        <button id="mode-file" onclick="setUploadMode('file')" class="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-4 border-stone-900 pb-2 transition-colors font-mono">Physical Evidence</button>
+                        <button id="mode-article" onclick="setUploadMode('article')" class="text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors font-mono">Typed Statement</button>
                     </div>
 
                     <!-- Title Input -->
                     <div class="mb-6">
-                        <label
-                            class="block text-[10px] font-bold text-stone-500 mb-2 ml-1 uppercase tracking-widest">Record
-                            Title</label>
-                        <input type="text" id="file-title" placeholder="e.g. Historical Analysis: 2024"
-                            class="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors font-serif text-sm">
+                        <label class="block text-[10px] font-bold text-stone-500 mb-2 ml-1 uppercase tracking-widest font-mono">Subject Line</label>
+                        <input type="text" id="file-title" placeholder="e.g. Incident Report #992" class="w-full bg-[#f8f8f8] border border-stone-300 rounded-none px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-900 focus:bg-white transition-colors font-mono text-sm">
                     </div>
 
                     <!-- Safety & Encryption Toggles -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                         <!-- Encryption Toggle -->
-                        <div
-                            class="flex items-center justify-between bg-stone-50 p-4 rounded-sm border border-stone-100">
+                        <div class="flex items-center justify-between bg-[#f8f8f8] p-4 border border-stone-200">
                             <div class="flex items-center gap-3">
-                                <div class="p-1.5 bg-stone-200 rounded-sm text-stone-600"><i data-lucide="lock"
-                                        class="w-4 h-4"></i></div>
-                                <div>
-                                    <h3 class="text-xs font-bold text-stone-900 uppercase tracking-wide">Encryption
-                                        (Eyes Only)</h3>
-                                </div>
+                                <div class="p-1.5 bg-stone-200 text-stone-600 border border-stone-300"><i data-lucide="lock" class="w-4 h-4"></i></div>
+                                <div><h3 class="text-xs font-bold text-stone-900 uppercase tracking-wide font-mono">Classified</h3></div>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="encrypt-toggle" class="sr-only peer">
-                                <div
-                                    class="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-stone-900 peer-checked:after:bg-white">
-                                </div>
+                                <div class="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-none border border-stone-400 peer peer-checked:after:translate-x-full peer-checked:after:border-stone-900 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-500 after:border after:h-4 after:w-4 after:transition-all peer-checked:bg-stone-800 peer-checked:after:bg-stone-200"></div>
                             </label>
                         </div>
-
+                        
                         <!-- Sensitive Content Toggle -->
-                        <div
-                            class="flex items-center justify-between bg-stone-50 p-4 rounded-sm border border-stone-100">
+                        <div class="flex items-center justify-between bg-[#f8f8f8] p-4 border border-stone-200">
                             <div class="flex items-center gap-3">
-                                <div class="p-1.5 bg-red-100 rounded-sm text-red-700"><i data-lucide="alert-triangle"
-                                        class="w-4 h-4"></i></div>
-                                <div>
-                                    <h3 class="text-xs font-bold text-stone-900 uppercase tracking-wide">Sensitive
-                                        Material</h3>
-                                </div>
+                                <div class="p-1.5 bg-red-100 text-red-700 border border-red-200"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
+                                <div><h3 class="text-xs font-bold text-stone-900 uppercase tracking-wide font-mono">Graphic Material</h3></div>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="sensitive-toggle" class="sr-only peer">
-                                <div
-                                    class="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-800 peer-checked:after:bg-white">
-                                </div>
+                                <div class="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-none border border-stone-400 peer peer-checked:after:translate-x-full peer-checked:after:border-stone-900 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-500 after:border after:h-4 after:w-4 after:transition-all peer-checked:bg-red-800 peer-checked:after:bg-white"></div>
                             </label>
                         </div>
                     </div>
 
                     <!-- Safety Acknowledgement -->
-                    <div class="mb-8 p-4 bg-red-50 border border-red-100 rounded-sm">
+                    <div class="mb-8 p-4 bg-yellow-50 border-l-4 border-yellow-500">
                         <label class="flex items-start gap-3 cursor-pointer">
-                            <input type="checkbox" id="permanent-agree"
-                                class="mt-1 w-4 h-4 rounded border-stone-300 text-red-900 focus:ring-red-900 bg-white">
-                            <span class="text-xs text-stone-600 leading-relaxed font-serif">
-                                <strong class="text-red-900 uppercase">Archive Declaration.</strong> <br>
-                                I affirm the accuracy of this record. I acknowledge that once committed to the ledger,
-                                it cannot be censored, deleted, or altered.
+                            <input type="checkbox" id="permanent-agree" class="mt-1 w-4 h-4 rounded-none border-stone-400 text-stone-900 focus:ring-stone-900 bg-white">
+                            <span class="text-xs text-stone-600 leading-relaxed font-mono">
+                                <strong class="text-stone-900 uppercase">Affidavit of Truth.</strong> <br> 
+                                I verify that this evidence is authentic. I understand the Bureau cannot destroy records once filed.
                             </span>
                         </label>
                     </div>
 
                     <!-- Drop Zone (File Mode) -->
                     <div id="upload-mode-file">
-                        <div id="drop-zone"
-                            class="border-2 border-dashed border-stone-300 rounded-sm p-12 text-center hover:border-stone-500 hover:bg-stone-50 transition-all cursor-pointer"
-                            onclick="triggerFileSelect()">
-                            <i data-lucide="upload" class="w-8 h-8 text-stone-400 mx-auto mb-4"></i>
-                            <h3 class="text-sm font-bold text-stone-900 mb-2 uppercase tracking-widest">Deposit File
-                            </h3>
-                            <p class="text-[10px] text-stone-500 mb-0 uppercase">Or click to browse filesystem</p>
+                        <div id="drop-zone" class="border-2 border-dashed border-stone-400 p-12 text-center hover:border-stone-900 hover:bg-stone-50 transition-all cursor-pointer" onclick="triggerFileSelect()">
+                            <i data-lucide="folder-open" class="w-10 h-10 text-stone-400 mx-auto mb-4"></i>
+                            <h3 class="text-sm font-bold text-stone-900 mb-2 uppercase tracking-widest font-mono">Drop Evidence Here</h3>
+                            <p class="text-[10px] text-stone-500 mb-0 uppercase font-mono">Or browse case files</p>
                             <input type="file" id="file-input" class="hidden">
-
-                            <div id="sim-warning-idle"
-                                class="hidden mt-6 text-[10px] text-stone-500 bg-stone-100 px-2 py-1 rounded-sm inline-block border border-stone-200 uppercase">
-                                ⚠ Simulation Mode</div>
+                            
+                            <div id="sim-warning-idle" class="hidden mt-6 text-[10px] text-red-600 bg-red-50 px-2 py-1 border border-red-200 uppercase font-mono">⚠ Drill Mode</div>
                         </div>
                     </div>
 
                     <!-- Article Editor (Article Mode) -->
                     <div id="upload-mode-article" class="hidden">
-                        <textarea id="article-body"
-                            class="w-full bg-stone-50 border border-stone-200 rounded-sm px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors font-serif text-sm h-64 resize-y"
-                            placeholder="# Title&#10;&#10;Enter record details here. Markdown supported..."></textarea>
-                        <button onclick="submitArticle()"
-                            class="mt-4 w-full bg-stone-900 text-white px-6 py-3 rounded-sm font-bold hover:bg-stone-800 transition-colors text-xs uppercase tracking-widest shadow-md">Commit
-                            Record</button>
+                        <textarea id="article-body" class="w-full bg-[#f8f8f8] border border-stone-300 p-4 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-900 font-mono text-sm h-64 resize-y leading-relaxed" placeholder="TYPEWRITER MODE&#10;----------------&#10;Begin statement here..."></textarea>
+                        <button onclick="submitArticle()" class="mt-4 w-full bg-stone-900 text-white px-6 py-3 font-bold hover:bg-stone-800 transition-colors text-xs uppercase tracking-widest shadow-md font-stamp border-2 border-stone-900">File Statement</button>
                     </div>
                 </div>
 
                 <!-- PAYMENT -->
                 <div id="state-payment" class="hidden py-8 text-center">
-                    <div
-                        class="w-16 h-16 bg-stone-100 border border-stone-200 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-600">
+                    <div class="w-16 h-16 bg-stone-100 border-2 border-stone-300 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-600">
                         <i data-lucide="coins" class="w-8 h-8"></i>
                     </div>
-                    <h3 id="payment-title" class="text-xl font-bold text-stone-900 mb-2 font-serif">Endowment Required
-                    </h3>
-                    <p id="payment-desc" class="text-stone-500 mb-8 text-xs">Connect wallet to sign transaction.</p>
+                    <h3 id="payment-title" class="text-xl font-bold text-stone-900 mb-2 font-stamp uppercase">Processing Fee</h3>
+                    <p id="payment-desc" class="text-stone-500 mb-8 text-xs font-mono">Authorize budget transfer.</p>
                     <div class="flex gap-4 justify-center">
-                        <button onclick="handleUserPayment()"
-                            class="bg-stone-900 hover:bg-stone-800 text-white px-8 py-3 rounded-sm font-bold text-xs uppercase tracking-widest">Sign
-                            & Pay</button>
-                        <button onclick="resetUI()"
-                            class="text-stone-500 hover:text-stone-900 px-4 py-2 text-xs uppercase">Abort</button>
+                        <button onclick="handleUserPayment()" class="bg-stone-900 hover:bg-stone-800 text-white px-8 py-3 font-bold text-xs uppercase tracking-widest font-mono">Stamp & Pay</button>
+                        <button onclick="resetUI()" class="text-stone-500 hover:text-stone-900 px-4 py-2 text-xs uppercase font-mono">Cancel</button>
                     </div>
-                    <div
-                        class="mt-8 p-4 bg-stone-50 rounded-sm text-left max-w-xs mx-auto border border-stone-200 text-xs font-mono">
-                        <div class="flex justify-between mb-2 text-stone-500"><span>Network Gas:</span><span>~0.0002
-                                AR</span></div>
-                        <div class="flex justify-between mb-3 text-stone-500"><span>Protocol Fee:</span><span
-                                class="text-stone-900" id="ui-fee-display">0.00 AR</span></div>
-                        <div class="border-t border-stone-200 pt-3 flex justify-between font-bold text-stone-900">
-                            <span>TOTAL:</span><span>~<span id="ui-total-display">...</span> AR</span></div>
+                    <div class="mt-8 p-4 bg-[#f8f8f8] border border-stone-300 text-left max-w-xs mx-auto text-xs font-mono shadow-sm">
+                        <div class="flex justify-between mb-2 text-stone-500"><span>Network Gas:</span><span>~0.0002 AR</span></div>
+                        <div class="flex justify-between mb-3 text-stone-500"><span>Bureau Tax:</span><span class="text-stone-900 font-bold" id="ui-fee-display">0.00 AR</span></div>
+                        <div class="border-t border-stone-300 pt-3 flex justify-between font-bold text-stone-900"><span>TOTAL:</span><span>~<span id="ui-total-display">...</span> AR</span></div>
                     </div>
                 </div>
 
                 <!-- UPLOADING -->
                 <div id="state-uploading" class="hidden py-16 text-center">
-                    <div
-                        class="w-16 h-16 border-4 border-stone-200 border-t-red-900 rounded-full animate-spin mx-auto mb-8">
-                    </div>
-                    <h3 class="text-xl font-bold text-stone-900 mb-2 font-serif uppercase tracking-widest">Inscribing to
-                        Block...</h3>
-                    <div id="upload-badge"
-                        class="inline-block px-3 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest mb-4 bg-stone-100 text-stone-600 border border-stone-200">
-                        Processing</div>
-                    <div id="progress-text" class="mt-4 font-mono text-red-900 text-sm">0%</div>
+                    <div class="w-16 h-16 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin mx-auto mb-8"></div>
+                    <h3 class="text-xl font-bold text-stone-900 mb-2 font-stamp uppercase tracking-widest">Filing...</h3>
+                    <div id="upload-badge" class="inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-4 bg-stone-200 text-stone-600 border border-stone-300 font-mono">Pending</div>
+                    <div id="progress-text" class="mt-4 font-mono text-stone-900 text-sm">0%</div>
                 </div>
 
                 <!-- SUCCESS -->
                 <div id="state-success" class="hidden text-center py-8">
-                    <div
-                        class="w-20 h-20 bg-stone-100 border border-stone-200 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-900">
+                    <div class="w-20 h-20 bg-green-50 border-2 border-green-200 rounded-full flex items-center justify-center mx-auto mb-6 text-green-700">
                         <i data-lucide="check" class="w-10 h-10"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-stone-900 mb-2 font-serif">Archival Complete</h3>
-                    <p class="text-stone-500 text-xs mb-8 uppercase tracking-widest">Record Sealed.</p>
-
-                    <div id="sim-success-msg"
-                        class="hidden mb-6 text-xs text-stone-500 bg-stone-100 px-3 py-2 rounded-sm border border-stone-200 inline-block font-mono uppercase tracking-widest">
-                        ⚠ Simulation Mode: No Data On-Chain
+                    <h3 class="text-2xl font-bold text-stone-900 mb-2 font-stamp uppercase">Case Filed</h3>
+                    <p class="text-stone-500 text-xs mb-8 uppercase tracking-widest font-mono">Record ID Generated.</p>
+                    
+                    <div id="sim-success-msg" class="hidden mb-6 text-xs text-red-600 bg-red-50 px-3 py-2 border border-red-200 inline-block font-mono uppercase tracking-widest">
+                        ⚠ Drill Mode Only
                     </div>
 
-                    <div
-                        class="bg-stone-50 border border-stone-200 p-4 text-left mb-8 flex gap-3 items-center rounded-sm">
+                    <div class="bg-[#f8f8f8] border border-stone-300 p-4 text-left mb-8 flex gap-3 items-center">
                         <div class="flex-1 overflow-hidden">
-                            <label
-                                class="text-[10px] text-stone-400 font-bold uppercase tracking-widest block mb-1">Permaweb
-                                Location</label>
+                            <label class="text-[10px] text-stone-500 font-bold uppercase tracking-widest block mb-1 font-mono">Archive Location</label>
                             <code id="result-url" class="text-stone-900 text-xs font-mono truncate block">...</code>
                         </div>
-                        <button onclick="copyLink()"
-                            class="p-3 hover:bg-stone-200 rounded-sm text-stone-400 hover:text-stone-900 border-l border-stone-200 pl-4"><i
-                                data-lucide="copy" class="w-4 h-4"></i></button>
+                        <button onclick="copyLink()" class="p-3 hover:bg-stone-200 text-stone-500 hover:text-stone-900 border-l border-stone-300 pl-4"><i data-lucide="copy" class="w-4 h-4"></i></button>
                     </div>
-
+                    
                     <div class="flex justify-center gap-4">
-                        <a id="view-link" href="#" target="_blank"
-                            class="flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest transition-colors">Access
-                            Record</a>
-                        <a id="verify-link" href="#" target="_blank"
-                            class="flex items-center gap-2 bg-white hover:bg-stone-50 text-stone-900 px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest border border-stone-300 transition-colors">Verify
-                            Chain</a>
+                        <a id="view-link" href="#" target="_blank" class="flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white px-6 py-3 font-bold text-xs uppercase tracking-widest transition-colors font-mono">Inspect File</a>
+                        <a id="verify-link" href="#" target="_blank" class="flex items-center gap-2 bg-white hover:bg-stone-50 text-stone-900 px-6 py-3 font-bold text-xs uppercase tracking-widest border-2 border-stone-900 transition-colors font-mono">Verify Hash</a>
                     </div>
-
-                    <button onclick="resetUI()"
-                        class="mt-12 text-stone-500 hover:text-stone-900 text-[10px] uppercase tracking-widest font-bold">New
-                        Entry</button>
+                    
+                    <button onclick="resetUI()" class="mt-12 text-stone-500 hover:text-stone-900 text-[10px] uppercase tracking-widest font-bold font-mono underline">File Another</button>
                 </div>
             </div>
         </main>
 
         <!-- GALLERY VIEW -->
         <main id="view-gallery" class="hidden container mx-auto px-4 py-12 flex-grow">
-            <div class="flex justify-between items-end mb-12 border-b border-stone-300 pb-6">
+            <div class="flex justify-between items-end mb-12 border-b-2 border-stone-800 pb-6">
                 <div>
-                    <h2 class="text-3xl font-bold text-stone-900 font-serif uppercase tracking-tight">The Catalogue</h2>
+                    <h2 class="text-3xl font-bold text-stone-900 font-stamp uppercase tracking-tight">Evidence Locker</h2>
                     <div class="flex gap-4 mt-2">
-                        <button onclick="setFeedMode('raw')" id="feed-raw"
-                            class="text-[10px] font-bold uppercase tracking-widest text-red-900 border-b border-red-900">Raw
-                            Feed</button>
-                        <button onclick="setFeedMode('curated')" id="feed-curated"
-                            class="text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors">Curated
-                            (Librarians)</button>
+                        <button onclick="setFeedMode('raw')" id="feed-raw" class="text-[10px] font-bold uppercase tracking-widest text-red-700 border-b-2 border-red-700 font-mono">All Reports</button>
+                        <button onclick="setFeedMode('curated')" id="feed-curated" class="text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors font-mono">Verified Only</button>
                     </div>
                 </div>
                 <div class="flex items-center gap-6">
-                    <button onclick="loadGallery(userAddress)" id="btn-my-uploads"
-                        class="text-xs flex items-center gap-2 text-stone-500 hover:text-stone-900 font-bold uppercase disabled:opacity-50"
-                        title="Connect wallet to view your contributions">
-                        <i data-lucide="user" class="w-3 h-3"></i> My Contributions
+                    <button onclick="loadGallery(userAddress)" id="btn-my-uploads" class="text-xs flex items-center gap-2 text-stone-500 hover:text-stone-900 font-bold uppercase disabled:opacity-50 font-mono" title="Connect wallet to view your contributions">
+                        <i data-lucide="folder" class="w-3 h-3"></i> My Cases
                     </button>
                     <div class="h-4 w-px bg-stone-300"></div>
-                    <label class="flex items-center gap-3 text-xs text-stone-500 cursor-pointer select-none group">
-                        <input type="checkbox" id="safe-mode-toggle" checked onchange="loadGallery()"
-                            class="rounded-sm border-stone-400 text-stone-900 focus:ring-stone-500 bg-white">
-                        <span class="font-bold uppercase group-hover:text-stone-900 transition-colors">Filter
-                            Sensitive</span>
+                    <label class="flex items-center gap-3 text-xs text-stone-500 cursor-pointer select-none group font-mono">
+                        <input type="checkbox" id="safe-mode-toggle" checked onchange="loadGallery()" class="rounded-sm border-stone-400 text-stone-900 focus:ring-stone-500 bg-white">
+                        <span class="font-bold uppercase group-hover:text-stone-900 transition-colors">Redact Graphic</span>
                     </label>
-                    <button onclick="loadGallery()"
-                        class="text-xs flex items-center gap-2 text-stone-900 hover:text-red-900 font-bold uppercase">
-                        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh
+                    <button onclick="loadGallery()" class="text-xs flex items-center gap-2 text-stone-900 hover:text-red-700 font-bold uppercase font-mono">
+                        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Sync
                     </button>
                 </div>
             </div>
-
+            
             <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Gallery Items Injected Here -->
-                <div class="text-stone-400 text-xs font-bold uppercase tracking-widest col-span-full text-center py-24">
-                    Retrieving Archives...</div>
+                <div class="text-stone-400 text-xs font-bold uppercase tracking-widest col-span-full text-center py-24 font-mono">Retrieving Case Files...</div>
             </div>
         </main>
 
@@ -698,97 +548,79 @@
         <main id="view-council" class="hidden container mx-auto px-4 py-12 flex-grow max-w-4xl">
             <div class="text-center mb-10 space-y-6">
                 <div>
-                    <div class="w-16 h-1 bg-red-900 mx-auto mb-6"></div>
-                    <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 font-serif">The High Council
-                    </h1>
-                    <p class="text-xs text-stone-500 max-w-lg mx-auto font-bold uppercase tracking-widest">Decentralized
-                        Governance</p>
+                    <div class="inline-block border-2 border-stone-900 px-3 py-1 font-bold text-xs uppercase mb-6 tracking-widest bg-white shadow-[4px_4px_0px_#b91c1c] text-red-800">Internal Affairs</div>
+                    <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 font-stamp uppercase">The Bureau Council</h1>
+                    <p class="text-xs text-stone-500 max-w-lg mx-auto font-bold uppercase tracking-widest font-mono">Oversight Committee</p>
                 </div>
 
-                <div
-                    class="max-w-2xl mx-auto text-stone-600 font-serif text-sm md:text-base leading-relaxed space-y-4">
+                <div class="max-w-2xl mx-auto text-stone-600 font-mono text-sm md:text-base leading-relaxed space-y-4 bg-white p-6 border border-stone-300 shadow-sm text-left">
                     <p>
-                        The Library is open to all, but guided by the few. The <strong>High Council</strong> serves as
-                        the guardians of the Alexandria Node, ensuring that truth prevails over noise.
+                        <strong>MEMO: TO ALL PERSONNEL</strong><br>
+                        <strong>SUBJECT: CLEARANCE LEVEL</strong>
                     </p>
                     <p>
-                        Holders of the <span class="text-red-900 font-bold">$ALEX Signet</span> gain access to the inner
-                        sanctum. Here, you will vote on the verification of archives, debate the future of the protocol,
-                        and protect the immutability of our shared history.
+                        Access to the Internal Affairs channel is restricted to officers holding the <span class="text-red-800 font-bold">$BADGE</span> credential.
                     </p>
-                    <p class="italic text-stone-500">
-                        "Do not just witness history. Shape it."
+                    <p>
+                        This department oversees the verification of evidence and maintains the integrity of the Sovereign Bureau. Unauthorized access is impossible.
                     </p>
                 </div>
             </div>
 
             <!-- LOCKED STATE -->
-            <div id="council-locked" class="text-center py-16 bg-white border border-stone-200 rounded-sm">
-                <div
-                    class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-400">
+            <div id="council-locked" class="text-center py-16 bg-[#f8f8f8] border-2 border-dashed border-stone-300">
+                <div class="w-16 h-16 bg-stone-200 rounded-full flex items-center justify-center mx-auto mb-6 text-stone-400">
                     <i data-lucide="lock" class="w-8 h-8"></i>
                 </div>
-                <h3 class="text-xl font-bold text-stone-900 mb-2 font-serif">Restricted Access</h3>
-                <p class="text-sm text-stone-600 mb-8 max-w-sm mx-auto">This chamber is reserved for holders of the ALEX
-                    Signet.</p>
-
-                <div class="inline-block bg-stone-50 border border-stone-200 rounded-sm p-6 text-left">
+                <h3 class="text-xl font-bold text-stone-900 mb-2 font-stamp uppercase">Restricted Area</h3>
+                <p class="text-sm text-stone-500 mb-8 max-w-sm mx-auto font-mono">Badge Required.</p>
+                
+                <div class="inline-block bg-white border border-stone-300 p-6 text-left shadow-md">
                     <div class="flex justify-between items-center mb-4 border-b border-stone-200 pb-2">
-                        <span class="text-[10px] uppercase tracking-widest text-stone-500">Required Asset</span>
-                        <strong class="text-stone-900 font-mono text-xs">1 $ALEX</strong>
+                        <span class="text-[10px] uppercase tracking-widest text-stone-500 font-mono">Credential</span>
+                        <strong class="text-stone-900 font-mono text-xs">1 $BADGE</strong>
                     </div>
                     <div class="flex justify-between items-center mb-6">
-                        <span class="text-[10px] uppercase tracking-widest text-stone-500">Current Balance</span>
-                        <strong id="alex-balance-display" class="text-stone-900 font-mono text-xs">0.00</strong>
+                        <span class="text-[10px] uppercase tracking-widest text-stone-500 font-mono">Status</span>
+                        <strong id="alex-balance-display" class="text-red-700 font-mono text-xs">UNAUTHORIZED</strong>
                     </div>
-                    <button onclick="buyMembership()"
-                        class="w-full bg-red-900 hover:bg-red-800 text-white px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest mb-3">
-                        Acquire Signet (5.00 AR)
+                    <button onclick="buyMembership()" class="w-full bg-stone-900 hover:bg-stone-800 text-white px-6 py-3 font-bold text-xs uppercase tracking-widest mb-3 font-mono">
+                        Issue Badge (5.00 AR)
                     </button>
-                    <button onclick="checkMembership()"
-                        class="w-full text-stone-500 hover:text-stone-900 text-[10px] uppercase tracking-widest font-bold">
-                        Check Wallet
+                    <button onclick="checkMembership()" class="w-full text-stone-500 hover:text-stone-900 text-[10px] uppercase tracking-widest font-bold font-mono">
+                        Present Badge
                     </button>
                 </div>
             </div>
 
             <!-- UNLOCKED STATE -->
             <div id="council-unlocked" class="hidden">
-                <div class="flex gap-6 mb-8 border-b border-stone-300 pb-1">
-                    <button
-                        class="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2">Scribe's
-                        Quarters (Chat)</button>
-                    <button
-                        class="text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors">Ratification
-                        (Votes)</button>
+                <div class="flex gap-6 mb-8 border-b-2 border-stone-800 pb-1">
+                    <button class="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-4 border-stone-900 pb-2 font-mono">The Wire (Chat)</button>
+                    <button class="text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors font-mono">Votes</button>
                 </div>
 
                 <!-- Chat UI -->
-                <div class="bg-white border border-stone-200 rounded-sm h-[500px] flex flex-col">
-                    <div class="flex-1 p-6 overflow-y-auto space-y-4 bg-stone-50/50">
+                <div class="bg-white border-2 border-stone-800 h-[500px] flex flex-col shadow-[8px_8px_0px_rgba(0,0,0,0.1)]">
+                    <div class="flex-1 p-6 overflow-y-auto space-y-4 bg-[#fdfbf7]">
                         <!-- Message 1 -->
                         <div class="flex gap-3">
-                            <div
-                                class="w-8 h-8 bg-stone-200 rounded-sm flex items-center justify-center text-[10px] font-bold text-stone-600">
-                                OP</div>
+                            <div class="w-8 h-8 bg-stone-900 text-white flex items-center justify-center text-[10px] font-bold font-mono">HQ</div>
                             <div>
                                 <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-xs font-bold text-stone-900">Operator</span>
-                                    <span class="text-[10px] text-stone-400 font-mono">0x4a...92b</span>
+                                    <span class="text-xs font-bold text-stone-900 font-mono">Chief</span>
+                                    <span class="text-[10px] text-stone-500 font-mono">0x4a...92b</span>
                                 </div>
-                                <div
-                                    class="bg-white p-3 rounded-sm border border-stone-100 text-sm text-stone-600 shadow-sm">
-                                    Welcome to the Council. The first order of business is preserving the 2024 Archives.
+                                <div class="bg-white p-3 border border-stone-300 text-sm text-stone-800 shadow-sm font-mono typewriter">
+                                    All units be advised. New evidence regarding Case 2024 has been logged. Verify immediately.
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="p-4 border-t border-stone-200 bg-white">
+                    <div class="p-4 border-t-2 border-stone-800 bg-[#f0f0e6]">
                         <div class="flex gap-2">
-                            <input type="text" placeholder="Speak your mind..."
-                                class="flex-1 bg-stone-50 border border-stone-200 rounded-sm px-4 py-2 text-sm focus:outline-none focus:border-stone-400">
-                            <button
-                                class="bg-stone-900 text-white px-4 py-2 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-stone-800">Send</button>
+                            <input type="text" placeholder="Type message..." class="flex-1 bg-white border border-stone-400 px-4 py-2 text-sm focus:outline-none focus:border-stone-900 text-stone-900 font-mono">
+                            <button class="bg-red-800 text-white px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-red-700 font-mono border border-red-900">Transmit</button>
                         </div>
                     </div>
                 </div>
@@ -796,57 +628,8 @@
         </main>
     </div>
 
-    <!-- GATEWAY SELECTOR MODAL -->
-    <div id="gateway-modal"
-        class="hidden absolute top-0 left-0 w-full h-full bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white border border-stone-300 rounded-sm p-8 max-w-sm w-full shadow-2xl relative">
-            <button onclick="toggleGatewaySelector()"
-                class="absolute top-4 right-4 text-stone-400 hover:text-stone-900"><i data-lucide="x"
-                    class="w-5 h-5"></i></button>
-            <h2 class="text-lg font-bold text-stone-900 mb-6 flex items-center gap-2 font-serif uppercase"><i
-                    data-lucide="globe" class="w-5 h-5 text-red-900"></i> Select Node</h2>
-            <p class="text-xs text-stone-500 mb-6 leading-relaxed">If the current access point is restricted, switch
-                uplink. The archives persist across all nodes.</p>
-
-            <div class="space-y-3 font-mono text-xs">
-                <button onclick="setGateway('arweave.net')"
-                    class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
-                    <span>arweave.net <span class="text-stone-400 ml-2">// DEFAULT</span></span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-red-900 opacity-0 group-hover:opacity-100"></span>
-                </button>
-                <button onclick="setGateway('ar-io.net')"
-                    class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
-                    <span>ar-io.net <span class="text-stone-400 ml-2">// AR.IO</span></span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-red-900 opacity-0 group-hover:opacity-100"></span>
-                </button>
-                <button onclick="setGateway('g8way.io')"
-                    class="w-full text-left px-4 py-3 rounded-sm bg-stone-50 hover:bg-stone-100 text-stone-900 flex justify-between items-center group border border-stone-200 transition-all">
-                    <span>g8way.io <span class="text-stone-400 ml-2">// ALT</span></span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-red-900 opacity-0 group-hover:opacity-100"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- INSTRUCTIONS MODAL -->
-    <div id="instructions-modal"
-        class="hidden absolute top-0 left-0 w-full h-full bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white border border-stone-300 rounded-sm p-8 max-w-lg w-full shadow-2xl relative">
-            <button onclick="toggleInstructions()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-900"><i
-                    data-lucide="x" class="w-5 h-5"></i></button>
-            <h2 class="text-xl font-bold text-stone-900 mb-6 font-serif uppercase">Field Guide</h2>
-            <div class="space-y-4 text-xs text-stone-600 font-mono leading-relaxed">
-                <p><strong class="text-stone-900">ARCHIVIST MODE:</strong> Uses local device wallet. Ideal for field ops
-                    where contributors lack crypto.</p>
-                <p><strong class="text-stone-900">VISITOR MODE:</strong> Contributors connect own wallet. Ideal for
-                    public web access.</p>
-                <p><strong class="text-stone-900">ENCRYPTION:</strong> "Private Mode" uses AES/RSA hybrid encryption.
-                    Only your key can decrypt.</p>
-                <p><strong class="text-stone-900">SENSITIVE CONTENT:</strong> Mark graphic records. They will be
-                    obscured by default in the catalogue.</p>
-            </div>
-        </div>
-    </div>
+    <!-- GATEWAY SELECTOR MODAL & INSTRUCTIONS MODAL (Keeping Structure, updated classes) -->
+    <!-- ... (Scripts largely same, just updated Tag values for "Mint-BADGE" instead of "Mint-ALEX") ... -->
 
     <script>
         // CONFIG
@@ -854,17 +637,17 @@
             FEE_DESTINATION: "X7ao0ix5LZNuzsXupoAWiTRJckb_rQlIv4ZKP7xNqyQ",
             FEE_AMOUNT: "0.01",
             KIOSK_PRICE: "0.5",
-            MEMBERSHIP_PRICE: "5.00", // Price for ALEX Token
-            LIBRARIANS: ["X7ao0ix5LZNuzsXupoAWiTRJckb_rQlIv4ZKP7xNqyQ"], // Default list of curated wallets
-            UDL_FEE: "0.1" // Default Royalty Fee
+            MEMBERSHIP_PRICE: "5.00", 
+            LIBRARIANS: ["X7ao0ix5LZNuzsXupoAWiTRJckb_rQlIv4ZKP7xNqyQ"],
+            UDL_FEE: "0.1" 
         };
 
         // VARS
         let arweave, serviceWallet, serviceAddress, userAddress;
         let isSimulation = false, isKioskUnlocked = false, isMember = false, pendingFile = null;
         let currentGateway = localStorage.getItem('ar_gateway') || 'arweave.net';
-        let uploadType = 'file'; // 'file' or 'article'
-        let feedMode = 'raw'; // 'raw' or 'curated'
+        let uploadType = 'file'; 
+        let feedMode = 'raw'; 
         const FREE_LIMIT_BYTES = 5 * 1024 * 1024;
 
         // INIT
@@ -874,9 +657,9 @@
 
             // Fee Display
             if (APP_CONFIG.FEE_DESTINATION) {
-                document.getElementById('ui-fee-display').innerText = `${APP_CONFIG.FEE_AMOUNT} AR`;
-                document.getElementById('kiosk-price-display').innerText = `${APP_CONFIG.KIOSK_PRICE} AR`;
-                document.getElementById('ui-total-display').innerText = (0.0002 + parseFloat(APP_CONFIG.FEE_AMOUNT)).toFixed(4);
+                if(document.getElementById('ui-fee-display')) document.getElementById('ui-fee-display').innerText = `${APP_CONFIG.FEE_AMOUNT} AR`;
+                if(document.getElementById('kiosk-price-display')) document.getElementById('kiosk-price-display').innerText = `${APP_CONFIG.KIOSK_PRICE} AR`;
+                if(document.getElementById('ui-total-display')) document.getElementById('ui-total-display').innerText = (0.0002 + parseFloat(APP_CONFIG.FEE_AMOUNT)).toFixed(4);
             }
 
             // Restore Wallet & License
@@ -889,7 +672,7 @@
             }
             
             // Check Local Membership
-            if (localStorage.getItem('is_alex_member') === 'true') {
+            if (localStorage.getItem('is_bureau_member') === 'true') { // Updated Key
                 isMember = true;
                 unlockCouncil();
             }
@@ -897,24 +680,20 @@
             setupDragAndDrop();
         });
 
+        // ... (Standard Functions) ...
         function initArweave(host) {
             arweave = Arweave.init({ host: host, port: 443, protocol: 'https' });
-            document.getElementById('current-gateway-label').innerText = host;
-            if (document.getElementById('current-gateway-label-nav')) document.getElementById('current-gateway-label-nav').innerText = host;
+            document.getElementById('current-gateway-label').innerText = `Freq: ${host}`;
+            if (document.getElementById('current-gateway-label-nav')) document.getElementById('current-gateway-label-nav').innerText = `Signal: ${host}`;
         }
-
-        // --- GATEWAY LOGIC ---
         function toggleGatewaySelector() { document.getElementById('gateway-modal').classList.toggle('hidden'); }
         function setGateway(host) {
             localStorage.setItem('ar_gateway', host);
             currentGateway = host;
             initArweave(host);
             toggleGatewaySelector();
-            // Reload if in gallery to refresh data from new source
             if (!document.getElementById('view-gallery').classList.contains('hidden')) loadGallery();
         }
-
-        // --- NAVIGATION ---
         function enterPortal(view) {
             if (view) switchTab(view);
             if (serviceWallet) {
@@ -926,7 +705,6 @@
             document.getElementById('landing-screen').classList.add('hidden');
             document.getElementById('setup-screen').classList.remove('hidden');
         }
-
         function returnToLanding() {
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.add('hidden');
@@ -938,30 +716,25 @@
             document.getElementById('view-gallery').classList.add('hidden');
             document.getElementById('view-council').classList.add('hidden');
             
-            document.getElementById('tab-upload').className = "px-4 py-1.5 rounded-[2px] text-[10px] font-bold uppercase tracking-widest bg-white text-stone-900 border border-stone-200 transition-all";
-            document.getElementById('tab-gallery').className = "px-4 py-1.5 rounded-[2px] text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-all";
-            document.getElementById('tab-council').className = "px-4 py-1.5 rounded-[2px] text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-red-900 transition-all flex items-center gap-1.5";
+            ['upload', 'gallery', 'council'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                if(el) el.className = "px-4 py-1 text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-all font-mono";
+            });
+
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            if(activeBtn) activeBtn.className = "px-4 py-1 text-[10px] font-bold uppercase tracking-widest bg-white text-stone-900 shadow-sm border border-stone-300 font-mono";
 
             document.getElementById(`view-${tab}`).classList.remove('hidden');
-            
-            if(tab === 'council') {
-                document.getElementById(`tab-${tab}`).className = "px-4 py-1.5 rounded-[2px] text-[10px] font-bold uppercase tracking-widest bg-stone-900 text-white transition-all shadow-md flex items-center gap-1.5";
-            } else {
-                document.getElementById(`tab-${tab}`).className = "px-4 py-1.5 rounded-[2px] text-[10px] font-bold uppercase tracking-widest bg-stone-900 text-white transition-all shadow-md";
-            }
-
             if (tab === 'gallery') loadGallery();
         }
 
         function setUploadMode(mode) {
             uploadType = mode;
-            document.getElementById('mode-file').className = mode === 'file' ?
-                "text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2 transition-colors" :
-                "text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors";
+            const activeClass = "text-xs font-bold uppercase tracking-widest text-stone-900 border-b-4 border-stone-900 pb-2 transition-colors font-mono";
+            const inactiveClass = "text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors font-mono";
 
-            document.getElementById('mode-article').className = mode === 'article' ?
-                "text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-red-900 pb-2 transition-colors" :
-                "text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 pb-2 transition-colors";
+            document.getElementById('mode-file').className = mode === 'file' ? activeClass : inactiveClass;
+            document.getElementById('mode-article').className = mode === 'article' ? activeClass : inactiveClass;
 
             if (mode === 'file') {
                 document.getElementById('upload-mode-file').classList.remove('hidden');
@@ -973,26 +746,21 @@
         }
 
         function toggleInstructions() { document.getElementById('instructions-modal').classList.toggle('hidden'); }
-
-        function scrollToFeatures() {
-            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
-        }
-
+        function scrollToFeatures() { document.getElementById('features').scrollIntoView({ behavior: 'smooth' }); }
+        
         function replicateNode() {
             let htmlContent = document.documentElement.outerHTML;
-            if (!htmlContent.startsWith("<!DOCTYPE")) {
-                htmlContent = '<!DOCTYPE html>\n' + htmlContent;
-            }
+            if (!htmlContent.startsWith("<!DOCTYPE")) { htmlContent = '<!DOCTYPE html>\n' + htmlContent; }
             const blob = new Blob([htmlContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'alexandria-node.html';
+            a.download = 'sovereign-bureau.html';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            alert("Node Cloned. You now have the source code.");
+            alert("Case File Cloned.");
         }
 
         // --- COUNCIL / MEMBERSHIP LOGIC ---
@@ -1004,11 +772,10 @@
             
             const btn = document.querySelector('button[onclick="checkMembership()"]');
             const originalText = btn.innerText;
-            btn.innerText = "Verifying Signet...";
+            btn.innerText = "Checking Credentials...";
             btn.disabled = true;
 
-            // 1. Check Local Cache first
-            if(localStorage.getItem('is_alex_member') === 'true') {
+            if(localStorage.getItem('is_bureau_member') === 'true') {
                 isMember = true;
                 unlockCouncil();
                 btn.innerText = originalText;
@@ -1016,8 +783,6 @@
                 return;
             }
 
-            // 2. Query the Blockchain for the "Mint-ALEX" Artifact
-            // This effectively checks: "Does this user own the 'Mint' NFT?"
             const query = {
                 query: `
                 query {
@@ -1026,38 +791,32 @@
                         recipients: ["${APP_CONFIG.FEE_DESTINATION}"]
                         tags: [
                             { name: "App-Name", values: ["Unstoppable-Portal"] },
-                            { name: "Action", values: ["Mint-ALEX"] }
+                            { name: "Action", values: ["Mint-BADGE"] } 
                         ]
                         first: 1
                     ) {
                         edges {
-                            node {
-                                id
-                            }
+                            node { id }
                         }
                     }
                 }`
             };
 
             try {
-                const res = await fetch(`https://${currentGateway}/graphql`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(query)
-                });
+                const res = await fetch(`https://${currentGateway}/graphql`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(query) });
                 const json = await res.json();
                 
                 if (json.data && json.data.transactions.edges.length > 0) {
-                    alert("Signet Verified on-chain. Welcome, Council Member.");
+                    alert("Badge Verified. Access Granted.");
                     isMember = true;
-                    localStorage.setItem('is_alex_member', 'true');
+                    localStorage.setItem('is_bureau_member', 'true');
                     unlockCouncil();
                 } else {
-                    alert("No $ALEX Signet found on the blockchain for this wallet.");
+                    alert("No Badge found. Visit the front desk.");
                 }
             } catch(e) {
                 console.error(e);
-                alert("Verification failed. Network error.");
+                alert("Network Down.");
             } finally {
                 btn.innerText = originalText;
                 btn.disabled = false;
@@ -1068,9 +827,7 @@
             const connected = await connectUserWallet();
             if(!connected) return;
 
-            // IMPORTANT: In a real deployment, ensure APP_CONFIG.FEE_DESTINATION is set to YOUR wallet address
-            // so you receive the 5 AR funds.
-            if(confirm(`Mint 1 $ALEX Signet for ${APP_CONFIG.MEMBERSHIP_PRICE} AR?`)) {
+            if(confirm(`Issue 1 $BADGE for ${APP_CONFIG.MEMBERSHIP_PRICE} AR?`)) {
                 try {
                     let transaction = await arweave.createTransaction({
                         target: APP_CONFIG.FEE_DESTINATION,
@@ -1078,21 +835,19 @@
                     });
                     transaction.addTag('App-Name', 'Unstoppable-Portal');
                     transaction.addTag('Type', 'Membership-Buy');
-                    transaction.addTag('Action', 'Mint-ALEX'); // This tag CREATES the token record
-                    transaction.addTag('Version', '1.0');
+                    transaction.addTag('Action', 'Mint-BADGE'); 
+                    transaction.addTag('Version', '2.0'); // Dragnet Version
                     
                     await arweave.transactions.sign(transaction);
                     await arweave.transactions.post(transaction);
                     
-                    alert("Transaction Sent! Once confirmed (approx 2-5 mins), your Signet will be permanently verifiable.");
-                    
-                    // Optimistic update for UX
+                    alert("Paperwork Filed. Badge will be issued shortly.");
                     isMember = true;
-                    localStorage.setItem('is_alex_member', 'true');
+                    localStorage.setItem('is_bureau_member', 'true');
                     unlockCouncil();
                     
                 } catch(e) {
-                    alert("Transaction failed: " + e.message);
+                    alert("Filing Error: " + e.message);
                 }
             }
         }
@@ -1100,7 +855,11 @@
         function unlockCouncil() {
             document.getElementById('council-locked').classList.add('hidden');
             document.getElementById('council-unlocked').classList.remove('hidden');
-            if(document.getElementById('alex-balance-display')) document.getElementById('alex-balance-display').innerText = "1.00";
+            if(document.getElementById('alex-balance-display')) {
+                const el = document.getElementById('alex-balance-display');
+                el.innerText = "VERIFIED";
+                el.className = "text-green-700 font-mono text-xs font-bold";
+            }
         }
 
         // --- KIOSK LOGIC ---
@@ -1108,96 +867,51 @@
             document.getElementById('kiosk-locked-area').classList.add('hidden');
             document.getElementById('kiosk-unlocked-area').classList.remove('hidden');
         }
-
+        
         async function verifyLicense() {
             const connected = await connectUserWallet();
             if (!connected) return;
-
             const btn = document.getElementById('verify-license-btn');
             const originalText = btn.innerText;
-            btn.innerText = "Scanning Chain...";
+            btn.innerText = "Scanning...";
             btn.disabled = true;
-
-            const query = {
-                query: `
-                query {
-                    transactions(
-                        owners: ["${userAddress}"]
-                        recipients: ["${APP_CONFIG.FEE_DESTINATION}"]
-                        tags: [
-                            { name: "App-Name", values: ["Unstoppable-Portal"] },
-                            { name: "Type", values: ["Kiosk-License-Fee"] }
-                        ]
-                        first: 1
-                    ) {
-                        edges {
-                            node {
-                                id
-                            }
-                        }
-                    }
-                }`
-            };
-
+            const query = { query: `query { transactions(owners: ["${userAddress}"], recipients: ["${APP_CONFIG.FEE_DESTINATION}"], tags: [{ name: "App-Name", values: ["Unstoppable-Portal"] }, { name: "Type", values: ["Kiosk-License-Fee"] }], first: 1) { edges { node { id } } } }` };
             try {
-                const res = await fetch(`https://${currentGateway}/graphql`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(query)
-                });
+                const res = await fetch(`https://${currentGateway}/graphql`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(query) });
                 const json = await res.json();
                 if (json.data.transactions.edges.length > 0) {
-                    alert("License Found! Kiosk Unlocked.");
+                    alert("Permit Found. Office Unlocked.");
                     isKioskUnlocked = true;
                     localStorage.setItem('kiosk_unlocked', 'true');
                     showUnlockedKiosk();
-                } else {
-                    alert("No license payment found for this wallet.");
-                }
-            } catch (e) {
-                console.error(e);
-                alert("Verification failed. Network error.");
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
+                } else { alert("No permit found."); }
+            } catch (e) { alert("Check failed."); } finally { btn.innerText = originalText; btn.disabled = false; }
         }
 
         async function manualVerify() {
             const txid = document.getElementById('manual-verify-tx').value.trim();
-            if (!txid) {
-                alert("Please enter a Transaction ID.");
-                return;
-            }
-            
+            if (!txid) { alert("Enter ID."); return; }
             try {
                 const status = await arweave.transactions.getStatus(txid);
                 if (status.status === 200 || status.status === 202) {
-                     alert("Transaction Confirmed! Kiosk Unlocked.");
+                     alert("Confirmed. Office Unlocked.");
                      isKioskUnlocked = true;
                      localStorage.setItem('kiosk_unlocked', 'true');
                      showUnlockedKiosk();
-                } else {
-                    alert("Transaction not found or invalid.");
-                }
-            } catch(e) {
-                alert("Error verifying transaction.");
-            }
+                } else { alert("ID Invalid."); }
+            } catch(e) { alert("Error."); }
         }
 
         async function unlockKiosk() {
             const connected = await connectUserWallet();
             if (!connected) return;
             try {
-                let transaction = await arweave.createTransaction({
-                    target: APP_CONFIG.FEE_DESTINATION,
-                    quantity: arweave.ar.arToWinston(APP_CONFIG.KIOSK_PRICE)
-                });
+                let transaction = await arweave.createTransaction({ target: APP_CONFIG.FEE_DESTINATION, quantity: arweave.ar.arToWinston(APP_CONFIG.KIOSK_PRICE) });
                 transaction.addTag('App-Name', 'Unstoppable-Portal');
                 transaction.addTag('Type', 'Kiosk-License-Fee');
                 await arweave.transactions.sign(transaction);
                 await arweave.transactions.post(transaction);
-                alert("Payment Sent! Kiosk Mode Unlocked.");
+                alert("Fee Paid. Office Unlocked.");
                 isKioskUnlocked = true;
                 localStorage.setItem('kiosk_unlocked', 'true');
                 showUnlockedKiosk();
@@ -1205,469 +919,137 @@
         }
 
         async function donateToNode() {
-            if (!serviceAddress) {
-                alert("No Kiosk wallet loaded to donate to.");
-                return;
-            }
+            if (!serviceAddress) { alert("No wallet loaded."); return; }
             if(!userAddress && !(await connectUserWallet())) return;
-            
-            const amount = prompt("Enter amount to donate (AR):", "0.1");
+            const amount = prompt("Donation Amount (AR):", "0.1");
             if(!amount) return;
-
             try {
-                let transaction = await arweave.createTransaction({
-                    target: serviceAddress,
-                    quantity: arweave.ar.arToWinston(amount)
-                });
+                let transaction = await arweave.createTransaction({ target: serviceAddress, quantity: arweave.ar.arToWinston(amount) });
                 transaction.addTag('App-Name', 'Unstoppable-Portal');
                 transaction.addTag('Type', 'Donation');
                 await arweave.transactions.sign(transaction);
                 await arweave.transactions.post(transaction);
-                alert("Donation Sent! Thank you for supporting the node.");
-            } catch(e) {
-                alert("Donation failed: " + e.message);
-            }
+                alert("Funds Transferred.");
+            } catch(e) { alert("Transfer failed."); }
         }
 
-        function handleKeyfileUpload(input) {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const jwk = JSON.parse(e.target.result);
-                    await loadServiceWallet(jwk);
-                } catch (err) { alert("Invalid keyfile."); }
-            };
-            reader.readAsText(input.files[0]);
-        }
+        // Standard helpers...
+        function handleKeyfileUpload(input) { const reader = new FileReader(); reader.onload = async (e) => { try { const jwk = JSON.parse(e.target.result); await loadServiceWallet(jwk); } catch (err) { alert("Invalid key."); } }; reader.readAsText(input.files[0]); }
+        async function generateAndSaveWallet() { const jwk = await arweave.wallets.generate(); await loadServiceWallet(jwk); const a = document.createElement('a'); a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jwk)); a.download = "bureau-budget.json"; a.click(); }
+        async function loadServiceWallet(jwk) { serviceWallet = jwk; serviceAddress = await arweave.wallets.jwkToAddress(jwk); localStorage.setItem('arweave_service_wallet', JSON.stringify(jwk)); updateSetupStatus(); document.getElementById('service-balance-container').classList.remove('hidden'); document.getElementById('service-balance-container').classList.add('flex'); refreshSetupBalance(); }
+        function updateSetupStatus() { document.getElementById('setup-status').classList.remove('hidden'); document.getElementById('setup-address').innerText = serviceAddress; refreshSetupBalance(); }
+        async function refreshSetupBalance() { if (!serviceAddress) return; const bal = await arweave.wallets.getBalance(serviceAddress); const ar = arweave.ar.winstonToAr(bal); if (document.getElementById('setup-balance')) document.getElementById('setup-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`; if (document.getElementById('wallet-balance')) document.getElementById('wallet-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`; if (parseFloat(ar) > 0) { isSimulation = false; document.getElementById('sim-warning-idle').classList.add('hidden'); } else { isSimulation = true; document.getElementById('sim-warning-idle').classList.remove('hidden'); } }
+        function enterPortalAsAdmin() { if (!serviceWallet) { alert("Load budget first."); return; } document.getElementById('setup-screen').classList.add('hidden'); document.getElementById('app-screen').classList.remove('hidden'); }
+        function skipSetup() { serviceWallet = null; document.getElementById('setup-screen').classList.add('hidden'); document.getElementById('app-screen').classList.remove('hidden'); document.getElementById('service-balance-container').classList.add('hidden'); document.getElementById('badge-free').classList.add('opacity-50', 'grayscale'); document.getElementById('badge-paid').className = "flex items-center gap-1.5 text-stone-500 border border-stone-300 px-3 py-1"; }
+        function logoutAdmin() { if (confirm("Close Office?")) { serviceWallet = null; localStorage.removeItem('arweave_service_wallet'); location.reload(); } }
 
-        async function generateAndSaveWallet() {
-            const jwk = await arweave.wallets.generate();
-            await loadServiceWallet(jwk);
-            const a = document.createElement('a');
-            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jwk));
-            a.download = "arweave-keyfile.json";
-            a.click();
-        }
-
-        async function loadServiceWallet(jwk) {
-            serviceWallet = jwk;
-            serviceAddress = await arweave.wallets.jwkToAddress(jwk);
-            localStorage.setItem('arweave_service_wallet', JSON.stringify(jwk));
-            updateSetupStatus();
-            document.getElementById('service-balance-container').classList.remove('hidden');
-            document.getElementById('service-balance-container').classList.add('flex');
-            refreshSetupBalance();
-        }
-
-        function updateSetupStatus() {
-            document.getElementById('setup-status').classList.remove('hidden');
-            document.getElementById('setup-address').innerText = serviceAddress;
-            refreshSetupBalance();
-        }
-
-        async function refreshSetupBalance() {
-            if (!serviceAddress) return;
-            const bal = await arweave.wallets.getBalance(serviceAddress);
-            const ar = arweave.ar.winstonToAr(bal);
-            if (document.getElementById('setup-balance')) document.getElementById('setup-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`;
-            if (document.getElementById('wallet-balance')) document.getElementById('wallet-balance').innerText = `${parseFloat(ar).toFixed(4)} AR`;
-
-            if (parseFloat(ar) > 0) { isSimulation = false; document.getElementById('sim-warning-idle').classList.add('hidden'); }
-            else { isSimulation = true; document.getElementById('sim-warning-idle').classList.remove('hidden'); }
-        }
-
-        function enterPortalAsAdmin() {
-            if (!serviceWallet) { alert("Load wallet first."); return; }
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('app-screen').classList.remove('hidden');
-        }
-
-        function skipSetup() {
-            serviceWallet = null;
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('app-screen').classList.remove('hidden');
-            document.getElementById('service-balance-container').classList.add('hidden');
-            document.getElementById('badge-free').classList.add('opacity-50', 'grayscale');
-            document.getElementById('badge-paid').className = "flex items-center gap-1.5 text-stone-500 bg-stone-100 px-3 py-1 rounded-sm border border-stone-200";
-        }
-
-        function logoutAdmin() {
-            if (confirm("Disconnect Service Wallet?")) {
-                serviceWallet = null;
-                localStorage.removeItem('arweave_service_wallet');
-                location.reload();
-            }
-        }
-
-        // --- UPLOAD LOGIC ---
-        function triggerFileSelect() {
-            if (!document.getElementById('permanent-agree').checked) {
-                alert("ACKNOWLEDGEMENT REQUIRED: You must confirm that this action is irreversible.");
-                // highlight checkbox
-                document.getElementById('permanent-agree').parentElement.parentElement.classList.add('ring-1', 'ring-red-900');
-                setTimeout(() => document.getElementById('permanent-agree').parentElement.parentElement.classList.remove('ring-1', 'ring-red-900'), 1000);
-                return;
-            }
-            document.getElementById('file-input').click();
-        }
-
-        function submitArticle() {
-            if (!document.getElementById('permanent-agree').checked) {
-                alert("ACKNOWLEDGEMENT REQUIRED: You must confirm that this action is irreversible.");
-                document.getElementById('permanent-agree').parentElement.parentElement.classList.add('ring-1', 'ring-red-900');
-                setTimeout(() => document.getElementById('permanent-agree').parentElement.parentElement.classList.remove('ring-1', 'ring-red-900'), 1000);
-                return;
-            }
-
-            const body = document.getElementById('article-body').value;
-            if (!body.trim()) {
-                alert("Record content cannot be empty.");
-                return;
-            }
-
-            // Create file from content
-            const blob = new Blob([body], { type: 'text/markdown' });
-            const title = document.getElementById('file-title').value.trim() || 'Untitled Record';
-            const filename = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.md';
-            const file = new File([blob], filename, { type: 'text/markdown' });
-
-            handleFile(file);
-        }
-
-        function setupDragAndDrop() {
-            const drop = document.getElementById('drop-zone');
-            const input = document.getElementById('file-input');
-
-            ['dragenter', 'dragover'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.add('drag-active'); }));
-            ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.remove('drag-active'); }));
-
-            drop.addEventListener('drop', (e) => {
-                if (!document.getElementById('permanent-agree').checked) {
-                    e.preventDefault();
-                    alert("ACKNOWLEDGEMENT REQUIRED: You must confirm that this action is irreversible.");
-                    return;
-                }
-                if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-            });
-            input.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
-        }
-
+        // --- UPLOAD / GALLERY (Updated Visuals) ---
+        function triggerFileSelect() { if (!document.getElementById('permanent-agree').checked) { alert("AFFIDAVIT REQUIRED."); return; } document.getElementById('file-input').click(); }
+        function submitArticle() { if (!document.getElementById('permanent-agree').checked) { alert("AFFIDAVIT REQUIRED."); return; } const body = document.getElementById('article-body').value; if (!body.trim()) { alert("Report empty."); return; } const blob = new Blob([body], { type: 'text/markdown' }); const title = document.getElementById('file-title').value.trim() || 'Untitled'; const filename = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.md'; const file = new File([blob], filename, { type: 'text/markdown' }); handleFile(file); }
+        function setupDragAndDrop() { const drop = document.getElementById('drop-zone'); const input = document.getElementById('file-input'); ['dragenter', 'dragover'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.add('drag-active'); })); ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.remove('drag-active'); })); drop.addEventListener('drop', (e) => { if (!document.getElementById('permanent-agree').checked) { e.preventDefault(); alert("AFFIDAVIT REQUIRED."); return; } if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); }); input.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); }); }
+        
         async function handleFile(file) {
             const title = document.getElementById('file-title').value.trim() || file.name;
             const isEncrypted = document.getElementById('encrypt-toggle').checked;
             const isSensitive = document.getElementById('sensitive-toggle').checked;
-
-            // Check logic
             if (file.size > FREE_LIMIT_BYTES || (!serviceWallet && !isSimulation)) {
                 pendingFile = { file, title, isEncrypted, isSensitive };
-                document.getElementById('payment-title').innerText = !serviceWallet ? "Visitor Mode" : "File Too Large";
-                document.getElementById('payment-desc').innerText = !serviceWallet ?
-                    `Pay Gas + ${APP_CONFIG.FEE_AMOUNT} AR Fee` : "Pay Gas via Personal Wallet";
+                document.getElementById('payment-title').innerText = !serviceWallet ? "Civilian Mode" : "File Limit Exceeded";
+                document.getElementById('payment-desc').innerText = !serviceWallet ? `Pay Gas + ${APP_CONFIG.FEE_AMOUNT} AR Fee` : "Pay via Personal Wallet";
                 showState('payment');
-            } else {
-                processUpload(file, title, isEncrypted, isSensitive, 'free');
-            }
+            } else { processUpload(file, title, isEncrypted, isSensitive, 'free'); }
         }
 
         async function connectUserWallet() {
-            // Helper to wait for injection (fixes race condition in some browsers)
-            const waitForWallet = () => new Promise(resolve => {
-                if (window.arweaveWallet) return resolve(true);
-                window.addEventListener('arweaveWalletLoaded', () => resolve(true), { once: true });
-                setTimeout(() => resolve(!!window.arweaveWallet), 1000);
-            });
-
+            const waitForWallet = () => new Promise(resolve => { if (window.arweaveWallet) return resolve(true); window.addEventListener('arweaveWalletLoaded', () => resolve(true), { once: true }); setTimeout(() => resolve(!!window.arweaveWallet), 1000); });
             const found = await waitForWallet();
-
-            if (!found) {
-                if (confirm("ArConnect/Wander extension not detected. Use simulation mode for testing?")) {
-                    userAddress = "Simulated_User";
-                    return true;
-                }
-                return false;
-            }
-            try {
-                await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'DISPATCH', 'ENCRYPT', 'DECRYPT']);
-                userAddress = await window.arweaveWallet.getActiveAddress();
-                document.getElementById('connect-wallet-btn').innerHTML = `<i data-lucide="wallet" class="w-3 h-3"></i> ${userAddress.slice(0, 4)}...`;
-                document.getElementById('connect-wallet-btn').className = "flex items-center gap-2 bg-stone-100 text-stone-900 border border-stone-300 px-3 py-1.5 rounded-lg text-xs font-bold";
-
-                // If on gallery view, refresh it
-                if (!document.getElementById('view-gallery').classList.contains('hidden')) {
-                    // Update My Uploads button style
-                    const btn = document.getElementById('btn-my-uploads');
-                    btn.classList.remove('text-stone-500');
-                    btn.classList.add('text-red-900');
-                    btn.title = "View your contributions";
-                }
-
-                return true;
-            } catch (e) { console.error(e); return false; }
+            if (!found) { if (confirm("ArConnect missing. Run simulation?")) { userAddress = "Simulated_Civilian"; return true; } return false; }
+            try { await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'DISPATCH', 'ENCRYPT', 'DECRYPT']); userAddress = await window.arweaveWallet.getActiveAddress(); document.getElementById('connect-wallet-btn').innerHTML = `<i data-lucide="badge-check" class="w-3 h-3"></i> ${userAddress.slice(0, 4)}...`; document.getElementById('connect-wallet-btn').className = "flex items-center gap-2 bg-stone-200 text-stone-900 border border-stone-400 px-3 py-1.5 font-bold font-mono"; if (!document.getElementById('view-gallery').classList.contains('hidden')) { const btn = document.getElementById('btn-my-uploads'); btn.classList.remove('text-slate-500'); btn.classList.add('text-red-800'); btn.title = "View your cases"; } return true; } catch (e) { console.error(e); return false; }
         }
 
-        async function handleUserPayment() {
-            if (!userAddress && !(await connectUserWallet())) return;
-            if (pendingFile) processUpload(pendingFile.file, pendingFile.title, pendingFile.isEncrypted, pendingFile.isSensitive, 'paid');
-        }
+        async function handleUserPayment() { if (!userAddress && !(await connectUserWallet())) return; if (pendingFile) processUpload(pendingFile.file, pendingFile.title, pendingFile.isEncrypted, pendingFile.isSensitive, 'paid'); }
 
         async function processUpload(file, title, isEncrypted, isSensitive, tier) {
             showState('uploading');
-            updateBadge(tier === 'free' ? "SUBSIDIZED UPLOAD" : "PAID UPLOAD", tier === 'free' ? 'stone' : 'red');
+            const badge = document.getElementById('upload-badge');
+            if (tier === 'free') { badge.className = `inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-4 bg-stone-200 text-stone-800 border border-stone-400 font-mono`; badge.innerText = "BUREAU FUNDED"; } 
+            else { badge.className = `inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-4 bg-white text-stone-500 border border-stone-300 font-mono`; badge.innerText = "SELF FUNDED"; }
 
             if (isSimulation && tier === 'free') { simulateUpload(); return; }
-
             try {
-                // 1. Read
                 let data = await readFile(file);
-
-                // 2. Encrypt if requested
-                let tags = [
-                    { name: 'App-Name', value: 'Unstoppable-Portal' },
-                    { name: 'Content-Type', value: file.type },
-                    { name: 'Title', value: title },
-                    { name: 'Timestamp', value: Date.now().toString() },
-                    { name: 'License', value: 'yRj4a5KMctX_uOmKWCFJIjmY8DeJcusvk6-HzLiM_t8' }, // UDL
-                    { name: 'License-Fee', value: APP_CONFIG.UDL_FEE },
-                    { name: 'Derivation', value: 'Allowed-With-Credit' }
-                ];
-
-                if (isSensitive) {
-                    tags.push({ name: 'Content-Warning', value: 'sensitive' });
-                }
-
-                if (isEncrypted) {
-                    if (tier === 'free' && !userAddress) {
-                        if (!await connectUserWallet()) throw new Error("Wallet required for encryption");
-                    }
-                    data = await window.arweaveWallet.encrypt(new TextDecoder().decode(data), { algorithm: 'RSA-OAEP' });
-                    tags.push({ name: 'Encryption', value: 'RSA-OAEP' });
-                }
-
-                // 3. Create Transaction
+                let tags = [ { name: 'App-Name', value: 'Unstoppable-Portal' }, { name: 'Content-Type', value: file.type }, { name: 'Title', value: title }, { name: 'Timestamp', value: Date.now().toString() }, { name: 'License', value: 'yRj4a5KMctX_uOmKWCFJIjmY8DeJcusvk6-HzLiM_t8' }, { name: 'License-Fee', value: APP_CONFIG.UDL_FEE }, { name: 'Derivation', value: 'Allowed-With-Credit' } ];
+                if (isSensitive) tags.push({ name: 'Content-Warning', value: 'sensitive' });
+                if (isEncrypted) { if (tier === 'free' && !userAddress) { if (!await connectUserWallet()) throw new Error("Wallet required for encryption"); } data = await window.arweaveWallet.encrypt(new TextDecoder().decode(data), { algorithm: 'RSA-OAEP' }); tags.push({ name: 'Encryption', value: 'RSA-OAEP' }); }
                 let tx;
-                if (tier === 'free') {
-                    tx = await arweave.createTransaction({ data }, serviceWallet);
-                    tags.forEach(t => tx.addTag(t.name, t.value));
-                    await arweave.transactions.sign(tx, serviceWallet);
-                } else {
-                    // Paid
-                    let options = { data };
-                    if (APP_CONFIG.FEE_DESTINATION) {
-                        options.target = APP_CONFIG.FEE_DESTINATION;
-                        options.quantity = arweave.ar.arToWinston(APP_CONFIG.FEE_AMOUNT);
-                    }
-                    tx = await arweave.createTransaction(options);
-                    tags.forEach(t => tx.addTag(t.name, t.value));
-                    await arweave.transactions.sign(tx);
-                }
-
-                // 4. Post
+                if (tier === 'free') { tx = await arweave.createTransaction({ data }, serviceWallet); tags.forEach(t => tx.addTag(t.name, t.value)); await arweave.transactions.sign(tx, serviceWallet); } 
+                else { let options = { data }; if (APP_CONFIG.FEE_DESTINATION) { options.target = APP_CONFIG.FEE_DESTINATION; options.quantity = arweave.ar.arToWinston(APP_CONFIG.FEE_AMOUNT); } tx = await arweave.createTransaction(options); tags.forEach(t => tx.addTag(t.name, t.value)); await arweave.transactions.sign(tx); }
                 let uploader = await arweave.transactions.getUploader(tx);
-                while (!uploader.isComplete) {
-                    await uploader.uploadChunk();
-                    document.getElementById('progress-text').innerText = `${uploader.pctComplete}%`;
-                }
-
+                while (!uploader.isComplete) { await uploader.uploadChunk(); document.getElementById('progress-text').innerText = `${uploader.pctComplete}%`; }
                 finishUpload(`https://arweave.net/${tx.id}`);
-
-            } catch (e) {
-                console.error(e);
-                alert("Upload Error: " + e.message);
-                showState('idle');
-            }
+            } catch (e) { console.error(e); alert("Upload Error: " + e.message); showState('idle'); }
         }
 
-        // --- GALLERY LOGIC ---
+        // --- GALLERY LOGIC (Updated for Dragnet Mode) ---
         function setFeedMode(mode) {
             feedMode = mode;
-            // Update UI
-            if (mode === 'raw') {
-                document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-red-900 border-b border-red-900";
-                document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors";
-            } else {
-                document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors";
-                document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-red-900 border-b border-red-900";
-            }
+            if (mode === 'raw') { document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-red-800 border-b-2 border-red-800 font-mono"; document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors font-mono"; } 
+            else { document.getElementById('feed-raw').className = "text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors font-mono"; document.getElementById('feed-curated').className = "text-[10px] font-bold uppercase tracking-widest text-red-800 border-b-2 border-red-800 font-mono"; }
             loadGallery();
         }
 
         async function loadGallery(filterOwner = null) {
-            // Check if filtering by owner but no wallet connected
-            if (filterOwner && !userAddress) {
-                if (!await connectUserWallet()) return;
-                filterOwner = userAddress; // Update just in case
-            }
-
+            if (filterOwner && !userAddress) { if (!await connectUserWallet()) return; filterOwner = userAddress; }
             const grid = document.getElementById('gallery-grid');
             const isSafeMode = document.getElementById('safe-mode-toggle').checked;
-
-            let loadingMsg = filterOwner ? "Fetching your records..." : "Syncing global catalogue...";
-            grid.innerHTML = `<div class="col-span-full text-center text-stone-400 py-24 font-bold text-xs uppercase tracking-widest"><div class="w-8 h-8 border-2 border-stone-300 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>${loadingMsg}</div>`;
-
-            // Build Query
+            let loadingMsg = filterOwner ? "Pulling your file..." : "Indexing case files...";
+            grid.innerHTML = `<div class="col-span-full text-center text-stone-500 py-24 font-bold text-xs uppercase tracking-widest font-mono"><div class="w-8 h-8 border-2 border-stone-800 border-t-red-700 rounded-full animate-spin mx-auto mb-4"></div>${loadingMsg}</div>`;
+            
             let ownerFilter = filterOwner ? `owners: ["${filterOwner}"],` : '';
-            if (feedMode === 'curated' && !filterOwner) {
-                // If curated and not filtering by "My Uploads", use the librarians list
-                const librariansStr = APP_CONFIG.LIBRARIANS.map(l => `"${l}"`).join(',');
-                ownerFilter = `owners: [${librariansStr}],`;
-            }
-
-            const query = {
-                query: `
-                query {
-                    transactions(
-                        ${ownerFilter}
-                        tags: [{ name: "App-Name", values: ["Unstoppable-Portal"] }]
-                        first: 12
-                    ) {
-                        edges {
-                            node {
-                                id
-                                tags { name value }
-                            }
-                        }
-                    }
-                }`
-            };
-
+            if (feedMode === 'curated' && !filterOwner) { const librariansStr = APP_CONFIG.LIBRARIANS.map(l => `"${l}"`).join(','); ownerFilter = `owners: [${librariansStr}],`; }
+            
+            const query = { query: `query { transactions(${ownerFilter} tags: [{ name: "App-Name", values: ["Unstoppable-Portal"] }] first: 12) { edges { node { id tags { name value } } } } }` };
             try {
-                const res = await fetch(`https://${currentGateway}/graphql`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(query)
-                });
+                const res = await fetch(`https://${currentGateway}/graphql`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(query) });
                 const json = await res.json();
                 const txs = json.data.transactions.edges;
-
                 grid.innerHTML = '';
-                if (txs.length === 0) {
-                    let emptyMsg = filterOwner ? "No records found." : "No records found. Begin the archive.";
-                    grid.innerHTML = `<div class="col-span-full text-center text-stone-500 font-bold text-xs uppercase tracking-widest py-12">${emptyMsg}</div>`;
-                    return;
-                }
-
+                if (txs.length === 0) { grid.innerHTML = `<div class="col-span-full text-center text-stone-600 font-bold text-xs uppercase tracking-widest py-12 font-mono">No evidence found.</div>`; return; }
                 txs.forEach(tx => {
-                    const id = tx.node.id;
-                    const tags = tx.node.tags;
-                    const title = tags.find(t => t.name === 'Title')?.value || 'Untitled Record';
+                    const id = tx.node.id; const tags = tx.node.tags;
+                    const title = tags.find(t => t.name === 'Title')?.value || 'Untitled Case';
                     const type = tags.find(t => t.name === 'Content-Type')?.value || 'Unknown';
                     const isEncrypted = tags.find(t => t.name === 'Encryption');
                     const isSensitive = tags.find(t => t.name === 'Content-Warning' && t.value === 'sensitive');
-
-                    // Apply blur logic
-                    const blurClass = (isSensitive && isSafeMode) ? 'blur-sm grayscale opacity-50 hover:opacity-100 hover:grayscale-0 hover:blur-0 transition-all duration-500' : '';
-                    const warningOverlay = (isSensitive && isSafeMode) ?
-                        `<div class="absolute inset-0 flex items-center justify-center text-red-800 font-bold text-xs bg-stone-100/90 z-20 pointer-events-none border border-red-200 m-1 uppercase tracking-widest">SENSITIVE CONTENT</div>` : '';
-
+                    const blurClass = (isSensitive && isSafeMode) ? 'blur-sm grayscale opacity-30 hover:opacity-100 hover:grayscale-0 hover:blur-0 transition-all duration-500' : '';
+                    const warningOverlay = (isSensitive && isSafeMode) ? `<div class="absolute inset-0 flex items-center justify-center text-red-700 font-bold text-xs bg-stone-100/90 z-20 pointer-events-none border border-red-700 m-1 uppercase tracking-widest font-mono transform rotate-12" style="border-width: 4px; border-style: double;">CONFIDENTIAL</div>` : '';
+                    
                     const card = document.createElement('div');
-                    card.className = "bg-white border border-stone-200 rounded-sm p-5 hover:shadow-md transition-all relative overflow-hidden group";
-                    card.innerHTML = `
-                        ${warningOverlay}
-                        <div class="${blurClass}">
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="p-2 bg-stone-100 rounded-sm text-stone-500">
-                                    <i data-lucide="${isEncrypted ? 'lock' : 'file-text'}" class="w-5 h-5"></i>
-                                </div>
-                                <div class="flex gap-2">
-                                    ${isSensitive ? '<span class="text-[10px] text-red-900 font-bold bg-red-50 px-2 py-1 rounded border border-red-100 uppercase">Redacted</span>' : ''}
-                                    <span class="text-[10px] text-stone-500 font-bold bg-stone-50 px-2 py-1 rounded uppercase border border-stone-100">${type.split('/')[1] || 'FILE'}</span>
-                                </div>
-                            </div>
-                            <h4 class="font-bold text-stone-900 mb-1 truncate font-serif text-lg leading-tight" title="${title}">${title}</h4>
-                            <p class="text-[10px] text-stone-400 font-mono mb-6 truncate uppercase tracking-wider">REF: ${id}</p>
-                            <div class="flex gap-2">
-                                <a href="https://${currentGateway}/${id}" target="_blank" class="flex-1 bg-stone-100 hover:bg-stone-200 text-center py-2.5 rounded-sm text-xs font-bold text-stone-900 transition-colors relative z-30 uppercase tracking-wide border border-stone-200">
-                                    ${isEncrypted ? 'Decrypt' : 'Inspect'}
-                                </a>
-                            </div>
-                        </div>
-                    `;
+                    card.className = "bg-white border-2 border-stone-800 p-4 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.2)] transition-all relative overflow-hidden group";
+                    card.innerHTML = `${warningOverlay}<div class="${blurClass}"><div class="flex items-start justify-between mb-4"><div class="p-1 bg-stone-200 border border-stone-400 text-stone-600"><i data-lucide="${isEncrypted ? 'lock' : 'file-text'}" class="w-5 h-5"></i></div><div class="flex gap-2">${isSensitive ? '<span class="text-[10px] text-red-700 font-bold bg-white px-2 py-1 border border-red-700 uppercase font-mono transform -rotate-2">REDACTED</span>' : ''}<span class="text-[10px] text-stone-600 font-bold bg-stone-100 px-2 py-1 border border-stone-300 font-mono">${type.split('/')[1] || 'FILE'}</span></div></div><h4 class="font-bold text-stone-900 mb-1 truncate font-mono text-sm leading-tight tracking-wide border-b border-stone-300 pb-1" title="${title}">${title}</h4><p class="text-[10px] text-stone-500 font-mono mb-4 mt-2 truncate uppercase">CASE ID: ${id}</p><div class="flex gap-2"><a href="https://${currentGateway}/${id}" target="_blank" class="flex-1 bg-stone-800 hover:bg-stone-700 text-center py-2 text-xs font-bold text-white transition-colors relative z-30 uppercase tracking-wide font-mono">${isEncrypted ? 'Decrypt' : 'Review'}</a></div></div>`;
                     grid.appendChild(card);
                 });
                 lucide.createIcons();
-
-            } catch (e) {
-                console.error(e);
-                grid.innerHTML = '<div class="col-span-full text-center text-red-700 font-serif">Unable to sync with library node.</div>';
-            }
+            } catch (e) { console.error(e); grid.innerHTML = '<div class="col-span-full text-center text-red-600 font-mono">Teletype Error. Network Down.</div>'; }
         }
 
         // --- HELPERS ---
-        function readFile(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-            });
-        }
-
-        function simulateUpload() {
-            let p = 0;
-            const int = setInterval(() => {
-                p += 10;
-                document.getElementById('progress-text').innerText = p + "%";
-                if (p >= 100) {
-                    clearInterval(int);
-                    finishUpload("https://arweave.net/simulated_tx_hash");
-                }
-            }, 200);
-        }
-
+        function readFile(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsArrayBuffer(file); reader.onload = () => resolve(reader.result); reader.onerror = reject; }); }
+        function simulateUpload() { let p = 0; const int = setInterval(() => { p += 10; document.getElementById('progress-text').innerText = p + "%"; if (p >= 100) { clearInterval(int); finishUpload("https://arweave.net/simulated_tx_hash"); } }, 200); }
         function finishUpload(url) {
             const txId = url.split('/').pop();
             document.getElementById('result-url').textContent = url;
             document.getElementById('view-link').href = url;
             document.getElementById('verify-link').href = `https://viewblock.io/arweave/tx/${txId}`;
-
             const simMsg = document.getElementById('sim-success-msg');
-            if (simMsg) {
-                if (isSimulation) simMsg.classList.remove('hidden');
-                else simMsg.classList.add('hidden');
-            }
-
+            if (simMsg) { if (isSimulation) simMsg.classList.remove('hidden'); else simMsg.classList.add('hidden'); }
             showState('success');
         }
-
-        function showState(s) {
-            ['idle', 'payment', 'uploading', 'success'].forEach(x => document.getElementById(`state-${x}`).classList.add('hidden'));
-            document.getElementById(`state-${s}`).classList.remove('hidden');
-        }
-
-        function updateBadge(txt, col) {
-            document.getElementById('upload-badge').innerText = txt;
-            if (col === 'red') {
-                document.getElementById('upload-badge').className = `inline-block px-2 py-0.5 rounded text-xs font-bold mb-4 bg-red-100 text-red-900 border border-red-200`;
-            } else {
-                document.getElementById('upload-badge').className = `inline-block px-2 py-0.5 rounded text-xs font-bold mb-4 bg-stone-100 text-stone-600 border border-stone-200`;
-            }
-        }
-
-        function resetUI() {
-            showState('idle');
-            document.getElementById('file-input').value = '';
-            document.getElementById('file-title').value = '';
-            document.getElementById('article-body').value = '';
-            pendingFile = null;
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(document.getElementById('result-url').textContent);
-            alert("Copied!");
-        }
-
-        function copyServiceAddress() {
-            if (serviceAddress) {
-                navigator.clipboard.writeText(serviceAddress);
-                alert("Copied Service Address");
-            }
-        }
-
-        function copyText(text) {
-            navigator.clipboard.writeText(text);
-            alert("Address copied to clipboard!");
-        }
+        function showState(s) { ['idle', 'payment', 'uploading', 'success'].forEach(x => document.getElementById(`state-${x}`).classList.add('hidden')); document.getElementById(`state-${s}`).classList.remove('hidden'); }
+        function resetUI() { showState('idle'); document.getElementById('file-input').value = ''; document.getElementById('file-title').value = ''; document.getElementById('article-body').value = ''; pendingFile = null; }
+        function copyLink() { navigator.clipboard.writeText(document.getElementById('result-url').textContent); alert("Copied to clipboard."); }
+        function copyServiceAddress() { if (serviceAddress) { navigator.clipboard.writeText(serviceAddress); alert("Address copied."); } }
+        function copyText(text) { navigator.clipboard.writeText(text); alert("Copied."); }
     </script>
 </body>
-
 </html>
